@@ -1,0 +1,12 @@
+# research repo ignore rules (mirrors the upstream red lines)
+*.ipsw
+*.img
+*.qcow2
+*.raw
+*.dmg
+*.rom
+*.efi
+AVPBooter*
+logs/
+artifacts/
+vm/disks/

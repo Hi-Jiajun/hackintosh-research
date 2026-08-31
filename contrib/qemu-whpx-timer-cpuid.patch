@@ -1,0 +1,49 @@
+From: hiliang <hiliang@localhost>
+Subject: [PATCH] whpx: expose APIC timer features the hypervisor emulates
+
+WHvGetVirtualProcessorCpuidOutput hides CPUID.01H:ECX.TSC_DEADLINE_TIMER and
+CPUID.06H:EAX.ARAT on hosts whose native CPUID layout differs (observed on an
+AMD Ryzen 7 9700X host), even though the hypervisor's local-APIC emulation
+accepts TSC-deadline MSR writes and QEMU's own LAPIC device implements the
+same. Guests that probe these bits early (e.g. the x86_64 macOS kernel) then
+select a timer mode different from the one QEMU actually emulates.
+
+Force the two bits on the same way the function already forces X2APIC,
+HYPERVISOR and HT: QEMU is the component that implements the behavior the
+bits advertise, so reporting them is accurate regardless of the host CPUID
+layout. This removes the "host doesn't support requested feature" warnings
+for these bits under WHPX.
+
+Signed-off-by: hiliang <hiliang@localhost>
+---
+ target/i386/whpx/whpx-all.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/target/i386/whpx/whpx-all.c b/target/i386/whpx/whpx-all.c
+index 0000000..0000001 100644
+--- a/target/i386/whpx/whpx-all.c
++++ b/target/i386/whpx/whpx-all.c
+@@ -1399,6 +1399,18 @@ uint32_t whpx_get_supported_cpuid(uint32_t func, uint32_t idx, int reg)
+     if (func == 1) {
+         ecx |= CPUID_EXT_X2APIC;
+         ecx |= CPUID_EXT_HYPERVISOR;
++        /*
++         * Hyper-V's CPUID output hides the APIC timer modes on hosts whose
++         * native CPUID layout differs (e.g. AMD hosts), even though the
++         * hypervisor's local-APIC emulation handles TSC-deadline writes and
++         * the QEMU-side LAPIC device does the same for kernel-irqchip=off
++         * style operation. Guests that probe this bit early (e.g. the
++         * x86_64 macOS kernel) pick their timer based on it; exposing it
++         * matches what QEMU actually emulates, exactly like the X2APIC bit
++         * above.
++         */
++        ecx |= CPUID_EXT_TSC_DEADLINE_TIMER;
+         edx |= CPUID_HT;
+     }
++    if (func == 6) {
++        eax |= CPUID_6_EAX_ARAT;
++    }
+ 
+     switch (reg) {
+-- 
+2.45.0
