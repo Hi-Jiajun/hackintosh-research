@@ -63,3 +63,15 @@
 - 若干实现 bug 已修：CR3 低 12 位未屏蔽（walk 地址错）、WHvGet 计数 2→3（rsi 未读）、dump 门控把 walk 一并吞掉（结构错位）、过滤器假阳性（phys=0）。
 - 脏页查询崩溃的 A/B：查询禁用后稳定；但查询即崩的定位仍不完整（query-only 的 boot 没跑到救援点）。
 
+
+## 最终追加：1GB 形态的宿主侧杠杆穷尽清单
+
+- host 侧 CR3 写（PCD 翻转）→ 无效（Hyper-V 不因宿主 CR3 写刷新结构缓存）；
+- 中断注入路线 → **不可行**：WHvGetVirtualProcessorInterruptControllerState（弃用版）与
+  WHvGetVirtualProcessorState + InterruptControllerState2 均返回 80370301
+  WHV_E_UNKNOWN_CAPABILITY——本 Windows 版本的 WHPX 不提供 LAPIC 状态读取，
+  无法获知定时器向量（盲注向量 = guest panic 风险，不做）。
+- 结论：1GB 大页缓存形态在宿主侧已无可用的干预手段，只能等 guest 自然 CR3 切换
+  （历史破点 15-20 分钟且不保证发生）。该形态的根治 = 微软/WHPX 侧修复
+  （影子页表结构缓存失效逻辑），已随 issue #71 附上完整可复现材料。
+
