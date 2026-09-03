@@ -20,3 +20,13 @@
 - gdb 断点 vm_fault 入口/出口（guest 内核符号 + slide），观察
   "成功返回但页表不变"的具体分支（physmap 判定 vs reserved entry）；
 - 或读 fault 地址所在 vm_map（physmap 区验证）。
+
+## 追加：CPU 拉满根因（IOKit workloop 忙等 AHCI）
+
+- 15 个 AP 全部停在 IOEventSource::sleepGate 调用的 workloop 忙等
+  循环（call IOEventSource::sleepGate + 全局标志检查 + 回跳），
+  非 hlt——15 核自旋 = CPU 拉满。
+- serial 反复 AHCI COMRESET did not proceed / EnablePortOperation
+  0xE00002D6——磁盘中断未到达，IOInterruptEventSource gate 不睡。
+- 与 CPU0 的 rep movsb 循环（APFS 相关拷贝）同属磁盘/启动 IO 链。
+- CR3 flush timer（100ms×16VP hypercall）作为干扰项待排除。

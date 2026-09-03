@@ -1,0 +1,1158 @@
+reims-vgpu efi-gop: start
+reims-vgpu efi-gop: GOP installed BAR1=0x80000000 1920x1080 BGRA8
+[2J[001;001H[=3h[2J[001;001H[2J[001;001H[8;056;240t[2J[001;001HBdsDxe: loading Boot0002 "UEFI QEMU HARDDISK QM00017 " from PciRoot(0x0)/Pci(0x2,0x0)/Sata(0x2,0xFFFF,0x0)
+BdsDxe: starting Boot0002 "UEFI QEMU HARDDISK QM00017 " from PciRoot(0x0)/Pci(0x2,0x0)/Sata(0x2,0xFFFF,0x0)
+#[EB|LOG:EXITBS:END] _
+#[EB.BST.FBS|-]
+#[EB|B:BOOT]
+#[EB|LOG:HANDOFF TO XNU] _
+======== End of efiboot serial output. ========
+PMAP: Supervisor Mode Execute Protection enabled
+PMAP: Supervisor Mode Access Protection enabled
+Darwin Kernel Version 22.6.0: Tue Jul 15 08:22:28 PDT 2025; root:xnu-8796.141.3.713.2~2/RELEASE_X86_64
+pmap_startup() delaying init/free of page nums > 0x200000
+pmap_startup() init/release time: 379673 microsec
+pmap_startup() delayed init/release of 2631067 pages
+vm_page_bootstrap: 1466851 free pages, 2694685 wired pages, (up to 2631067 of which are delayed free)
+VM boostrap: 73 maps, 153 entries and 128 holes available
+Maximum number of VM swap files: 100
+kext submap [0x<ptr> - 0x<ptr>], kernel text [0x<ptr> - 0x<ptr>]
+"vm_compressor_mode" is 4
+VM bootstrap done: 57 maps, 110 entries and 117 holes left
+OSLog stream configured: stream: 8192 bytes, cache: 2112 bytes
+Firehose configured: 16 chunks, 8 io pages
+Log queues configured: slot count: 128, per-slot size: 32768, total size: 4194304
+Long logs support configured: size: 16384
+standard timeslicing quantum is 10000 us
+standard background quantum is 2500 us
+mig_table_max_displ = 54 mach_kobj_count = 374
+kdp_core zlib memory 0x7000
+ACPI: RSDP 0x000000007F97E014 000024 (v02 BOCHS )
+ACPI: XSDT 0x000000007F9E6000 000054 (v01 BOCHS  BXPC     00000001      01000013)
+ACPI: FACP 0x000000007F978000 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)Darwin Image4 Validator Version 5.0.0: Tue Jul 15 08:14:25 PDT 2025; root:AppleImage4-202.120.2~1073/AppleImage4/RELEASE_X86_64
+calling mpo_policy_init for AppleImage4
+Security policy loaded: AppleImage4 sysctl hook (AppleImage4)
+AppleImage4: no options node: 19
+
+calling mpo_policy_init for AMFI
+Security policy loaded: Apple Mobile File Integrity (AMFI)
+AMFI: Booted in a VM
+calling mpo_policy_init for Sandbox
+Security policy loaded: Seatbelt sandbox policy (Sandbox)
+ACPI: DSDT 0x000000007F979000 0033EA (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+ACPI: FACS 0x000000007F9DD000 000040
+ACPI: APIC 0x000000007F977000 0000F0 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+ACPI: HPET 0x000000007F976000 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+ACPI: MCFG 0x000000007F975000 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+ACPI: WAET 0x000000007F974000 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+ACPI: SSDT 0x000000007F9E7000 00010B (v02 ACDT   SsdtEC   00001000 INTL 20190509)
+ACPI: 2 ACPI AML tables successfully acquired and loaded
+calling mpo_policy_init for Quarantine
+Security policy loaded: Quarantine policy (Quarantine)
+AppleCredentialManager: init: inited KE[1] (ready=NO, AVP=NO) -> true.
+AppleCredentialManager: probe: probed KE[1] (ready=NO) -> true (score=0).
+Couldn't alloc class "AppleKeyStoreTest"
+pci (build 08:15:00 Jul 15 2025), flags 0xc3080
+AppleACPICPU: ProcessorId=0 LocalApicId=0 Enabled
+AppleACPICPU: ProcessorId=1 LocalApicId=1 Enabled
+AppleACPICPU: ProcessorId=2 LocalApicId=2 Enabled
+AppleACPICPU: ProcessorId=3 LocalApicId=3 Enabled
+AppleACPICPU: ProcessorId=4 LocalApicId=4 Enabled
+AppleACPICPU: ProcessorId=5 LocalApicId=5 Enabled
+AppleACPICPU: ProcessorId=6 LocalApicId=6 Enabled
+AppleACPICPU: ProcessorId=7 LocalApicId=7 Enabled
+AppleACPICPU: ProcessorId=8 LocalApicId=8 Enabled
+AppleACPICPU: ProcessorId=9 LocalApicId=9 Enabled
+AppleACPICPU: ProcessorId=10 LocalApicId=10 Enabled
+AppleACPICPU: ProcessorId=11 LocalApicId=11 Enabled
+AppleACPICPU: ProcessorId=12 LocalApicId=12 Enabled
+AppleACPICPU: ProcessorId=13 LocalApicId=13 Enabled
+AppleACPICPU: ProcessorId=14 LocalApicId=14 Enabled
+AppleACPICPU: ProcessorId=15 LocalApicId=15 Enabled
+no external trust caches found (segment length is zero)
+AppleCredentialManager: start: starting KE[1] (ready=NO) -> true.
+IOAPIC: Version 0x20 Vectors 64:87
+ACPI: Executed 1 blocks of module-level executable AML code
+ACPI: sleep states S3 S4 S5
+AppleCredentialManager: initImpl: called, KE[1].
+AssertMacros: value (value: 0x0), ---, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMKernelService.cpp:182
+[addMemoryRange()] AppleVTD is not yet installed as gSystem
+[addMemoryRange()] AppleVTD is not yet installed as gSystem
+[addMemoryRange()] AppleVTD is not yet installed as gSystem
+[addMemoryRange()] AppleVTD is not yet installed as gSystem
+[ PCI configuration begin ]
+IOPCIConfigurator::configure kIOPCIEnumerationWaitTime is 900
+VirtualSMC     efend: @ authenticated restart support is unavailable (800000000000000E, 8)
+HID: Legacy shim 2
+Previous shutdown cause: 0
+VirtualSMC      vsmc: @ disabling itself due to multiple devices present
+console relocated to 0x80000000
+[ PCI configuration end, bridges 2, devices 9 ]
+[AHCI][HBA][00000000] start::266:AppleAHCI::start
+virtual bool IONVMeController::start(IOService *)::793:IONVMeController::start
+[AHCI][HBA][00000000] start::266:AppleAHCI::start
+Sleep failure code 0xffffffff 0xffffffff
+AppleNVMe Assert failed: ( 0 != data ) ReleaseIDNode file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/IONVMeFamily/Common/IONVMeController.cpp line: 6325 
+AppleNVMe Assert failed: ( 0 != data ) ReleaseIDNode file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/IONVMeFamily/Common/IONVMeController.cpp line: 6325 
+[AHCI][PRT][00020000] InitializePort::689:Port 0
+AppleNVMe Assert failed: 0 == (status) Exit file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/IONVMeFamily/Common/IONVMeController.cpp line: 6374 
+static AppleNVMeRequestPool *AppleNVMeRequestPool::Create(AppleNVMeWorkLoop *, uint8_t, uint16_t, uint32_t, bool, NVMeBufferAllocator *, lck_mtx_t *, NVMeCGType_t, IOMapper *)::111:NVMe Request Pool Init (External Drive Case). First phase, RequestCount = [AHCI][PRT][001F0200] InitializePort::689:Port 0
+virtual IOReturn IONVMeController::CreateSubmissionQueue(uint16_t, uint8_t)::3177:SQ index=0 entrysize=64
+virtual IOReturn IONVMeController::CreateSubmissionQueue(uint16_t, uint8_t)::3177:SQ index=1 entrysize=64
+[AHCI][PRT][001F0200] EnablePortOperation::3281:Enabling port 0
+[AHCI][PRT][00020000] EnablePortOperation::3281:Enabling port 0
+[AHCI][PRT][001F0200] setPowerState::2937:inNewPowerState: 2
+[AHCI][PRT][00020000] setPowerState::2937:inNewPowerState: 2
+virtual bool IONVMeController::start(IOService *)::849:Successfully initialized NVMe drive
+apfs_module_start:3058: load: com.apple.filesystems.apfs, v2142.140.9, apfs-2142.140.9.703.1, 2025/07/15
+apfs_module_start:3084: setting max link-id cache size to: 16
+ktriage_register_subsystem_strings: set subsystem 7 strings
+AppleCredentialManager: initImpl: EOSDevice: 0 [SEP over: KernelRelay=NO SEPManager=NO] [booted into: BaseSystem=NO InternalSystem=NO].
+ACM: Env_SetVariableWithParams: set var[6] len=1 <00>.
+ACM: InitCredentialEngine: Global credential set created, CS[20].
+ACM: Env_SetVariableWithParams: set var[5] len=1 <00>.
+ACM: Env_SetVariableWithParams: set var[23] len=1 <01>.
+ACM: Env_SetVariableWithParams: set var[24] len=22 <4a756c20313520323032352c2030383a32353a353700>.
+ACM: Env_SetDataProvider: data provider *set* for var[25].
+ACM: Env_SetDataProvider: data provider *set* for var[27].
+ACM: Env_SetDataProvider: data provider *set* for var[36].
+ACM: Env_SetDataProvider: data provider *set* for var[22].
+ACM: Env_SetDataProvider: data provider *set* for var[29].
+ACM: Env_SetVariableWithParams: set var[7] len=1 <00>.
+ACM: Env_SetVariableWithParams: set var[26] len=1 <00>.
+ACM: Env_SetVariableWithParams: set var[33] len=1 <01>.
+ACM: Env_SetVariableWithParams: set var[34] len=1 <00>.
+ACMFirstResponderKernelService: init: called, .
+ACMTRM-S: init: called, starting PersistentStore service.
+ACMTRM-A: init: called, starting TRM Analytics service.
+ACMTRM-C: init: called, starting AccessoryCache service.
+ACMKernelService: initValueFromBootArgAliasesUInt32: acc-cache size = 48 (default).
+ACMKernelService: initValueFromBootArgAliasesUInt32: acc-cache expiration = 2592000 (default).
+ACM: TRMAccCache_SetupEmpty: called, cacheSize=48 expiration=2592000.
+ACMTRM: init: called, starting TRM service.
+ACMKernelService: initValueFromBootArgAliasesUInt32: policy supported in BaseSystem = 0 (default).
+ACMKernelService: initValueFromBootArgAliasesUInt32: config profile = 4294967295 (default).
+AssertMacros: dtDefaults (value: 0x0), ---, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMRestrictedModeKernelService.cpp:2070
+ACMTRM: _getDefaultConfigProfile: config profile: 2 (boot-arg=2 edt-prop=2).
+ACMKernelService: initValueFromBootArgAliasesUInt32: policy mode timeout = 604800 (default).
+ACMKernelService: initValueFromBootArgAliasesUInt32: grace period (bounded) timeout = 259200 (default).
+ACMKernelService: initValueFromBootArgAliasesUInt32: unlocked period timeout = 86400 (default).
+ACMKernelService: initValueFromBootArgAliasesUInt32: enabled by default = 1 (default).
+ACMTRM: _disableBy: [TRM ENABLED=YES] (mask=0, DISABLED BY: Def=NO* BtArg=NO HW=NO DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=YES] (mask=0, DISABLED BY: Def=NO BtArg=NO* HW=NO DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES* DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO* OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+AssertMacros: data (value: 0x0), 'external-boot' property not found, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMRestrictedModeACMTRM: _loadDisabledByExternalBoot: disabled by ExternalBoot: NO.
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO* | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+AssertMacros: data (value: 0x0), 'disable-transport-rm' property not found, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMRestricACMTRM: _loadDisabledByOSEnvironment: disabled by OSEnvironment: NO.
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO* ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _mapAndPublishTRM: set TRM_PolicyTimeout = 604800.
+ACMTRM: _mapAndPublishTRM: set TRM_PolicyReason = Unrestricted(0).
+ACMTRM: _mapAndPublishTRM: set TRM_UnlockedPeriodTimeout = 86400.
+ACMTRM: _mapAndPublishTRM: sending kIOMessageServicePropertyChange(#changes=3) while LOCKED(1), TRM: 604800/U(0) 4294967295/-(255) M=255/4294967295/4294967295 ---(255)/---(255) L=255 BS=255 R=255 UP=86400/255, CUR: U(0) -(255).
+AppleCredentialManager: initImpl: KE[1] INITED.
+AppleCredentialManager: initImpl: returning, KE[1] -> true.
+AppleCredentialManager: startImpl: called, KE[1].
+ACMTRM: start: security.mac.acm.root_pivot_occurred sysctl registered.
+AppleCredentialManager: startImpl: registering notifications.
+AppleCredentialManager: startImpl: KE[1] STARTED.
+AppleCredentialManager: startImpl: returning, KE[1] -> true.
+AppleCredentialManager: start: started KE[1] (ready=YES) -> true.
+AppleKeyStore:330:0: starting (BUILT: Jul 15 2025 08:29:29) (normal variant)
+AppleKeyStore:488:0: _kernel_relay_enable = 0
+AppleKeyStore:533:0: _sep_enabled = 0
+AppleSSE::start called
+AssertMacros: value (value: 0x0),  file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleSSE/AppleSSE/AppleSSE.cpp, line: 49
+AppleSSE::start returning, result = 1
+virtual bool CoreAnalyticsHub::start(IOService *)::139:CoreAnalyticsHub start
+Registered CoreAnalyticsHub functions with xnu.virtual bool CoreAnalyticsHub::start(IOService *)::218:CoreAnalyticsHub start completed
+DSMOS has arrived
+Couldn't alloc class "AppleKeyStoreTest"
+Copyright (c) 1982, 1986, 1989, 1991, 1993
+	The Regents of the University of California. All rights reserved.
+
+MAC Framework successfully initialized
+AMFI: developer mode is force enabled on this platform
+AppleKeyStore:869:0: oy vey
+AMFIInitializeLocalSigningPublicKey: failed to get local signing public key (e00002bc)
+AMFI: finished: 1 1
+using 16384 buffer headers and 10240 cluster IO buffer headers
+ktriage_register_subsystem_strings: set subsystem 8 strings
+Couldn't alloc class "AppleKeyStoreTest"
+mcache: 16 CPU(s), 64 bytes CPU cache line size
+mbinit: done [256 MB total pool size, (170/85) split]
+dlil_init: Waiting for all the create dlil kernel threads to get scheduled at least once.
+dlil_init: All the created dlil kernel threads have been scheduled at least once. Proceeding.
+com.apple.AppleFSCompressionTypeDataless kmod start
+com.apple.AppleFSCompressionTypeZlib kmod start
+ifnet_attach: All kernel threads created for interface lo0 have been scheduled at least once. Proceeding.
+ifnet_attach: Waiting for all kernel threads created for interface gif0 to get scheduled at least once.
+ifnet_attach: All kernel threads created for interface gif0 have been scheduled at least once. Proceeding.
+skip attaching fsw to lo0 using legacy TX modelifnet_attach: Waiting for all kernel threads created for interface stf0 to get scheduled at least once.
+ifnet_attach: All kernel threads created for interface stf0 have been scheduled at least once. Proceeding.
+Couldn't alloc class "AppleKeyStoreTest"
+com.apple.AppleFSCompressionTypeDataless load succeeded
+com.apple.AppleFSCompressionTypeZlib load succeeded
+Setting up notifier for CoreAnalyticsHub
+calling mpo_policy_init for ASP
+calling mpo_policy_initbsd for ASP
+ASP: NVRAM pointer initialized
+ASP: No recovery key set
+Security policy loaded: Apple System Policy (ASP)
+apfs_sysctl_register:1562: done registering sysctls.
+Couldn't alloc class "AppleKeyStoreTest"
+rooting via boot-uuid from /chosen: 9CC9E7DC-DA36-4416-ADE0-B69290BF31EE
+cryptoAlloc:650: Using 64 buffers with size 16384, 512 buffers size 65536
+IOKernelDebugger: registering debugger
+Couldn't alloc class "AppleKeyStoreTest"
+Waiting on <dict ID="0"><key>IOProviderClass</key><string ID="1">IOResources</string><key>IOResourceMatch</key><string ID="2">boot-uuid-media</string></dict>
+Couldn't alloc class "AppleKeyStoreTest"
+AppleFileSystemDriver: using apfs-preboot-uuid
+swcrypto_threadpool_init:1504: Starting ThreadPool
+swcrypto_threadpool_init:1526: 4 threads would be used for the ThreadPool
+specread_work_queue_init:162: number of threads used for specread work queue 3
+dev_init:296: disk0s2 device accelerated crypto: 0 (compiled @ Jul 15 2025 08:10:43)
+dev_init:299: disk0s2 device_handle block size 4096 block count 67057654 features 0 internal 
+fletcher64_init:87: Selecting AVX2 implementation of fletcher64
+nx_mount:1224: disk0s2 initializing cache w/hash_size 8192 and cache size 32768
+nx_mount:1553: disk0s2 checkpoint search: largest xid 3360, best xid 3360 @ 8
+nx_mount:1555: disk0s2 reloading after unclean unmount, checkpoint xid 3360, superblock xid 3342
+nx_mount:1580: disk0s2 stable checkpoint indices: desc 7 data 26478
+nx_get_volume_group:8053: disk0s2 volume groups tree is not setup yet
+getVolumeGroupMountFrom:8529: disk0s2 nx_get_volume_group(9CC9E7DC-DA36-4416-ADE0-B69290BF31EE) failed with error 2
+nx_get_volume_group:8053: disk0s2 volume groups tree is not setup yet
+getVolumeGroupMountFrom:8529: disk0s2 nx_get_volume_group(9CC9E7DC-DA36-4416-ADE0-B69290BF31EE) failed with error 2
+probe:3995: disk0s2 Caching extended container info for container disk0s2
+authenticate_efi_forwarded_roothash:3253: evaluating authenticity of root hash
+populate_value_from_memory_descriptor:12059:  populate_value_from_memory_descriptor boot_args arv blob size 229
+populate_value_from_memory_descriptor:12066: populate_value_from_memory_descriptor copied into arv blob size 229
+populate_value_from_memory_descriptor:12059:  populate_value_from_memory_descriptor boot_args arv blob size 3658
+populate_value_from_memory_descriptor:12066: populate_value_from_memory_descriptor copied into arv blob size 3658
+root_hash_execution_cb:2828: img4_firmware_execute: successfully validated the payload and the manifest
+AppleFileSystemDriver: publishing boot-uuid-media=disk1s4 (Macintosh HD)
+Couldn't alloc class "AppleKeyStoreTest"
+Got boot device = IOService:/AppleACPIPlatformExpert/PCI0/AppleACPIPCI/S18@3/IONVMeController/IONVMeBlockStorageDevice@1/IOBlockStorageDriver/QEMU NVMe Ctrl Media/IOGUIDPartitionScheme/Untitled 2@2/AppleAPFSContainerScheme/AppleAPFSMedia/AppleAPFSContaineBSD root: disk1s4, major 1, minor 7
+bufattr_get_apfs:8238: Volume not mounted
+disk1s4: device is not readable.
+hfs_mountfs: buf_meta_bread failed with 13
+hfs_mount: hfs_mountfs returned error=13 for device unknown-dev
+hfs_mountroot failed: 13
+apfs_vfsop_mountroot:2745: apfs: mountroot called!
+dev_init:296: disk1 device accelerated crypto: 0 (compiled @ Jul 15 2025 08:10:43)
+dev_init:299: disk1 device_handle block size 4096 block count 67057654 features 16 internal solidstate
+nx_mount:1224: disk1 initializing cache w/hash_size 16384 and cache size 40960
+[AHCI][PRT][00020000] WaitForLinkPresent::4023:Port 0 PxSSTS: 0x0
+[AHCI][PRT][001F0200] WaitForLinkPresent::4023:Port 0 PxSSTS: 0x0
+[AHCI][PRT][001F0200] EnablePortOperation::3315:Port 0 - HandleComReset
+[AHCI][PRT][00020000] EnablePortOperation::3315:Port 0 - HandleComReset
+nx_mount:1553: disk1 checkpoint search: largest xid 3360, best xid 3360 @ 8
+nx_mount:1555: disk1 reloading after unclean unmount, checkpoint xid 3360, superblock xid 3342
+nx_mount:1580: disk1 stable checkpoint indices: desc 7 data 26478
+er_state_obj_get_for_recovery:7551: disk1s4 No ER state object for volume Macintosh HD - rolling is not happening, nothing to recover.
+apfs_vfsop_mount:2408: disk1 Promoter has been locked 
+apfs_vfsop_mount:2478: disk1s4 Rooting from snapshot with xid 799.
+apfs_log_mount_unmount:2039: disk1s4 mounting volume Macintosh HD, requested by: kernel_task (pid 0); parent: kernel_task (pid 0)
+handle_snapshot_mount:1036: disk1s4 mounting snapshot w/snap_xid 799 and sblock oid 0x9333e
+nx_get_volume_group:8053: disk1 volume groups tree is not setup yet
+getVolumeGroupMountFrom:8529: disk1 nx_get_volume_group(9CC9E7DC-DA36-4416-ADE0-B69290BF31EE) failed with error 2
+is_root_hash_authentication_required_osx:371: disk1s4 Release kext with internal build: 0, ARV disabled: 0, booting xid: 0
+is_root_hash_authentication_required:540: disk1s4 Root Volume, root hash authentication is required
+authenticate_root_hash:624: disk1s4 successfully validated on-disk root hash
+handle_snapshot_mount:1231: disk1s4 setting dev block size to 4096 from 512
+handle_mount:765: disk1s4 vol-uuid: 56F09BD8-CF06-4AD0-815A-E8D316594907 block size: 4096 block count: 67057654 (unencrypted; flags: 0x201; features: 21.0.16)
+handle_mount:819: disk1s4 ROSV: apfs mounted RO and is the system volume of a volume group and mounted as the root fs: creating the shadow fs_root
+fs_setup_shadow_fs_root_tree:2862: disk1s4 Created the shadow_fs_root tree <ptr>
+nx_volume_group_update:7978: disk1s4 Set volume (role 0x1) to 56d xid 31f
+ioqueue_depth = 256,   ioscale = 8
+BootCache: Root disk is an SSD, not caching
+load_init_program: attempting to load /sbin/launchd
+AppleUSB20XHCIPort@01600000: AppleUSBHostPort::enumerateDeviceComplete_block_invoke: enumerated 0x0627/0001/0000 (QEMU USB Tablet / 1) at 480 Mbps
+QEMU USB Tablet@01600000: IOUSBHostDevice::setConfigurationGated: AppleUSBHostCompositeDevice selected configuration 1
+shared_region: 0x4c3c499f5364fea3 [1(launchd)] check_np(0x7ff7b0a05cc8) vm_shared_region_start_address() failed
+Darwin Ignition Sequence Version 1.0.0: Tue Jul 15 08:16:39 PDT 2025; root:libignition-51~2042/libignition_core/RELEASE_X86_64
+AppleUSB20XHCIPort@01500000: AppleUSBHostPort::enumerateDeviceComplete_block_invoke: enumerated 0x0627/0001/0000 (QEMU USB Keyboard / 2) at 480 Mbps
+QEMU USB Keyboard@01500000: IOUSBHostDevice::setConfigurationGated: AppleUSBHostCompositeDevice selected configuration 1
+IOUSBHostInterface(0x100000277): matching deferred by IOUSBHostHIDDevice
+libignition: 1: arguments           :
+libignition: 1:   ignition level    : 0x5
+libignition: 1:   force dylib root  : 0x0
+libignition: 1:   halt after stage  : n/a
+libignition: 1: configuration         :
+libignition: 1:   program             : launchd
+libignition: 1:   os environment      : n/a
+libignition: 1:   rd                  : n/a
+libignition: 1:   arp0                : n/a
+libignition: 1:   rp                  : n/a
+libignition: 1:   pivot src           : n/a
+libignition: 1:   root ramdisk        : 0x0
+libignition: 1:   restore             : 0x0
+libignition: 1:   root device info    : 0x0
+libignition: 1:   can haz debugger    : 0x0
+libignition: 1:   rootfs mount flags  : 0x4480d001
+libignition: 1:   ecid                : 0x0
+libignition: 1:   volume group uuid   : 9CC9E7DC-DA36-4416-ADE0-B69290BF31EE
+libignition: 1:   hardware target     : x86legacyap
+libignition: 1:   initproc            : 0x1
+libignition: 1:   single user         : 0x0
+libignition: 1:   userspace reboot    : 0x0
+libignition: 1:   x86 translated      : 0x0
+libignition: 1:   secure boot level   : 0x3
+libignition: 1:   os version          : n/a
+libignition: 1: parameters          :
+libignition: 1:   version           : 0x1
+libignition: 1:   argc              : 0x1
+libignition: 1:   log fd            : 0xffffffffffffffff
+libignition: 1:   platform          : 0x1
+libignition: 1: boot spec           :
+libignition: 1:   name              : local
+libignition: 1:   stage count       : 0x8
+libignition: 1:        hello: commence primary ignition
+libignition: 1:        hello: hello from launchd.1
+libignition: 1:      preboot: mounting preboot
+libignition: 1:      preboot: preboot device: /dev/disk1s2
+libignition: 1:      preboot: preboot mount point: /System/Volumes/Preboot
+libignition: 1:      preboot: mounting preboot: dev = /dev/disk1s2, uid = 0, gid = 0
+spaceman_metazone_init:172: disk1 metazone for device 0 of size 1205462 blocks (encrypted: 0-602731 unencrypted: 602731-1205462)
+spaceman_datazone_init:628: disk1 allocation zone on dev 0 for allocations of 1 blocks starting at paddr 4096000
+spaceman_datazone_init:628: disk1 allocation zone on dev 0 for allocations of 2 blocks starting at paddr 3801088
+spaceman_datazone_init:628: disk1 allocation zone on dev 0 for allocations of 3 blocks starting at paddr 3833856
+spaceman_datazone_init:628: disk1 allocation zone on dev 0 for allocations of 4 blocks starting at paddr 3866624
+spaceman_scan_free_blocks:3374: disk1 scan took 0.000000 s (no trims)
+er_state_obj_get_for_recovery:7551: disk1s2 No ER state object for volume Preboot - rolling is not happening, nothing to recover.
+apfs_log_mount_unmount:2039: disk1s2 mounting volume Preboot, requested by: launchd (pid 1); parent: kernel_task (pid 0)
+handle_mount:765: disk1s2 vol-uuid: D0ED2561-D057-4F35-AC3A-2B15B9F56E39 block size: 4096 block count: 67057654 (unencrypted; flags: 0x1; features: 1.0.2)
+handle_mount:778: disk1s2 setting dev block size to 4096 from 512
+nx_volume_group_update:7897: disk1s2 Volume Preboot role 10 Not a System or data volume
+apfs_should_be_system_mount:660: disk1s2 volume with role 16 will be mounted until system shutdown
+ioqueue_depth = 256,   ioscale = 8
+libignition: 1: cryptex1 sniff: detecting cryptex1 directory
+libignition: 1: create graft directories: creating graft directories
+apfs_log_mount_unmount:2039: disk1s2 updating mounted volume Preboot, requested by: launchd (pid 1); parent: kernel_task (pid 0)
+libignition: 1: create graft directories: Cryptexes directory exists
+libignition: 1: create graft directories: incoming Cryptexes directory exists
+libignition: 1: create graft directories: graft point exists: Cryptexes/OS
+libignition: 1: downlevel cryptex not installed: 2
+libignition: 1: create graft directories: graft point exists: Cryptexes/App
+libignition: 1: create graft directories: graft point exists: Cryptexes/Incoming/OS
+libignition: 1:        graft: grafting boot cryptexes
+libignition: 1:        graft: os: no root xattr present
+libignition: 1:        graft: os: opening preboot subdirectory: cryptex1/current
+libignition: 1:        graft: os: opened preboot subdirectory: cryptex1/current
+libignition: 1:        graft: os: opened object: name = apticket.x86legacyap.im4m, type = image4 manifest, slot = 0
+libignition: 1:        graft: os: opened object: name = os.dmg, type = os hyper dmg, slot = 1
+libignition: 1:        graft: os: opened object: name = os.dmg.root_hash, type = os hyper dmg seal, slot = 2
+libignition: 1:        graft: os: opened object: name = os.dmg.trustcache, type = os hyper dmg trust cache, slot = 3
+libignition: 1:        graft: os: object spec not present: 4
+libignition: 1:        graft: os: selected im4m spec: image4 manifest
+libignition: 1:        graft: os: grafting: method = syscall, dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.dmg, seal = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.dmg.root_hash, graft point = /System/Volumes/Preboot/Cryptexes/OS, im4m = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/apticket.x86legacyap.im4m
+AppleImage4: failed to get cstring: vnum: 2
+root_hash_execution_cb:2828: img4_firmware_execute: successfully validated the payload and the manifest
+graft_dev_init:377: disk1 os.dmg GRAFT (compiled @ Jul 15 2025 08:10:43)
+graft_dev_init:380: disk1 os.dmg device_handle block size 4096 real block size 4096 block count 392192 features 0 internal 
+nx_mount:1224: os.dmg initializing cache w/hash_size 512 and cache size 2048
+nx_mount:1553: os.dmg checkpoint search: largest xid 21, best xid 21 @ 9
+nx_mount:1580: os.dmg stable checkpoint indices: desc 8 data 16
+er_state_obj_get_for_recovery:7551: os.dmgs1 No ER state object for volume RomeSecurityGlowG22H730.x86_64SystemCryptex - rolling is not happening, nothing to recover.
+is_root_hash_authentication_required_osx:371: os.dmgs1 Release kext with internal build: 0, ARV disabled: 0, booting xid: 0
+is_root_hash_authentication_required:540: os.dmgs1 RSR Graft, root hash authentication is required
+authenticate_root_hash:624: os.dmgs1 successfully validated on-disk root hash
+apfs_lookup_ge_jobj_id:4269: disk1s2 Found OBJID 0x6ce6 type 3
+apfs_graft:604: disk1s2 Graft ino 824, jobj_id range 1680+11538
+apfs_graft:675: disk1s2 successfully grafted ino 824 on dir 535, dev_name [os.dmg]
+libignition: 1:        graft: os: grafted cryptex: dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.dmg, graft point = /System/Volumes/Preboot/Cryptexes/OS, ignored error = 0
+libignition: 1:        graft: querying cryptex dmg node info: os
+libignition: 1: downlevel cryptex not installed: 2
+libignition: 1:        graft: app: no root xattr present
+libignition: 1:        graft: app: opening preboot subdirectory: cryptex1/current
+libignition: 1:        graft: app: opened preboot subdirectory: cryptex1/current
+libignition: 1:        graft: app: opened object: name = apticket.x86legacyap.im4m, type = image4 manifest, slot = 0
+libignition: 1:        graft: app: opened object: name = app.dmg, type = app hyper dmg, slot = 1
+libignition: 1:        graft: app: opened object: name = app.dmg.root_hash, type = app hyper dmg seal, slot = 2
+libignition: 1:        graft: app: opened object: name = app.dmg.trustcache, type = app hyper dmg trust cache, slot = 3
+libignition: 1:        graft: app: object spec not present: 4
+libignition: 1:        graft: app: selected im4m spec: image4 manifest
+libignition: 1:        graft: app: grafting: method = syscall, dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/app.dmg, seal = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/app.dmg.root_hash, graft point = /System/Volumes/Preboot/Cryptexes/App, im4m = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/apticket.x86legacyap.im4m
+AppleImage4: failed to get cstring: vnum: 2
+root_hash_execution_cb:2828: img4_firmware_execute: successfully validated the payload and the manifest
+graft_dev_init:377: disk1 app.dmg GRAFT (compiled @ Jul 15 2025 08:10:43)
+graft_dev_init:380: disk1 app.dmg device_handle block size 4096 real block size 4096 block count 4608 features 0 internal 
+nx_mount:1224: app.dmg initializing cache w/hash_size 512 and cache size 2048
+nx_mount:1553: app.dmg checkpoint search: largest xid 1774, best xid 1774 @ 5
+nx_mount:1580: app.dmg stable checkpoint indices: desc 4 data 49
+er_state_obj_get_for_recovery:7551: app.dmgs1 No ER state object for volume AppCryptex - rolling is not happening, nothing to recover.
+is_root_hash_authentication_required_osx:371: app.dmgs1 Release kext with internal build: 0, ARV disabled: 0, booting xid: 0
+is_root_hash_authentication_required:540: app.dmgs1 RSR Graft, root hash authentication is required
+authenticate_root_hash:624: app.dmgs1 successfully validated on-disk root hash
+apfs_lookup_ge_jobj_id:4269: disk1s2 Found OBJID 0x6ce6 type 3
+apfs_graft:604: disk1s2 Graft ino 828, jobj_id range 13218+3120
+apfs_graft:675: disk1s2 successfully grafted ino 828 on dir 536, dev_name [app.dmg]
+libignition: 1:        graft: app: grafted cryptex: dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/app.dmg, graft point = /System/Volumes/Preboot/Cryptexes/App, ignored error = 0
+libignition: 1:        graft: pre-reboot os: no root xattr present
+libignition: 1:        graft: pre-reboot os: opening preboot subdirectory: cryptex1/current
+libignition: 1:        graft: pre-reboot os: opened preboot subdirectory: cryptex1/current
+libignition: 1:        graft: pre-reboot os: opened object: name = apticket.x86legacyap.im4m, type = image4 manifest, slot = 0
+libignition: 1:        graft: pre-reboot os: opened object: name = os.clone.dmg, type = pre-reboot os hyper dmg, slot = 1
+libignition: 1:        graft: pre-reboot os: opened object: name = os.dmg.root_hash, type = os hyper dmg seal, slot = 2
+libignition: 1:        graft: pre-reboot os: object spec not present: 3
+libignition: 1:        graft: pre-reboot os: object spec not present: 4
+libignition: 1:        graft: pre-reboot os: selected im4m spec: image4 manifest
+libignition: 1:        graft: pre-reboot os: grafting: method = syscall, dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.clone.dmg, seal = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.dmg.root_hash, graft point = /System/Volumes/Preboot/Cryptexes/Incoming/OS, im4m = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/apticket.x86legacyap.im4m
+AppleImage4: failed to get cstring: vnum: 2
+root_hash_execution_cb:2828: img4_firmware_execute: successfully validated the payload and the manifest
+apfs_graft:456: disk1s2 Grafting a clone, share blockmap lut with os.dmg
+graft_dev_init:377: disk1 os.clone.dmg GRAFT (compiled @ Jul 15 2025 08:10:43)
+graft_dev_init:380: disk1 os.clone.dmg device_handle block size 4096 real block size 4096 block count 392192 features 0 internal 
+nx_mount:1224: os.clone.dmg initializing cache w/hash_size 512 and cache size 2048
+nx_mount:1553: os.clone.dmg checkpoint search: largest xid 21, best xid 21 @ 9
+nx_mount:1580: os.clone.dmg stable checkpoint indices: desc 8 data 16
+er_state_obj_get_for_recovery:7551: os.clone.dmgs1 No ER state object for volume RomeSecurityGlowG22H730.x86_64SystemCryptex - rolling is not happening, nothing to recover.
+is_root_hash_authentication_required_osx:371: os.clone.dmgs1 Release kext with internal build: 0, ARV disabled: 0, booting xid: 0
+is_root_hash_authentication_required:540: os.clone.dmgs1 RSR Graft, root hash authentication is required
+authenticate_root_hash:624: os.clone.dmgs1 successfully validated on-disk root hash
+apfs_lookup_ge_jobj_id:4269: disk1s2 Found OBJID 0x6ce6 type 3
+apfs_graft:604: disk1s2 Graft ino 835, jobj_id range 16338+11538
+apfs_graft:675: disk1s2 successfully grafted ino 835 on dir 538, dev_name [os.clone.dmg]
+libignition: 1:        graft: pre-reboot os: grafted cryptex: dmg = /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/cryptex1/current/os.clone.dmg, graft point = /System/Volumes/Preboot/Cryptexes/Incoming/OS, ignored error = 0
+libignition: 1:        graft: querying cryptex dmg node info: pre-reboot os
+libignition: 1:        graft: evaluating os and pre-reboot os node info: clone id [os] = 0x112, clone id [pre-reboot os] = 0x112
+libignition: 1: select os cryptex path: selecting os cryptex path
+libignition: 1: select os cryptex path: dylib cache directory present; not overriding
+libignition: 1: select os cryptex path: not forcing root fallback
+libignition: 1:  dylib_cache: discovering shared library cache
+libignition: 1:  dylib_cache: finding shared cache on cryptex: ignition level = 5, search root fd = 10, subpath = System/Library/dyld/
+libignition: 1:  dylib_cache: opened shared cache directory: /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld
+libignition: 1:      goodbye: ignition sequence complete
+shared_region: 0x4c3c499f5364fea3 [1(launchd)] check_np(0x7ff7b0a05128) vm_shared_region_start_address() failed
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h' is adhoc signed.
+ASP: AMFI pointer initialized
+ASP: port is not ready for callouts
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h.01' is adhoc signed.
+ASP: port is not ready for callouts
+[AHCI][PRT][001F0200] WaitForLinkPresent::4023:Port 0 PxSSTS: 0x0
+[AHCI][PRT][001F0200] HandleComReset::3832:linkPresent 0 - Port 0
+[AHCI][PRT][001F0200] EnablePortOperation::3322:Port 0 - COMRESET did not proceed
+[AHCI][PRT][001F0200] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][001F0210] InitializePort::689:Port 1
+[AHCI][PRT][001F0210] EnablePortOperation::3281:Enabling port 1
+[AHCI][PRT][001F0210] setPowerState::2937:inNewPowerState: 2
+[AHCI][PRT][00020000] WaitForLinkPresent::4023:Port 0 PxSSTS: 0x0
+[AHCI][PRT][00020000] HandleComReset::3832:linkPresent 0 - Port 0
+[AHCI][PRT][00020000] EnablePortOperation::3322:Port 0 - COMRESET did not proceed
+[AHCI][PRT][00020000] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][00020010] InitializePort::689:Port 1
+[AHCI][PRT][00020010] EnablePortOperation::3281:Enabling port 1
+[AHCI][PRT][00020010] setPowerState::2937:inNewPowerState: 2
+spaceman_scan_free_blocks:3356: disk1 scan took 0.000000 s, trims took 0.000000 s
+spaceman_scan_free_blocks:3358: disk1 0 blocks free in 0 extents
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h.02' is adhoc signed.
+ASP: port is not ready for callouts
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h.03' is adhoc signed.
+ASP: port is not ready for callouts
+VM Swap Subsystem is ON
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h.04' is adhoc signed.
+ASP: port is not ready for callouts
+shared_region: 0x4c3c499f5364fea3 [1(launchd)]: vnode_lookup(/System/Library/dyld/) failed (error=2)
+shared_region: 0x4c3c499f5364fea3 [1(launchd)]: vnode_lookup(/System/Library/dyld/) failed (error=2)
+shared_region: 0x4c3c499f5364fea3 [1(launchd)]: vnode_lookup(/System/Library/dyld/) failed (error=2)
+shared_region: 0x4c3c499f5364fea3 [1(launchd)]: vnode_lookup(/System/Library/dyld/) failed (error=2)
+shared_region: 0x4c3c499f5364fea3 [1(launchd)]: vnode_lookup(/System/Library/dyld/) failed (error=2)
+dyld: simulator status (/ rw: false; kernel: false, platform: false; pthread: false
+com.apple.xpc.launchd|2026-09-02 19:11:58.465010 <Notice>: hello
+com.apple.xpc.launchd|2026-09-02 19:11:58.467509 <Notice>: Darwin Bootstrapper Version 7.0.0: Tue Jul 15 08:28:41 PDT 2025; root:libxpc_executables-2462.141.1.706.1~2/launchd/RELEAexplicit release-type-set not supported without a monitor
+ALF, old data swfs_pid_entry <ptr>, updaterules_msg <ptr>, updaterules_state <ptr>skip attaching fsw to lo0 using legacy TX modelSE_X86_64
+com.apple.xpc.launchd|2026-09-02 19:11:58.467539 <Notice>: boot-args = keepsyms=1 -v debug=0x144 ser[AHCI][PRT][001F0210] WaitForLinkPresent::4023:Port 1 PxSSTS: 0x0
+[AHCI][PRT][001F0210] EnablePortOperation::3315:Port 1 - HandleComReset
+ial=3 wdt=-1 -noprogress -topo
+com.apple.xpc.launchd|2026-09-02 19:11:58.467589 <Notice>: System Integrity Prot[AHCI][PRT][00020010] WaitForLinkPresent::4023:Port 1 PxSSTS: 0x0
+[AHCI][PRT][00020010] EnablePortOperation::3315:Port 1 - HandleComReset
+ection is engaged.
+com.apple.xpc.launchd|2026-09-02 19:11:58.473382 (system) <Notice>: entering ondemand mode
+com.apple.xpc.launchd|2026-09-02 19:11:58.474243 (system) <Notice>: created
+com.apple.xpc.launchd|2026-09-02 19:11:58.476782 (fsck) <Notice>: Doing boot task
+vnode_create_internal: alias vnode <ptr> is in state of change (start)
+vnode_create_internal: alias vnode <ptr> is in state of change (end)
+vnode_create_internal: alias vnode <ptr> is in state of change (start)
+vnode_create_internal: alias vnode <ptr> is in state of change (end)
+sendIONotification:2566: Sending notification about e0084006 for APFS snapshot 1.10
+sendIONotification:2572: Sending additional notification about e0084006 for the parent of APFS snapshot 1.10
+** Checking the container superblock.
+[AHCI][PRT][001F0210] WaitForLinkPresent::4023:Port 1 PxSSTS: 0x0
+[AHCI][PRT][001F0210] HandleComReset::3832:linkPresent 0 - Port 1
+   Checking the checkpoint with transaction ID 3360.
+** Checking the object map.
+** Checking volume /dev/rdisk1s4.
+** Checking the APFS volume superblock.
+   The volume Macintosh HD was formatted by storagekitd (2142.140.9.703.1) and last modified by apfs_kext (2142.140.9.703.1).
+** QUICKCHECK ONLY; FILESYSTEM CLEAN
+sendIONotification:2566: Sending notification about e0084007 for APFS snapshot 1.10
+sendIONotification:2572: Sending additional notification about e0084007 for the parent of APFS snapshot 1.10
+com.apple.xpc.launchd|2026-09-02 19:11:59.067903 (mount-phase-1) <Notice>: Doing boot task
+[AHCI][PRT][00020010] WaitForLinkPresent::4023:Port 1 PxSSTS: 0x0
+[AHCI][PRT][00020010] HandleComReset::3832:linkPresent 0 - Port 1
+[AHCI][PRT][00020010] EnablePortOperation::3322:Port 1 - COMRESET did not proceed
+[AHCI][PRT][00020010] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][00020020] InitializePort::689:Port 2
+[AHCI][PRT][00020020] EnablePortOperation::3281:Enabling port 2
+[AHCI][PRT][00020020] setPowerState::2937:inNewPowerState: 2
+[AHCI][PRT][00020020] EnablePortOperation::3330:Port 2 - link present
+[AHCI][PRT][00020020] WaitSecsForNotBusy::3905:Port 2 PxTFD: 0x130
+[AHCI][PRT][00020020] EnablePortOperation::3507:Successfully enabled port 2
+[AHCI][00020020] start::226:provider: <ptr>
+[AHCI][00020020] start::291:Successfully initialized AHCI device
+[AHCI][PRT][00020030] InitializePort::689:Port 3
+[AHCI][DISK][00020020] start::407:
+[AHCI][PRT][00020030] EnablePortOperation::3281:Enabling port 3
+[AHCI][PRT][00020030] setPowerState::2937:inNewPowerState: 2
+SATA WARNING: IDENTIFY DEVICE checksum not implemented
+[AHCI][DISK][00020020] start::518:Successfully initialized AHCI drive
+[AHCI][DISK][00020020] setPowerState::2186:inNewPowerState = 3
+[AHCI][DISK][00020020] setPowerState::2202:Already changed state to new power state, done
+mount_by_role:383: Mounting /dev/disk1s6 on /System/Volumes/VM
+er_state_obj_get_for_recovery:7551: disk1s6 No ER state object for volume VM - rolling is not happening, nothing to recover.
+apfs_log_mount_unmount:2039: disk1s6 mounting volume VM, requested by: apfs_boot_util (pid 4); parent: launchd (pid 1)
+handle_mount:765: disk1s6 vol-uuid: B22492DA-45AB-428D-B778-9EC98847DE36 block size: 4096 block count: 67057654 (unencrypted; flags: 0x1; features: 1.0.2)
+handle_mount:778: disk1s6 setting dev block size to 4096 from 512
+nx_volume_group_update:7897: disk1s6 Volume VM role 8 Not a System or data volume
+ioqueue_depth = 256,   ioscale = 8
+kern_open_file_for_direct_io(<ptr>, 0)
+kern_open_file_for_direct_io took 0 ms
+Opened file /System/Volumes/VM/kernelcore, size 1048576, extents 1, maxio 80000 ssd 1
+polled file major 1, minor 0, blocksize 4096, pollers 3
+Opened corefile of size 1 MB
+mount_by_role:347: volume /dev/disk1s2 with role = 10 already mounted at /System/Volumes/Preboot in APFS container for root device /dev/disk1s1
+mount_by_role:383: Mounting /dev/disk1s5 on /System/Volumes/Update
+er_state_obj_get_for_recovery:7551: disk1s5 No ER state object for volume Update - rolling is not happening, nothing to recover.
+apfs_log_mount_unmount:2039: disk1s5 mounting volume Update, requested by: apfs_boot_util (pid 4); parent: launchd (pid 1)
+handle_mount:765: disk1s5 vol-uuid: B6DC40D2-4441-4637-92DB-A806B26F2057 block size: 4096 block count: 67057654 (unencrypted; flags: 0x1; features: 1.0.6)
+handle_mount:778: disk1s5 setting dev block size to 4096 from 512
+nx_volume_group_update:7897: disk1s5 Volume Update role c0 Not a System or data volume
+apfs_should_be_system_mount:660: disk1s5 volume with role 192 will be mounted until system shutdown
+ioqueue_depth = 256,   ioscale = 8
+com.apple.xpc.launchd|2026-09-02 19:11:59.125995 (data-protection) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135194 (data-protection) <Error>: posix_spawn(): 86: Bad CPU type in executable
+com.apple.xpc.launchd|2026-09-02 19:11:59.135248 (detect-installed-roots) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135352 <Notice>: No cookie from system volume
+com.apple.xpc.launchd|2026-09-02 19:11:59.135408 <Notice>: No cookie: /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/.roots-installed
+com.apple.xpc.launchd|2026-09-02 19:11:59.135440 <Notice>: No cookie: /System/Volumes/iSCPreboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/.roots-installed
+com.apple.xpc.launchd|2026-09-02 19:11:59.135452 (select-boot-mode) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135462 <Error>: fsctl(APFSIOC_GET_DEV_BY_ROLE) error: 2
+com.apple.xpc.launchd|2026-09-02 19:11:59.135536 <Notice>: No cookie: /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/var/db/.com.apple.eacs
+com.apple.xpc.launchd|2026-09-02 19:11:59.135591 <Notice>: No cookie: /System/Volumes/Preboot/9CC9E7DC-DA36-4416-ADE0-B69290BF31EE/var/db/.com.apple.templatemigration
+com.apple.xpc.launchd|2026-09-02 19:11:59.135627 (commit-boot-mode) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135666 <Notice>: boot-mode committed: (null)
+com.apple.xpc.launchd|2026-09-02 19:11:59.135712 (auto-pivot-root) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135756 (allow-non-platform-code) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.135792 <Notice>: allowing non-platform code now
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644264603] [INFO] [Subsystem: launchd] [Event: fsck] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644301473] [INFO] [Subsystem: launchd] [Event: mount-phase-1] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644317974] [INFO] [Subsystem: launchd] [Event: data-protection] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644333033] [ERROR] [Subsystem: launchd] [Event: data-protection] posix_spawn(): 86: Bad CPU type in executable
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644347821] [INFO] [Subsystem: launchd] [Event: detect-installed-roots] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644398707] [INFO] [Subsystem: launchd] [Event: select-boot-mode] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644455094] [INFO] [Subsystem: launchd] [Event: commit-boot-mode] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644481885] [INFO] [Subsystem: launchd] [Event: auto-pivot-root] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+[System Event] [4284644496031] [INFO] [Subsystem: launchd] [Event: allow-non-platform-code] Doing boot task
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+com.apple.xpc.launchd|2026-09-02 19:11:59.136284 <Notice>: Flushed 23 logs [limit: 20]
+launchd.log: fopen(/private/var/log/com.apple.xpc.launchd/launchd.log): 2
+com.apple.xpc.launchd|2026-09-02 19:11:59.136311 (restore-datapartition) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 19:11:59.136493 (restore-datapartition) <Notice>: optional boot task not present
+com.apple.xpc.launchd|2026-09-02 19:11:59.136539 (mount-phase-2) <Notice>: Doing boot task
+get_volume_from_volume_group:213: found volume /dev/disk1s1 with role = 40 in APFS container for root device /dev/disk1s1
+mount_by_role:383: Mounting /dev/disk1s1 on /System/Volumes/Data
+er_state_obj_get_for_recovery:7551: disk1s1 No ER state object for volume Macintosh HD - Data - rolling is not happening, nothing to recover.
+apfs_log_mount_unmount:2039: disk1s1 mounting volume Macintosh HD - Data, requested by: apfs_boot_util (pid 7); parent: launchd (pid 1)
+handle_mount:765: disk1s1 vol-uuid: 9CC9E7DC-DA36-4416-ADE0-B69290BF31EE block size: 4096 block count: 67057654 (unencrypted; flags: 0x1; features: 1.0.16)
+handle_mount:778: disk1s1 setting dev block size to 4096 from 512
+nx_volume_group_update:7978: disk1s1 Set volume (role 0x40) to 402 xid 0
+ioqueue_depth = 256,   ioscale = 8
+setup_rosv_data:630: failed to stitch firmlinks for root device /dev/disk1s1, ignoring error (c002) ...
+unmount_recursively:880: Could not unmount path /System/Volumes/BaseSystem: 22 (Invalid argument).
+unmount_basesystem:938: No BaseSystem mounted.
+com.apple.xpc.launchd|2026-09-02 12:11:59.220600 (enable-swap) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.230557 <Notice>: swap enabled
+com.apple.xpc.launchd|2026-09-02 12:11:59.230586 (sandbox-enable-root-translation) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.230710 (init-with-data-volume) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.267854 (deferred_install) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.268461 (deferred_install) <Notice>: optional boot task not present
+com.apple.xpc.launchd|2026-09-02 12:11:59.268509 (fips) <Notice>: Doing boot task
+About to call the FIPS_POST function in the corecrypto.dylib
+Tracing: disabled
+FIPSPOST_USER [4284797484940] fipspost_post:152: [FIPSPOST][Module-ID] Apple corecrypto Module v13.0 [Intel, User, Software, SL1]
+FIPSPOST_USER [4284801684513] fipspost_post:160: PASSED: (3 ms) - fipspost_post_hmac
+FIPSPOST_USER [4284806624700] fipspost_post:164: PASSED: (4 ms) - fipspost_post_integrity
+FIPSPOST_USER [4284806669595] fipspost_post:168: PASSED: (0 ms) - fipspost_post_indicator
+FIPSPOST_USER [4284806673082] fipspost_post:169: PASSED: (0 ms) - fipspost_post_aes_ecb
+FIPSPOST_USER [4284806676007] fipspost_post:170: PASSED: (0 ms) - fipspost_post_aes_cbc
+FIPSPOST_USER [4284807792923] fipspost_post:171: PASSED: (1 ms) - fipspost_post_rsa_sig
+FIPSPOST_USER [4284810232844] fipspost_post:172: PASSED: (2 ms) - fipspost_post_ecdsa
+FIPSPOST_USER [4284810322113] fipspost_post:173: PASSED: (0 ms) - fipspost_post_ecdh
+FIPSPOST_USER [4284810327062] fipspost_post:174: PASSED: (0 ms) - fipspost_post_aes_ccm
+FIPSPOST_USER [4284810398227] fipspost_post:175: PASSED: (0 ms) - fipspost_post_aes_cmac
+FIPSPOST_USER [4284810421050] fipspost_post:176: PASSED: (0 ms) - fipspost_post_hkdf
+FIPSPOST_USER [4284815691392] fipspost_post:177: PASSED: (5 ms) - fipspost_post_pbkdf
+FIPSPOST_USER [4284815804677] fipspost_post:178: PASSED: (0 ms) - fipspost_post_drbg_hmac
+FIPSPOST_USER [4284815821398] fipspost_post:180: PASSED: (0 ms) - fipspost_post_kdf_ctr
+FIPSPOST_USER [4284815825486] fipspost_post:181: PASSED: (0 ms) - fipspost_post_aes_gcm
+FIPSPOST_USER [4284815931327] fipspost_post:182: PASSED: (0 ms) - fipspost_post_aes_xts
+FIPSPOST_USER [4284815952076] fipspost_post:183: PASSED: (0 ms) - fipspost_post_tdes_ecb
+FIPSPOST_USER [4284816016097] fipspost_post:184: PASSED: (0 ms) - fipspost_post_drbg_ctr
+FIPSPOST_USER [4284819403082] fipspost_post:186: PASSED: (3 ms) - fipspost_post_ffdh
+FIPSPOST_USER [4284821211918] fipspost_post:187: PASSED: (1 ms) - fipspost_post_rsa_enc_dec
+FIPSPOST_USER [4284821218971] fipspost_post:206: all tests PASSED (23 ms)
+Returned from calling the FIPS_POST function in the corecrypto.dylib: result = true
+com.apple.xpc.launchd|2026-09-02 12:11:59.313370 (cache-start) <Notice>: Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.337649 (dirs_cleaner) <Notice>: Doing boot task
+[System Event] [4284863487598] [INFO] [Subsystem: launchd] [Event: restore-datapartition] Doing boot task
+Couldn't build index for com.apple.init_featureflags: Not eligible for acceleration
+[System Event] [4285024661208] [INFO] [Subsystem: launchd] [Event: restore-datapartition] optional boot task not present
+[System Event] [4285024685704] [INFO] [Subsystem: launchd] [Event: mount-phase-2] Doing boot task
+[System Event] [4285024699891] [INFO] [Subsystem: launchd] [Event: enable-swap] Doing boot task
+[System Event] [4285024724528] [INFO] [Subsystem: launchd] [Event: sandbox-enable-root-translation] Doing boot task
+[System Event] [4285024753873] [INFO] [Subsystem: launchd] [Event: init-with-data-volume] Doing boot task
+[System Event] [4285024825318] [INFO] [Subsystem: launchd] [Event: deferred_install] Doing boot task
+[System Event] [4285024862819] [INFO] [Subsystem: launchd] [Event: deferred_install] optional boot task not present
+[System Event] [4285024895301] [INFO] [Subsystem: launchd] [Event: fips] Doing boot task
+[System Event] [4285024930247] [INFO] [Subsystem: launchd] [Event: cache-start] Doing boot task
+[System Event] [4285024961727] [INFO] [Subsystem: launchd] [Event: dirs_cleaner] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.354955 <Notice>: launchd logging initialized. name: com.apple.xpc.launchd pid: 1
+com.apple.xpc.launchd|2026-09-02 12:11:59.354983 (xpcroleaccountd) <Notice>: Doing boot task
+[System Event] [4285025144673] [INFO] [Subsystem: launchd] [Event: xpcroleaccountd] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:11:59.384995 (init_featureflags) <Notice>: Doing boot task
+[System Event] [4285066939923] [INFO] [Subsystem: launchd] [Event: init_featureflags] Doing boot task
+[AHCI][PRT][00020030] WaitForLinkPresent::4023:Port 3 PxSSTS: 0x0
+[AHCI][PRT][00020030] EnablePortOperation::3315:Port 3 - HandleComReset
+[AHCI][PRT][001F0210] EnablePortOperation::3322:Port 1 - COMRESET did not proceed
+[AHCI][PRT][001F0210] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][001F0220] InitializePort::689:Port 2
+[AHCI][PRT][001F0220] EnablePortOperation::3281:Enabling port 2
+[AHCI][PRT][001F0220] setPowerState::2937:inNewPowerState: 2
+com.apple.xpc.launchd|2026-09-02 12:11:59.766940 (EndpointSecurity) <Notice>: Doing boot task
+[System Event] [4285278170158] [INFO] [Subsystem: launchd] [Event: EndpointSecurity] Doing boot task
+endpointsecurityd: Starting early boot task
+endpointsecurityd: Loaded 0 early boot clients from .early_boot.plist
+endpointsecurityd: Successfully registered early boot clients with kernel
+com.apple.xpc.launchd|2026-09-02 12:11:59.839214 (rc.server) <Notice>: Doing boot task
+[System Event] [4285350217695] [INFO] [Subsystem: launchd] [Event: rc.server] Doing boot task
+Couldn't build index for com.apple.tzinit: Not eligible for acceleration
+com.apple.xpc.launchd|2026-09-02 12:11:59.842089 (rc.server) <Notice>: optional boot task not present
+[System Event] [4285359184107] [INFO] [Subsystem: launchd] [Event: rc.server] optional boot task not present
+com.apple.xpc.launchd|2026-09-02 12:11:59.842099 (tzinit) <Notice>: Doing boot task
+[System Event] [4285365639102] [INFO] [Subsystem: launchd] [Event: tzinit] Doing boot task
+tzinit: New update not compatible or older version: 2026c.1.0 vs. 2026c.1.0: No such file or directory
+com.apple.xpc.launchd|2026-09-02 12:11:59.866749 (dirhelper) <Notice>: Doing boot task
+[System Event] [4285377778445] [INFO] [Subsystem: launchd] [Event: dirhelper] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:12:00.097903 (rootless-init) <Notice>: Doing boot task
+[System Event] [4285609019020] [INFO] [Subsystem: launchd] [Event: rootless-init] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:12:00.111819 (finish-demo-restore) <Notice>: Doing boot task
+[System Event] [4285623070854] [INFO] [Subsystem: launchd] [Event: finish-demo-restore] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:12:00.115307 (finish-demo-restore) <Notice>: optional boot task not present
+[System Event] [4285630939335] [INFO] [Subsystem: launchd] [Event: finish-demo-restore] optional boot task not present
+com.apple.xpc.launchd|2026-09-02 12:12:00.118367 (systemstats) <Notice>: Doing boot task
+[System Event] [4285637921110] [INFO] [Subsystem: launchd] [Event: systemstats] Doing boot task
+com.apple.xpc.launchd|2026-09-02 12:12:00.139628 (prng_seedctl) <Notice>: Doing boot task
+[System Event] [4285650733586] [INFO] [Subsystem: launchd] [Event: prng_seedctl] Doing boot task
+Couldn't build index for com.apple.prng_seedctl: Not eligible for acceleration
+kern.prng.user_reseed_count: (-1) (2) No such file or directory
+failed to load virtual random: (-147) (-536870212)
+com.apple.xpc.launchd|2026-09-02 12:12:00.251715 <Notice>: launchd UUID: 09DF0F1A-C7AC-3E86-9614-22CFC29CD717
+com.apple.xpc.launchd|2026-09-02 12:12:00.251746 (boot) <Notice>: Early boot complete. Continuing system boot.
+[System Event] [4285769756995] [INFO] [Subsystem: launchd] [Event: boot] Early boot complete. Continuing system boot.
+[AHCI][PRT][00020030] WaitForLinkPresent::4023:Port 3 PxSSTS: 0x0
+[AHCI][PRT][00020030] HandleComReset::3832:linkPresent 0 - Port 3
+[AHCI][PRT][00020030] EnablePortOperation::3322:Port 3 - COMRESET did not proceed
+[AHCI][PRT][00020030] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][00020040] InitializePort::689:Port 4
+[AHCI][PRT][00020040] EnablePortOperation::3281:Enabling port 4
+[AHCI][PRT][00020040] setPowerState::2937:inNewPowerState: 2
+[AHCI][PRT][001F0220] WaitForLinkPresent::4023:Port 2 PxSSTS: 0x0
+[AHCI][PRT][001F0220] EnablePortOperation::3315:Port 2 - HandleComReset
+ALF, old data swfs_pid_entry <ptr>, updaterules_msg <ptr>, updaterules_state <ptr>ALF, old data swfs_pid_entry <ptr>, updaterules_msg <ptr>, updaterules_state <ptr>ALF, old data swfs_pid_entry <ptr>, updaterules_msg <ptr>, updaterules_state <ptr>ALF, old data swfs_pid_entry <ptr>, updaterules_msg <ptr>, updaterules_state <ptr>com.apple.xpc.launchd|2026-09-02 12:12:00.518083 (cache-tag) <Notice>: Doing boot task
+[System Event] [4286029079365] [INFO] [Subsystem: launchd] [Event: cache-tag] Doing boot task
+Couldn't build index for com.apple.dynamic_pager: Not eligible for acceleration
+Couldn't build index for com.apple.KernelEventAgent: Not eligible for acceleration
+Couldn't build index for com.apple.Installer-Progress: Not eligible for acceleration
+Couldn't build index for com.apple.uninstalld: Not eligible for acceleration
+Couldn't alloc class "AppleKeyStoreTest"
+[AHCI][PRT][00020040] WaitForLinkPresent::4023:Port 4 PxSSTS: 0x0
+[AHCI][PRT][00020040] EnablePortOperation::3315:Port 4 - HandleComReset
+[AHCI][PRT][001F0220] WaitForLinkPresent::4023:Port 2 PxSSTS: 0x0
+[AHCI][PRT][001F0220] HandleComReset::3832:linkPresent 0 - Port 2
+[AHCI][PRT][001F0220] EnablePortOperation::3322:Port 2 - COMRESET did not proceed
+[AHCI][PRT][001F0220] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][001F0230] InitializePort::689:Port 3
+[AHCI][PRT][001F0230] EnablePortOperation::3281:Enabling port 3
+[AHCI][PRT][001F0230] setPowerState::2937:inNewPowerState: 2
+sendIONotification:2557: Sending notification about e0084003 for APFS volume 1.4
+AppleCredentialManagerUserClient: start: session_uid = ffffffff.
+AppleCredentialManagerUserClient: start: session_uid = ffffffff.
+AMFI: Launch Constraint Violation (not enforcing), error info: c[6]p[2]m[3]e[255], (Process was launched as a system service unexpectedly but met System Service constraints) launching proc[vc: 1 pid: 86]: /Library/Apple/System/Library/CoreServices/MRT.appAppleCredentialManagerUserClient: start: session_uid = ffffffff.
+ACMFirstResponderKernelService: _onGetCapabilities: T208: NO.
+ACMTRM: _onDaemonStarted: starting TRM policy engine.
+AssertMacros: consoleUsersPropertyObject (value: 0x0), ---, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMRestrictedModeKernelSer[AHCI][PRT][00020040] WaitForLinkPresent::4023:Port 4 PxSSTS: 0x0
+[AHCI][PRT][00020040] HandleComReset::3832:linkPresent 0 - Port 4
+[AHCI][PRT][00020040] EnablePortOperation::3322:Port 4 - COMRESET did not proceed
+[AHCI][PRT][00020040] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][00020050] InitializePort::689:Port 5
+[AHCI][PRT][00020050] EnablePortOperation::3281:Enabling port 5
+ACMTRM: _startPolicy: startingInBaseSystem=NO startingInNormalOS=YES pivotingToNormalOS=NO | startupFlags=0x0 | initial deviceLockState=LOCKED(1) keybagState=0x0 consoleState=0x0.
+[AHCI][PRT][00020050] setPowerState::2937:inNewPowerState: 2
+ACMTRM-S: _loadAll: called, isLockerAvailable=NO.
+[AHCI][PRT][001F0230] WaitForLinkPresent::4023:Port 3 PxSSTS: 0x0
+[AHCI][PRT][001F0230] EnablePortOperation::3315:Port 3 - HandleComReset
+ACM: TRMAccCache_SetupEmpty: called, cacheSize=48 expiration=2592000.
+ACMTRM-S: _loadAll: fetching *policy* <- daemon (gen=0 osLen=53 dataLen=53 ver=11).
+ACMTRM-S: _loadAll: fetching *analytics* <- daemon (gen=0 osLen=400 dataLen=400 ver=1).
+ACMTRM-A: onPolicyStarted: *analytics* successfully loaded.
+ACMKernelService: initValueFromBootArgAliasesUInt32: analytics period = 86400 (default).
+ACMTRM-A: setProperty: propCollectionPeriod=86400 (prev=0).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-A: _onCollectionEnded: analytics collected (generation=2) -> finalizing, sending out and restarting.
+ACMTRM-A: setProperty: propActualCollectionPeriod=183054 (prev=0).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-A: _sendAnalyticsThroughKext: returning, err = -14.
+AssertMacros: _sendAnalyticsThroughKext(finalizedAnalytics) == 0  (value: 0xfffffffffffffff2), ---, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-A: setProperty: propPolicyModeTimeout=604800 (prev=0).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-A: setProperty: propGracePeriodBoundedTimeout=259200 (prev=0).
+Couldn't build index for com.apple.socketfilterhelper: Not eligible for acceleration
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM-A: incrementCounter: cntDaemonStarted=1.
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM: _logPolicy: LOADED: ver=11 smTm=0 poRsn=0 gpTm=0 smExp=NO gpBlk=NO suTm=0 svTm=1788198272 gpRsn=0 cMs=NO upTm=0 disBy=8.
+ACMTRM: _logConfig: caller=_loadConfig ver=1 gSw=1 GP=2 Pro=2.
+ACMKernelService: initValueFromBootArgAliasesUInt32: config profile = 4294967295 (default).
+AssertMacros: dtDefaults (value: 0x0), ---, file: /AppleInternal/Library/BuildRoots/cba74612-6165-11f0-ad86-deaaae182910/Library/Caches/com.apple.xbs/Sources/AppleCredentialManager/AppleCredentialManager/Services/ACMRestrictedModeKernelService.cpp:2070
+ifnet_attach: All kernel threads created for interface en0 have been scheduled at least once. Proceeding.
+ACMTRM: _getDefaultConfigProfile: config profile: 2 (boot-arg=2 edt-prop=2).
+ACMTRM-A: setProperty: propGracePeriodTimeout=259200 (prev=0).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM: _mapAndPublishTRM: set TRM_GracePeriodTimeout = 259200.
+ACMTRM: _mapAndPublishTRM: sending kIOMessageServicePropertyChange(#changes=1) while LOCKED(1), TRM: 604800/U(0) 259200/-(255) M=255/4294967295/4294967295 ---(255)/---(255) L=255 BS=255 R=255 UP=86400/255, CUR: U(0) -(255).
+Couldn't build index for com.apple.automount: Not eligible for acceleration
+ACMTRM-A: setProperty: propPolicyDisabledByBits=8 (prev=0).
+ACMTRM-S: setData: saving *analytics* (dataLen=400) in 3 seconds (fullSync: NO -> NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO | MgCo=NO* DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO*).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO BSys=NO MBud=NO* SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO* CPro=NO BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM: _disableBy: [TRM ENABLED=NO] (mask=8, DISABLED BY: Def=NO BtArg=NO HW=YES DevT=NO OSEnv=NO ExBt=NO | MgCo=NO DwOS=NO ChBd=NO GSw=NO CPro=NO* BSys=NO MBud=NO SmCrd=NO ApSet=NO).
+ACMTRM-C: onPolicyStarted: *acc-cache* not found.
+_dlil_get_flowswitch_buffer_size: en0 1500 1500
+ACMTRM: _startPolicy: timePolicyViolated=NO (saveTime=1788198272 bootCalTime=1788376321 (delta=178049) bootUpTime=4287 nowUp=1788376321).
+ACMTRM: _startPolicy: policyViolated=NO (timePolicyViolated=NO passcodeThreshold=NO corruptedStateDetected=NO unexpectedShutdownDetected=NO).
+ACMTRM: _publish: _startPolicy LOCKED(1) reason=0 en=NO pro=2/2 pasThr=NO kb=0 con=0 poRsn=0 smExp=NO gpBlk=NO miss=NO seen=0 now=1788376321(0) | PMT=0/0 GPT=0/0/(0) UPT=0/0.
+ACMTRM: _mapAndPublishTRM: set TRM_CacheMiss = False.
+ACMTRM: _mapAndPublishTRM: set TRM_CacheMissThreshold = 5.
+ACMTRM: _mapAndPublishTRM: set TRM_CacheMissCount = 0.
+ACMTRM: _mapAndPublishTRM: set TRM_ConfigProfile = AskForNewAccessories(2).
+ACMTRM: _mapAndPublishTRM: set TRM_EffectiveConfigProfile = AskForNewAccessories(2).
+AppleKeyStore:8084:80: unexpected session: 100000 uid: -1 requested by: UserEventAgent (80)
+AppleKeyStore:12143:80: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+ACMTRM: _mapAndPublishTRM: set TRM_DeviceLocked = True.
+Couldn't build index for com.apple.usbmuxd: Not eligible for acceleration
+ACMTRM: _mapAndPublishTRM: set TRM_BaseSystem = False.
+ACMTRM: _mapAndPublishTRM: set TRM_Recovery = False.
+ACMTRM: _mapAndPublishTRM: set TRM_UnlockedPeriod = False.
+ACMTRM: _mapAndPublishTRM: sending kIOMessageServicePropertyChange(#changes=9) while LOCKED(1), TRM: 604800/U(0) 259200/-(255) M=0/5/0 AFNA(2)/AFNA(2) L=1 BS=0 R=0 UP=86400/0, CUR: U(0) X(0).
+ACMTRM: _logPolicy: SAVING: ver=11 smTm=0 poRsn=0 gpTm=0 smExp=NO gpBlk=NO suTm=0 svTm=1788376321 gpRsn=0 cMs=NO upTm=0 disBy=8.
+ACMTRM-S: setData: saving *policy* (dataLen=53) in 3 seconds (fullSync: NO -> NO).
+ACMTRM: _registerBioNotifier: Biometric driver not detected.
+ACMTRM-C: notifyClients_AccCache_Refreshed: sent kACMTRMMessage_AccCache_Refreshed(0) -> 0xe00002c7.
+ACMTRM: _isEnrollmentNeeded: enrollmentReason: eraseInstall=NO upgradeFromPreTRMSystem=NO.
+ACMTRM: _isEnrollmentNeeded: enrollmentNeeded=NO (loadedVersion=11).
+AMFI: Launch Constraint Violation (not enforcing), error info: c[6]p[2]m[3]e[255], (Process was launched as a system service unexpectedly but met System Service constraints) launching proc[vc: 1 pid: 122]: /Library/Apple/System/Library/PrivateFrameworks/M[AHCI][PRT][00020050] WaitForLinkPresent::4023:Port 5 PxSSTS: 0x0
+[AHCI][PRT][00020050] EnablePortOperation::3315:Port 5 - HandleComReset
+[AHCI][PRT][001F0230] WaitForLinkPresent::4023:Port 3 PxSSTS: 0x0
+[AHCI][PRT][001F0230] HandleComReset::3832:linkPresent 0 - Port 3
+[AHCI][PRT][001F0230] EnablePortOperation::3322:Port 3 - COMRESET did not proceed
+[AHCI][PRT][001F0230] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][001F0240] InitializePort::689:Port 4
+[AHCI][PRT][001F0240] EnablePortOperation::3281:Enabling port 4
+[AHCI][PRT][001F0240] setPowerState::2937:inNewPowerState: 2
+Couldn't build index for com.apple.systemkeychain: Not eligible for acceleration
+AppleKeyStore:8084:134: unexpected session: 100000 uid: -1 requested by: PerfPowerServices (134)
+AppleKeyStore:12143:134: operation failed (sel: 17 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:134: unexpected session: 100000 uid: -1 requested by: PerfPowerServices (134)
+AppleKeyStore:12143:134: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+[AHCI][PRT][00020050] WaitForLinkPresent::4023:Port 5 PxSSTS: 0x0
+[AHCI][PRT][00020050] HandleComReset::3832:linkPresent 0 - Port 5
+[AHCI][PRT][00020050] EnablePortOperation::3322:Port 5 - COMRESET did not proceed
+[AHCI][PRT][00020050] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][HBA][00020000] start::512:Successfully initialized AHCI controller
+[AHCI][PRT][001F0240] WaitForLinkPresent::4023:Port 4 PxSSTS: 0x0
+[AHCI][PRT][001F0240] EnablePortOperation::3315:Port 4 - HandleComReset
+bufattr_get_apfs:8188: Only accept buf I/O, no raw disk access
+disk1s4s1: device is not readable.
+Couldn't build index for com.apple.kextload: Not eligible for acceleration
+Couldn't build index for com.apple.audio.DriverHelper: Not eligible for acceleration
+[AHCI][PRT][001F0240] WaitForLinkPresent::4023:Port 4 PxSSTS: 0x0
+[AHCI][PRT][001F0240] HandleComReset::3832:linkPresent 0 - Port 4
+[AHCI][PRT][001F0240] EnablePortOperation::3322:Port 4 - COMRESET did not proceed
+[AHCI][PRT][001F0240] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][PRT][001F0250] InitializePort::689:Port 5
+[AHCI][PRT][001F0250] EnablePortOperation::3281:Enabling port 5
+[AHCI][PRT][001F0250] setPowerState::2937:inNewPowerState: 2
+AMFI: Launch Constraint Violation (not enforcing), error info: c[6]p[2]m[3]e[255], (Process was launched as a system service unexpectedly but met System Service constraints) launching proc[vc: 1 pid: 87]: /Library/Apple/System/Library/CoreServices/XProtecAppleKeyStore:8084:251: unexpected session: 100000 uid: -1 requested by: containermanagerd (251)
+AppleKeyStore:12143:251: operation failed (sel: 17 ret: e00002c2, -1, 100000)
+KextLog: kernelmanagerd is not active
+[AHCI][PRT][001F0250] WaitForLinkPresent::4023:Port 5 PxSSTS: 0x0
+[AHCI][PRT][001F0250] EnablePortOperation::3315:Port 5 - HandleComReset
+Couldn't build index for com.apple.nvram: Not eligible for acceleration
+com.apple.xpc.launchd|2026-09-02 12:12:04.267954 (system/com.apple.iomfb_bics_daemon [93]) <Error>: Missing executable detected. Job: 'com.apple.iomfb_bics_daemon' Executable: '/usr/libexec/IOMFB_bics_daemon'
+AppleKeyStore:12143:270: operation failed (sel: 17 ret: e00002f0, 205, 100008)
+[AHCI][PRT][001F0250] WaitForLinkPresent::4023:Port 5 PxSSTS: 0x0
+[AHCI][PRT][001F0250] HandleComReset::3832:linkPresent 0 - Port 5
+[AHCI][PRT][001F0250] EnablePortOperation::3322:Port 5 - COMRESET did not proceed
+[AHCI][PRT][001F0250] StartPort::1215:EnablePortOperation returned: 0xE00002D6
+[AHCI][HBA][001F0200] start::512:Successfully initialized AHCI controller
+Couldn't alloc class "AppleKeyStoreTest"
+Couldn't build index for com.apple.CodeSigningHelper: Not eligible for acceleration
+com.apple.xpc.launchd|2026-09-02 12:12:04.905822 (system/com.apple.appleh13camerad [275]) <Error>: Missing executable detected. Job: 'com.apple.appleh13camerad' Executable: '/usr/sbin/appleh13camerad'
+ACMTRM-S: _saveAll: pushing *policy* -> daemon (gen=1 dataLen=53 ver=11).
+ACMTRM-S: _saveAll: pushing *analytics* -> daemon (gen=1 dataLen=400 ver=1).
+Couldn't build index for com.apple.systemstatusd: Not eligible for acceleration
+Couldn't build index for com.apple.digest-service: Not eligible for acceleration
+apfs_keybag_init:2649: failed to initialize volume keybag, err = 2
+apfs_keybag_init:2649: failed to initialize volume keybag, err = 2
+apfs_keybag_init:2649: failed to initialize volume keybag, err = 2
+apfs_keybag_init:2649: failed to initialize volume keybag, err = 2
+apfs_keybag_init:2649: failed to initialize volume keybag, err = 2
+KextLog: kernelmanagerd is not active
+KextLog: kernelmanagerd is not active
+KextLog: Loading FileSet KC(s)
+KextLog: Loading Pageable KC from file /System/Library/KernelCollections/SystemKernelExtensions.kc
+KextLog: Collection UUID matches with loaded KCs.
+KextLog: Loading Aux KC from file /Library/KernelCollections/AuxiliaryKernelExtensions.kc
+KextLog: Collection UUID matches with loaded KCs.
+deferred rematching count 1
+Driver com.apple.DriverKit-IOUserDockChannelSerial has crashed 0 time(s)
+IOG flags 0x3 (0x51)
+  IOTimeSyncTimeSyncTimePort(0x525400c918270008): Created general notifier <ptr> for local clock port <ptr>
+No Generation from SMC.
+DK: IOUserDockChannelSerial-0x1000002f2 waiting for server com.apple.IOUserDockChannelSerial-1000002f2
+X86PlatformPlugin::getCPUCStates - C000 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C000 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::publishACPIStates - Failed to get max non-turbo PState. Set max non-turbo PState to default value 1
+X86PlatformPlugin::getCPUCStates - C001 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C001 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C002 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C002 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C003 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C003 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C004 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C004 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C005 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C005 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C006 ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C006 APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStat- acSArrayObj isotgn::getCPUPStates - C00B APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C00C ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C00C APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C00D ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C00D APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C00E ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C00E APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+X86PlatformPlugin::getCPUCStates - C00F ACST and _CST evaluations failed!
+X86PlatformPlugin::getCPUCStates - _CST did not return a package
+X86PlatformPlugin::getCPUPStates - C00F APSS and _PSS evaluations failed!
+X86PlatformPlugin::getCPUPStates - acpiPSArrayObj is not an valid OSArray
+X86PlatformPlugin::publishACPIStates - Failed to get CPU P States!
+IOPPF - IODeviceTree:/efi/platform/StartupPowerEvents: 0x0
+Apple16X50ACPI1: Identified Serial Port on ACPI Device=COM1
+a ats- 0 C a  ald
+8afrPui:^@getCPUPState  ^@e -_S do tunaomlun:gtUSaesnfs_kext_start: successfully loaded NFS kext
+Couldn't alloc class "AppleKeyStoreTest"
+GTrace synchronization point 1
+com_apple_filesystems_nfs: successfully loaded NFS module
+Driver com.apple.AppleUserHIDDrivers has crashed 0 time(s)
+Driver com.apple.AppleUserHIDDrivers has crashed 0 time(s)
+DK: AppleUserUSBHostHIDDevice-0x10000031e waiting for server com.apple.driverkit.AppleUserHIDDrivers-10000031e
+DK: AppleUserUSBHostHIDDevice-0x10000031f waiting for server com.apple.driverkit.AppleUserHIDDrivers-10000031e
+Couldn't alloc class "AppleKeyStoreTest"
+Ojinta vai Oatomlg:gtPPSts-0A APSS and _PSS evaluati^@s Apple16X50UARTSync1: Detected 16550AF/C/CF FIFO=16 MaxBaud=115200
+shared_region: 0x4c3c499f539fd90b [285(com.apple.Driver)] check_np(0x7ff7be864a58) vm_shared_region_start_address() failed
+shared_region: 0x4c3c499f539fd90b [285(com.apple.Driver)] check_np(0x7ff7be863eb8) vm_shared_region_start_address() failed
+AMFI: '/System/Volumes/Preboot/Cryptexes/OS/System/DriverKit/System/Library/dyld/dyld_shared_cache_x86_64h' is adhoc signed.
+shared_region: 0x4c3c499f539fd90b [285(com.apple.Driver)]: vnode_lookup(/System/DriverKit/System/Library/dyld/) failed (error=2)
+print_unknown_ioctl:18502: disk1s2 unknown ioctl _IOW('X', 2, 48) (0x80305802), pid = 107
+Couldn't alloc class "AppleKeyStoreTest"
+Couldn't alloc class "AppleKeyStoreTest"
+DK: IOUserDockChannelSerial-0x1000002f2::start(IOUserResources-0x100000116) ok
+DK: AppleUserUSBHostHIDDevice-0x10000031e::start(IOUSBHostInterface-0x10000026d) ok
+DK: AppleUserUSBHostHIDDevice-0x10000031f::start(IOUSBHostInterface-0x100000277) ok
+Driver com.apple.AppleUserHIDDrivers has crashed 0 time(s)
+DK: AppleUserHIDEventDriver-0x100000355 using existing server IOUserServer(com.apple.driverkit.AppleUserHIDDrivers-0x10000031e)-0x10000034a
+HID: Legacy shim 2
+open by AppleUserHIDEventDriver 0x100000355 (0x0)
+DK: AppleUserHIDEventDriver-0x100000355::start(IOHIDInterface-0x100000354) ok
+Driver com.apple.AppleUserHIDDrivers has crashed 0 time(s)
+DK: AppleUserHIDEventDriver-0x10000035d using existing server IOUserServer(com.apple.driverkit.AppleUserHIDDrivers-0x10000031e)-0x10000034a
+HID: Legacy shim 2
+open by AppleUserHIDEventDriver 0x10000035d (0x0)
+DK: AppleUserHIDEventDriver-0x10000035d::start(IOHIDInterface-0x10000035c) ok
+print_unknown_ioctl:18502: disk1s1 unknown ioctl _IOW('X', 2, 48) (0x80305802), pid = 107
+print_unknown_ioctl:18502: disk1s4 unknown ioctl _IOW('X', 2, 48) (0x80305802), pid = 107
+GTrace synchronization point 3
+X86PlatformPlugin::cgRegisterCallbackHandler - entered, type gpu-external-plimit-notification, target AGPM
+X86PlatformPlugin::cgRegisterPLimitCallbackHandler - There are 0 entries in the linked list before target name AGPM
+HE2N_Key Does Not Exist, use kSMCPStatesEGPU for External GPU
+Failed to send SMC number of eGPU P states (16) due to 0x82!
+AppleKeyStore:8084:141: unexpected session: 100000 uid: -1 requested by: bluetoothd (141)
+AppleKeyStore:12143:141: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:141: unexpected session: 100000 uid: -1 requested by: bluetoothd (141)
+AppleKeyStore:12143:141: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:141: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+IOConsoleUsers: time(0) 0->0, lin 0, llk 1, 
+IOConsoleUsers: gIOScreenLockState 3, hs 0, bs 0, now 0, sm 0x0
+Couldn't alloc class "AppleKeyStoreTest"
+GTrace synchronization point 9
+Couldn't alloc class "AppleKeyStoreTest"
+IOConsoleUsers: time(0) 0->0, lin 0, llk 0, 
+IOConsoleUsers: gIOScreenLockState 3, hs 0, bs 0, now 0, sm 0x0
+Couldn't alloc class "AppleKeyStoreTest"
+AMFI: Launch Constraint Violation (not enforcing), error info: c[6]p[2]m[3]e[255], (Process was launched as a system service unexpectedly but met System Service constraints) launching proc[vc: 1 pid: 311]: /Library/Apple/System/Library/CoreServices/XProteIOConsoleUsers: time(0) 0->0, lin 0, llk 0, 
+IOConsoleUsers: gIOScreenLockState 3, hs 0, bs 0, now 0, sm 0x0
+Couldn't alloc class "AppleKeyStoreTest"
+Couldn't build index for com.apple.ViewBridgeAuxiliary: Not eligible for acceleration
+AppleCredentialManagerUserClient: start: session_uid = ffffffff.
+ACMFirstResponderKernelService: _onGetCapabilities: T208: NO.
+Couldn't build index for com.apple.sysmond: Not eligible for acceleration
+sendIONotification:2557: Sending notification about e0084003 for APFS volume 1.8
+apfs_mount:28769: disk1s4 EALREADY; rooted from snap, apfs <ptr>
+apfs_log_mount_unmount:2039: disk1s4 mounting volume Macintosh HD, requested by: mount_apfs (pid 329); parent: com.apple.Mobile (pid 320)
+apfs_mount_livefs:28468: disk1 mount no firmlinks
+handle_mount:765: disk1s4 vol-uuid: 56F09BD8-CF06-4AD0-815A-E8D316594907 block size: 4096 block count: 67057654 (unencrypted; flags: 0x201; features: 21.0.16)
+handle_mount:778: disk1s4 setting dev block size to 4096 from 512
+ioqueue_depth = 256,   ioscale = 8
+nx_global_extent_manipulation_lock:5457: disk1 nx_global_extent_manipulation_lock(0, 1), (0, 0, 0, 0)
+nx_global_extent_manipulation_lock:5527: disk1 Shared global_extent_manipulation lock taken after 0 attempts
+handle_revert_to_snapshot:6166: disk1s4 On next mount, volume will revert to snapshot 'com.apple.os.update-74E05D9EE66173C522D76DF0C98A5B74A648965D5E82C6C7FF1AFB3E584375C2' w/snap xid 799
+nx_global_extent_manipulation_unlock:5552: disk1 nx_global_extent_manipulation_unlock(0, 1), (0, 0, 1, 1)
+apfs_stop_bg_work:831: disk1s4 Volume Macintosh HD is unmounting, stop any bg work
+apfs_log_mount_unmount:2039: disk1s4 unmounting volume Macintosh HD, requested by: com.apple.MobileSoftwareUpdate. (pid 320); parent: launchd (pid 1)
+apfs_vfsop_unmount:2989: disk1s4 waiting for purgatory cleaner to finish
+authapfs_seal_restore:597: disk1s4 integrity protection will be re-enabled
+apfs_vfsop_unmount:3318: disk1 nx_num_vols_mounted is 5
+apfs: total mem allocated: 48227059 (46 mb);
+apfs_vfsop_unmount:3331: all done.  going home.  (numMountedAPFSVolumes 5)
+apfs_mount:28769: disk1s4 EALREADY; rooted from snap, apfs <ptr>
+apfs_log_mount_unmount:2039: disk1s4 mounting volume Macintosh HD, requested by: mount_apfs (pid 333); parent: com.apple.Mobile (pid 320)
+authapfs_seal_break:501: disk1s4 integrity protection will be disabled (from xid: 3372)
+apfs_mount_livefs:28468: disk1 mount no firmlinks
+revert_to_snapshot:1618: disk1s4 Reverting to snapshot w/xid 799 and old sblock oid 602942.
+revert_extents_to_snapshot:1435: disk1s4 free'ing extents in main extentref tree 605497
+free_allocated_snapshot_extents:1350: disk1s4 processed 0 extents and free'd 0 blocks
+supplemental_tree_revert:305: disk1s4 reverted supplemental tree (type 5): 602784 -> 602892
+omap_cleanup:1464: disk1s4 started cleaning snapshots 3373-3373
+omap_cleanup:1685: disk1s4 completed cleaning snapshot 3373, om_snap_count 1 om_most_recent_snap 3373
+obj_cache_remove_reverted_fs_objects:1596: disk1s4 removing reverted fs objects for fs 1389: 800 - 3373
+revert_to_snapshot:1713: disk1s4 DONE reverting to snapshot w/xid 799
+authapfs_seal_break:501: disk1s4 integrity protection will be disabled (from xid: 3374)
+handle_mount:765: disk1s4 vol-uuid: 56F09BD8-CF06-4AD0-815A-E8D316594907 block size: 4096 block count: 67057654 (unencrypted; flags: 0x201; features: 21.0.16)
+handle_mount:778: disk1s4 setting dev block size to 4096 from 512
+ioqueue_depth = 256,   ioscale = 8
+apfs_log_mount_unmount:2039: disk1s4 unmounting volume Macintosh HD, requested by: com.apple.MobileSoftwareUpdate. (pid 320); parent: launchd (pid 1)
+apfs_vfsop_unmount:2989: disk1s4 waiting for purgatory cleaner to finish
+authapfs_seal_restore:597: disk1s4 integrity protection will be re-enabled
+apfs_vfsop_unmount:3318: disk1 nx_num_vols_mounted is 5
+apfs: total mem allocated: 62760597 (60 mb);
+apfs_vfsop_unmount:3331: all done.  going home.  (numMountedAPFSVolumes 5)
+AppleKeyStore:8084:377: unexpected session: 100000 uid: -1 requested by: PerfPowerServices (377)
+AppleKeyStore:12143:377: operation failed (sel: 17 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:377: unexpected session: 100000 uid: -1 requested by: PerfPowerServices (377)
+AppleKeyStore:12143:377: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleCredentialManagerUserClient: start: session_uid = ffffffff.
+ACMFirstResponderKernelService: _onGetCapabilities: T208: NO.
+ACM: createCredentialSet: Credential set created, CS[100]/2, mem=265(0).
+ACM: createCredentialSet: Credential set created, CS[101]/3, mem=377(0).
+Couldn't build index for com.apple.UserSelector: Not eligible for acceleration
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock failed (-5)
+AppleKeyStore:12143:118: operation failed (sel: 75 ret: e00002ce, -1, 100000)
+AppleKeyStore:12143:384: operation failed (sel: 17 ret: e00002f0, -1, 100000)
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock failed (-5)
+AppleKeyStore:12143:118: operation failed (sel: 75 ret: e00002ce, -1, 100000)
+AppleKeyStore:12143:384: operation failed (sel: 17 ret: e00002f0, -1, 100000)
+ACM: deleteCredentialSet: Deleting credential set, CS[100].
+ACM: deleteCredentialSet: Deleting credential set, CS[101].
+AppleKeyStore:8084:388: unexpected session: 100005 uid: -1 requested by: ctkd (388)
+AppleKeyStore:12143:388: operation failed (sel: 17 ret: e00002c2, -1, 100005)
+IOConsoleUsers: time(0) 0->0, lin 0, llk 0, 
+IOConsoleUsers: gIOScreenLockState 3, hs 0, bs 0, now 0, sm 0x0
+Couldn't alloc class "AppleKeyStoreTest"
+Couldn't build index for com.apple.activateSettings: Not eligible for acceleration
+ACM: createCredentialSet: Credential set created, CS[102]/2, mem=833(0).
+AppleKeyStore:12143:384: operation failed (sel: 17 ret: e00002f0, -1, 100000)
+ACM: deleteCredentialSet: Deleting credential set, CS[102].
+tx_flush:1241: disk1 xid 3380 tx stats: # 20 finish 19 enter 558 wait 1 3784us close 149us flush 13089us
+AppleKeyStore:8084:141: unexpected session: 100000 uid: -1 requested by: bluetoothd (141)
+AppleKeyStore:12143:141: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:141: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:397: unexpected session: 100000 uid: -1 requested by: bluetoothd (397)
+AppleKeyStore:12143:397: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:397: unexpected session: 100000 uid: -1 requested by: bluetoothd (397)
+AppleKeyStore:12143:397: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:397: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:397: unexpected session: 100000 uid: -1 requested by: bluetoothd (397)
+AppleKeyStore:12143:397: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:397: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:400: unexpected session: 100000 uid: -1 requested by: bluetoothd (400)
+AppleKeyStore:12143:400: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:400: unexpected session: 100000 uid: -1 requested by: bluetoothd (400)
+AppleKeyStore:12143:400: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:400: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:8084:433: unexpected session: 100000 uid: -1 requested by: bluetoothd (433)
+AppleKeyStore:12143:433: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:433: unexpected session: 100000 uid: -1 requested by: bluetoothd (433)
+AppleKeyStore:12143:433: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:433: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:12143:449: operation failed (sel: 7 ret: e00002bc, 501, 100025)
+AppleKeyStore:12143:449: operation failed (sel: 7 ret: e00002bc, 501, 100025)
+tx_flush:1241: disk1 xid 3400 tx stats: # 40 finish 39 enter 323 wait 1 3784us close 74us flush 8662us
+AppleKeyStore:8084:433: unexpected session: 100000 uid: -1 requested by: bluetoothd (433)
+AppleKeyStore:12143:433: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:433: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:459: unexpected session: 100000 uid: -1 requested by: bluetoothd (459)
+AppleKeyStore:12143:459: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:459: unexpected session: 100000 uid: -1 requested by: bluetoothd (459)
+AppleKeyStore:12143:459: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:459: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+tx_flush:1241: disk1 xid 3420 tx stats: # 60 finish 59 enter 230 wait 2 2162us close 49us flush 7014us
+AppleKeyStore:12143:449: operation failed (sel: 7 ret: e00002bc, 501, 100025)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:8084:459: unexpected session: 100000 uid: -1 requested by: bluetoothd (459)
+AppleKeyStore:12143:459: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:459: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:482: unexpected session: 100000 uid: -1 requested by: bluetoothd (482)
+AppleKeyStore:12143:482: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:482: unexpected session: 100000 uid: -1 requested by: bluetoothd (482)
+AppleKeyStore:12143:482: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:482: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+tx_flush:1241: disk1 xid 3440 tx stats: # 80 finish 79 enter 185 wait 2 2162us close 37us flush 6045us
+AppleKeyStore:8084:484: unexpected session: 100000 uid: -1 requested by: bluetoothd (484)
+AppleKeyStore:12143:484: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:484: unexpected session: 100000 uid: -1 requested by: bluetoothd (484)
+AppleKeyStore:12143:484: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:484: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:484: unexpected session: 100000 uid: -1 requested by: bluetoothd (484)
+AppleKeyStore:12143:484: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:484: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:486: unexpected session: 100000 uid: -1 requested by: bluetoothd (486)
+AppleKeyStore:12143:486: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:486: unexpected session: 100000 uid: -1 requested by: bluetoothd (486)
+AppleKeyStore:12143:486: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:486: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:8084:486: unexpected session: 100000 uid: -1 requested by: bluetoothd (486)
+AppleKeyStore:12143:486: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:486: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:501: unexpected session: 100000 uid: -1 requested by: bluetoothd (501)
+AppleKeyStore:12143:501: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:501: unexpected session: 100000 uid: -1 requested by: bluetoothd (501)
+AppleKeyStore:12143:501: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:501: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:1918:118: vol-uuid: , portable: 0, res: 0xfffffffd
+AppleKeyStore:3467:118: user b2f2a0facdd64307a0c3700dde7ac654 unlock successful (0)
+AppleKeyStore:8084:501: unexpected session: 100000 uid: -1 requested by: bluetoothd (501)
+AppleKeyStore:12143:501: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:501: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:510: unexpected session: 100000 uid: -1 requested by: bluetoothd (510)
+AppleKeyStore:12143:510: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:510: unexpected session: 100000 uid: -1 requested by: bluetoothd (510)
+AppleKeyStore:12143:510: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:510: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AMFI: Launch Constraint Violation (not enforcing), error info: c[6]p[2]m[3]e[255], (Process was launched as a system service unexpectedly but met System Service constraints) launching proc[vc: 1 pid: 512]: /Library/Apple/System/Library/CoreServices/XProteInvalid denylist
+AppleKeyStore:8084:510: unexpected session: 100000 uid: -1 requested by: bluetoothd (510)
+AppleKeyStore:12143:510: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:510: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+AppleKeyStore:8084:526: unexpected session: 100000 uid: -1 requested by: bluetoothd (526)
+AppleKeyStore:12143:526: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:526: unexpected session: 100000 uid: -1 requested by: bluetoothd (526)
+AppleKeyStore:12143:526: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:526: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+tx_flush:1241: disk1 xid 3460 tx stats: # 100 finish 99 enter 174 wait 2 2162us close 29us flush 5552us
+tx_flush:1241: disk1 xid 3480 tx stats: # 120 finish 119 enter 150 wait 2 2162us close 24us flush 5191us
+AppleKeyStore:8084:541: unexpected session: 100000 uid: -1 requested by: bluetoothd (541)
+AppleKeyStore:12143:541: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:541: unexpected session: 100000 uid: -1 requested by: bluetoothd (541)
+AppleKeyStore:12143:541: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:541: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+Couldn't build index for com.apple.AssetCacheLocatorService: Not eligible for acceleration
+AppleKeyStore:8084:564: unexpected session: 100000 uid: -1 requested by: bluetoothd (564)
+AppleKeyStore:12143:564: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:564: unexpected session: 100000 uid: -1 requested by: bluetoothd (564)
+AppleKeyStore:12143:564: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:564: operation failed (sel: 7 ret: e00002bc, -1, 100000)
+tx_flush:1241: disk1 xid 3500 tx stats: # 140 finish 139 enter 144 wait 2 2162us close 21us flush 5072us
+Couldn't build index for com.apple.DistributionKit.DistributionHelper: Not eligible for acceleration
+com.apple.xpc.launchd|2026-09-02 12:19:06.784930 (system/com.apple.oahd [665]) <Error>: Missing executable detected. Job: 'com.apple.oahd' Executable: '/usr/libexec/rosetta/oahd'
+AppleKeyStore:8084:666: unexpected session: 100000 uid: -1 requested by: bluetoothd (666)
+AppleKeyStore:12143:666: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:8084:666: unexpected session: 100000 uid: -1 requested by: bluetoothd (666)
+AppleKeyStore:12143:666: operation failed (sel: 7 ret: e00002c2, -1, 100000)
+AppleKeyStore:12143:666: operation failed (sel: 7 ret: e00002bc, -1, 100000)
