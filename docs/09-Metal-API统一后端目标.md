@@ -135,7 +135,8 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 
 - facade baseline：`252ca02656bcf80f943ea0bff7d924595ef919c0`；
 - binary AIR：`4583d3deef7e34151e63fde88a00416b0d80926e`；
-- reims engine seam：`bd62f89c3a6febdc7eb1d962d9f5e29fcb945305`。
+- reims engine seam (old `747580f` baseline): `bd62f89c3a6febdc7eb1d962d9f5e29fcb945305`；
+- reims engine seam adapted to upstream `69a57dd`: local `3f19c66`。
 
 关键限制：当前 `ComputeExecutor` 是“一次 submission snapshot → BufferUpdate”的
 离线测试接口，不是可直接替换 native `compute_core` 的低层 provider。它目前还：
@@ -289,7 +290,8 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 - **D2（现行约束）：** neutral protocol/core/memory/runtime owners 不移动；当前
   AGENTS.md 双 rail 实现契约继续有效，迁移是逐类 overlay。
 - **D3（local / verified prototype）：** 当前 facade 已证明 compute buffer 的离线
-  A/B 方法，但尚未接入 canonical Metal rail。
+  A/B 方法；它已在 `69a57dd` 的新 device-owned cache owner 上重放，但尚未接入
+  canonical Metal rail。
 - **D4（local / proposed）：** provider trait 先覆盖真实 native compute seam，再让
   `metal-api-core` 的高层 snapshot API 退居测试适配层。
 - **D5（verified limitation）：** 普通 MTLB 暂缓；在函数名表/single-function
