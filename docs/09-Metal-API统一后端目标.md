@@ -136,7 +136,9 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 - facade baseline：`252ca02656bcf80f943ea0bff7d924595ef919c0`；
 - binary AIR：`4583d3deef7e34151e63fde88a00416b0d80926e`；
 - reims engine seam (old `747580f` baseline): `bd62f89c3a6febdc7eb1d962d9f5e29fcb945305`；
-- reims engine seam adapted to upstream `69a57dd`: local `3f19c66`。
+- reims engine seam adapted to upstream `69a57dd`: local
+  `3f19c66c7af392d4b588430a07119142c5cea8bd`；
+- facade adapter pointing at that worktree: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`。
 
 关键限制：当前 `ComputeExecutor` 是“一次 submission snapshot → BufferUpdate”的
 离线测试接口，不是可直接替换 native `compute_core` 的低层 provider。它目前还：
@@ -292,6 +294,9 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 - **D3（local / verified prototype）：** 当前 facade 已证明 compute buffer 的离线
   A/B 方法；它已在 `69a57dd` 的新 device-owned cache owner 上重放，但尚未接入
   canonical Metal rail。
+- **D3a（verification boundary）：** 最新上游-69 lib clippy 仍有两项既存 upstream
+  诊断（`handle_render_draw` 参数过多、测试 helper 冗余闭包）；它们不改变本原型的
+  运行结果，也不应被写成“上游全量 lint 通过”。
 - **D4（local / proposed）：** provider trait 先覆盖真实 native compute seam，再让
   `metal-api-core` 的高层 snapshot API 退居测试适配层。
 - **D5（verified limitation）：** 普通 MTLB 暂缓；在函数名表/single-function
