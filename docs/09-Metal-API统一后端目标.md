@@ -142,6 +142,8 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 - facade adapter pointing at that worktree: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`。
 - provider contract B0 scaffold：`metal-api-emulator@b4dbb21`、capability admission
   `@9d0ac29`（本地，尚未发布）。
+- Vulkan reflection/limits mapping：`metal-api-emulator@be9c04e`（本地，尚未发布；
+  不改变现有 executor 执行路径）。
 
 关键限制：当前 `ComputeExecutor` 是“一次 submission snapshot → BufferUpdate”的
 离线测试接口，不是可直接替换 native `compute_core` 的低层 provider。它目前还：

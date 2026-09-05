@@ -9,6 +9,8 @@ it includes machine-specific paths and deployment details.
 - Reims upstream base: `69a57dd69a6958e946c03b73e02db331f330f435`.
 - Reims adaptation: `3f19c66c7af392d4b588430a07119142c5cea8bd`.
 - Facade adapter: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`.
+- Local provider contract/admission: `b4dbb21`, `9d0ac29`.
+- Local Vulkan reflection/limits mapping: `be9c04e`.
 - metal2vulkan dependency pin: `9e0e99a41dc3cb8bb7e288b531f1698a79fd4b1c`.
 - Windows release executable SHA-256 (source and deployed copy):
   `b782b32e3d1586ae2a775c8990b6aa398a2c5b7596d4025d58e7dc39fc594968`.
@@ -18,7 +20,10 @@ it includes machine-specific paths and deployment details.
 
 ## Verified
 
-- Facade workspace tests: 20 passed.
+- Facade workspace tests before B0: 20 passed.
+- After the contract/mapping increment, core tests are 24 and Vulkan adapter tests are 7;
+  reims adapter tests remain 3. These are pure/API tests; the existing GPU smoke path is
+  intentionally unchanged.
 - Reims upstream-69 all-targets Vulkan `cargo check`: passed.
 - Focused reims tests: exact-thread 3, device-limits 3, explicit completion 1,
   typed validation 2; all passed.

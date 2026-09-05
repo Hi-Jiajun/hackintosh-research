@@ -39,9 +39,9 @@ B0 一条 trace 只绑定一个 logical function/pipeline contract；需要多�
 的 command sequence 先拒绝，待后续 schema 明确其 per-pass identity。
 
 当前实现状态：`metal-api-emulator` 的 `metal-api-core::provider` 已在本地提交
-`b4dbb21`（纯值类型）和 `9d0ac29`（capability admission）。这两个提交只增加
-backend-neutral 数据模型与 owner-level 测试，不改变现有 standalone/reims 执行路径，
-也没有定义最终 provider trait。
+`b4dbb21`（纯值类型）和 `9d0ac29`（capability admission）；Vulkan 反射/limits
+映射在 `be9c04e`。这些提交只增加 backend-neutral 数据模型、映射和 owner-level
+测试，不改变现有 standalone/reims 执行路径，也没有定义最终 provider trait。
 
 ## 2. 生命周期和 owner
 
@@ -358,8 +358,8 @@ admission；parity 必须先确认相同的 logical fixture、entry 和 semantic
 | 现有位置 | 在 v0 中的角色 | 当前状态 |
 |---|---|---|
 | `metal-api-core::ComputeExecutor` | snapshot compatibility adapter | 保留，不升级为最终 trait |
-| `metal-api-vulkan::TranslatedComputePipeline` | translator/reflection boundary | 可复用，仍不拥有 canonical trace |
-| `metal-api-vulkan::VulkanExecutor` | standalone provider test backend | 通过 smoke，缺 typed error/lease token |
+| `metal-api-vulkan::TranslatedComputePipeline` | translator/reflection boundary | `provider_contract()` 可生成 v0 metadata，仍不拥有 canonical trace |
+| `metal-api-vulkan::VulkanExecutor` | standalone provider test backend | `provider_capabilities()` 可报告 limits；执行仍走旧 snapshot API |
 | `metal-api-reims-vulkan::ReimsVulkanExecutor` | reims off-VM adapter | 复用 `DeviceState`；completion owner 仍非 per-device，非生产 canonical rail |
 | `backend/metal/compute.rs` | native compute seam | 下一阶段包装，不改 neutral owner |
 | `runtime/compute_exec/{metal,vulkan}.rs` | trace/staging conversion sites | 迁移时保持共享 orchestration |
@@ -379,13 +379,15 @@ provider code 都应先把这些信息补进 trace/contract，再把 snapshot AP
   用 owner-level fixtures 测试 alias、range、state machine、refusal serialization；
 - 保留 `ComputeExecutor` 的现有 smoke，证明兼容层没有行为回归。
 
-本地验证：facade workspace 的核心 provider/旧 API 测试共 23 个，reims adapter 3 个、
-standalone Vulkan 5 个，全部通过；rustdoc、格式和 core warnings-denied clippy 通过。
+本地验证：facade workspace 的 core provider/旧 API 测试共 24 个，reims adapter 3 个、
+standalone Vulkan 7 个，全部通过；rustdoc、格式、core/Vulkan warnings-denied clippy
+通过。`provider_contract()`/`provider_capabilities()` 尚未接入 `execute()`，因此这不
+改变既有 GPU smoke 的执行路径。
 
 ### Phase B1：Vulkan provider adapter
 
 - 在 `metal-api-vulkan/src/provider.rs` 将 `TranslatedComputePipeline` 的
-  reflection/footprint 结果映射到 contract，先覆盖 `ThreadsExact`；
+  reflection/footprint 结果映射到 contract，已实现并先覆盖 `ThreadsExact`；
 - 将 Vulkan 内部 region plan、descriptor 和 fence 隐藏在 provider implementation；
 - 输出 canonical writeset 和 typed completion/refusal；
 - standalone 与 reims adapter 使用同一 trace fixture。
