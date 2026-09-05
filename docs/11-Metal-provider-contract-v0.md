@@ -384,6 +384,10 @@ standalone Vulkan 7 个，全部通过；rustdoc、格式、core/Vulkan warnings
 通过。`provider_contract()`/`provider_capabilities()` 尚未接入 `execute()`，因此这不
 改变既有 GPU smoke 的执行路径。
 
+目标平台交叉构建：Windows GNU release link 通过；本次新构建 PE SHA-256 为
+`6bb5b6779178152f85f9256ba4df804ec0a3b800b12b68f24c5711553864422e`，未覆盖此前
+已验证并部署的 smoke PE。
+
 ### Phase B1：Vulkan provider adapter
 
 - 在 `metal-api-vulkan/src/provider.rs` 将 `TranslatedComputePipeline` 的

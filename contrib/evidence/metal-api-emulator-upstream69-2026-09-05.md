@@ -11,6 +11,8 @@ it includes machine-specific paths and deployment details.
 - Facade adapter: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`.
 - Local provider contract/admission: `b4dbb21`, `9d0ac29`.
 - Local Vulkan reflection/limits mapping: `be9c04e`.
+- Current Windows GNU release cross-build SHA-256 (not deployed):
+  `6bb5b6779178152f85f9256ba4df804ec0a3b800b12b68f24c5711553864422e`.
 - metal2vulkan dependency pin: `9e0e99a41dc3cb8bb7e288b531f1698a79fd4b1c`.
 - Windows release executable SHA-256 (source and deployed copy):
   `b782b32e3d1586ae2a775c8990b6aa398a2c5b7596d4025d58e7dc39fc594968`.
