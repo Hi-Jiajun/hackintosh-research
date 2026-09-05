@@ -302,8 +302,8 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
   `metal-api-core` 的高层 snapshot API 退居测试适配层。
 - **D5（verified limitation）：** 普通 MTLB 暂缓；在函数名表/single-function
   contract 未正式建模前只能拒绝。
-- **D6（hard release rule）：** 本文、源码和证据先留在本地；任何 GitHub 仓库、push、
-  Issue 或 PR 动作必须先得到用户确认。
+- **D6（hard release rule）：** research 文档已在用户确认后发布；emulator/reims 源码、
+  新仓库、Issue 或 PR 动作仍必须先得到用户确认。
 
 ## 13. 关联资料
 

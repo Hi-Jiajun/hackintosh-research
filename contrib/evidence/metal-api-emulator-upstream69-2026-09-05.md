@@ -12,6 +12,9 @@ it includes machine-specific paths and deployment details.
 - metal2vulkan dependency pin: `9e0e99a41dc3cb8bb7e288b531f1698a79fd4b1c`.
 - Windows release executable SHA-256 (source and deployed copy):
   `b782b32e3d1586ae2a775c8990b6aa398a2c5b7596d4025d58e7dc39fc594968`.
+- This text-only evidence summary is published in
+  `Hi-Jiajun/hackintosh-research@2d5b3bb`; the emulator and reims source
+  worktrees remain local.
 
 ## Verified
 
