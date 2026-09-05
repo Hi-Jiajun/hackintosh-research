@@ -11,6 +11,7 @@ it includes machine-specific paths and deployment details.
 - Facade adapter: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`.
 - Local provider contract/admission: `b4dbb21`, `9d0ac29`.
 - Local Vulkan reflection/limits mapping: `be9c04e`.
+- Reflection/limits regression fixtures: `1073067`.
 - Current Windows GNU release cross-build SHA-256 (not deployed):
   `6bb5b6779178152f85f9256ba4df804ec0a3b800b12b68f24c5711553864422e`.
 - metal2vulkan dependency pin: `9e0e99a41dc3cb8bb7e288b531f1698a79fd4b1c`.
@@ -23,7 +24,7 @@ it includes machine-specific paths and deployment details.
 ## Verified
 
 - Facade workspace tests before B0: 20 passed.
-- After the contract/mapping increment, core tests are 24 and Vulkan adapter tests are 7;
+- After the contract/mapping increment, core tests are 24 and Vulkan adapter tests are 9;
   reims adapter tests remain 3. These are pure/API tests; the existing GPU smoke path is
   intentionally unchanged.
 - Reims upstream-69 all-targets Vulkan `cargo check`: passed.

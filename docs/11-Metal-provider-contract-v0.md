@@ -40,7 +40,7 @@ B0 一条 trace 只绑定一个 logical function/pipeline contract；需要多�
 
 当前实现状态：`metal-api-emulator` 的 `metal-api-core::provider` 已在本地提交
 `b4dbb21`（纯值类型）和 `9d0ac29`（capability admission）；Vulkan 反射/limits
-映射在 `be9c04e`。这些提交只增加 backend-neutral 数据模型、映射和 owner-level
+映射在 `be9c04e`，反射 fixture/limits 回归在 `1073067`。这些提交只增加 backend-neutral 数据模型、映射和 owner-level
 测试，不改变现有 standalone/reims 执行路径，也没有定义最终 provider trait。
 
 ## 2. 生命周期和 owner
@@ -380,7 +380,7 @@ provider code 都应先把这些信息补进 trace/contract，再把 snapshot AP
 - 保留 `ComputeExecutor` 的现有 smoke，证明兼容层没有行为回归。
 
 本地验证：facade workspace 的 core provider/旧 API 测试共 24 个，reims adapter 3 个、
-standalone Vulkan 7 个，全部通过；rustdoc、格式、core/Vulkan warnings-denied clippy
+standalone Vulkan 9 个，全部通过；rustdoc、格式、core/Vulkan warnings-denied clippy
 通过。`provider_contract()`/`provider_capabilities()` 尚未接入 `execute()`，因此这不
 改变既有 GPU smoke 的执行路径。
 
