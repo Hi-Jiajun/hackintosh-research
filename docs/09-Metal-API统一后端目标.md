@@ -117,7 +117,7 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 
 ## 6. 当前成果：原型，不是生产切换
 
-本地原型仓库：`/home/hiliang/hackintosh/metal-api-emulator`。
+本地原型仓库：`../../metal-api-emulator/`（与本研究仓库并列的本地 workspace）。
 
 已完成：
 
