@@ -13,7 +13,7 @@ it includes machine-specific paths and deployment details.
 - Windows release executable SHA-256 (source and deployed copy):
   `b782b32e3d1586ae2a775c8990b6aa398a2c5b7596d4025d58e7dc39fc594968`.
 - This text-only evidence summary is published in
-  `Hi-Jiajun/hackintosh-research@2d5b3bb`; the emulator and reims source
+  `Hi-Jiajun/hackintosh-research@87dc6c5`; the emulator and reims source
   worktrees remain local.
 
 ## Verified
