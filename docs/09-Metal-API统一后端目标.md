@@ -117,7 +117,8 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 
 ## 6. 当前成果：原型，不是生产切换
 
-本地原型仓库：`../../metal-api-emulator/`（与本研究仓库并列的本地 workspace）。
+本地原型仓库位于本机 workspace 的 sibling 目录（尚未作为本研究仓库的子目录发布）。
+其当前提交和构建边界记录在 [upstream-69 适配证据](../contrib/evidence/metal-api-emulator-upstream69-2026-09-05.md)。
 
 已完成：
 
@@ -308,6 +309,6 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 
 - [现有路线图](03-开发路线图.md)
 - [本机实施计划](05-本机实施计划.md)
-- [Metal facade README](../../metal-api-emulator/README.md)
+- `metal-api-emulator` README：本地 sibling workspace，尚未发布为本研究仓库文件
 - [metal2vulkan 上游仓库](https://github.com/steelbrain/metal2vulkan)
 - [用户提供的 Discord 原文](#2-discord-原意)
