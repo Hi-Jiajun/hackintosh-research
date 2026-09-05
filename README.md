@@ -6,7 +6,8 @@ ecosystem on Windows + WSL hosts.
 - docs/ — architecture survey, Windows feasibility, roadmap, performance
   analysis, machine runbook, upstream contribution package, the proposed
   Metal API/provider migration target (`09-Metal-API统一后端目标.md`), and
-  upstream update assessment (`10-上游更新评估-2026-09-05.md`)
+  upstream update assessment (`10-上游更新评估-2026-09-05.md`), plus the
+  compute-buffer provider contract draft (`11-Metal-provider-contract-v0.md`)
 - contrib/ — prepared upstream submissions (QEMU issue draft, patch series)
 - reference/ — fetched upstream READMEs
 

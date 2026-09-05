@@ -140,6 +140,8 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 - reims engine seam adapted to upstream `69a57dd`: local
   `3f19c66c7af392d4b588430a07119142c5cea8bd`；
 - facade adapter pointing at that worktree: `metal-api-emulator@9c934cbf8a6a58724ca73bf4582ab6596c676349`。
+- provider contract B0 scaffold：`metal-api-emulator@b4dbb21`、capability admission
+  `@9d0ac29`（本地，尚未发布）。
 
 关键限制：当前 `ComputeExecutor` 是“一次 submission snapshot → BufferUpdate”的
 离线测试接口，不是可直接替换 native `compute_core` 的低层 provider。它目前还：
@@ -207,9 +209,13 @@ provider 不重新解包 vGPU packet，也不拥有 guest scheduler 或 guest RA
 - native Metal 用 `(backing_ptr, backing_len)` 复用 alias，并以首项写回；当前 facade
   的 alias refusal 只是 MVP 限制，不能当 native 合同。
 
-## 8. Provider contract 的下一份交付物
+## 8. Provider contract 交付物
 
-在写 trait 前，先产出一份可评审的 contract，至少包含：
+首版契约已整理为：[Metal provider contract v0](11-Metal-provider-contract-v0.md)。
+它先作为设计基线，纯值 scaffold 已在本地实现；不改变现有 facade 或 reims 生产路径。
+下一步仍是根据评审结果稳定 trait 的具体对象边界。
+
+契约覆盖的最小内容包括：
 
 1. 对象/句柄：Device、Queue、Function、Pipeline、Buffer、CommandBuffer、Encoder；
 2. 线程模型：哪些对象 thread-bound，哪些可 `Send + Sync`；
