@@ -333,7 +333,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 
 ### 13.2 已完成
 
-- `metal-api-emulator` 的 `shared-provider-objects` 分支（推送目标 `origin/main`）：HEAD `15bf79a`（2026-09-08），已推送；其中 `69dab48` 为 metal2vulkan pin 升级，`76f6102` 为异步 completion/readback 契约，`31a0ba8` 为 Vulkan 真实异步 provider，`ebca75e` 为 native Metal completion handler 与共享 `CompletionRecord`，`15bf79a` 为 Vulkan 设备侧 fence 等待。
+- `metal-api-emulator` 的 `shared-provider-objects` 分支（推送目标 `origin/main`）：HEAD `45a7427`（2026-09-08），已推送；其中 `69dab48` 为 metal2vulkan pin 升级，`76f6102` 为异步 completion/readback 契约，`31a0ba8` 为 Vulkan 真实异步 provider，`ebca75e` 为 native Metal completion handler 与共享 `CompletionRecord`，`15bf79a` 为 Vulkan 设备侧 fence 等待，`45a7427` 为共享可配置 observation deadline。
 - 同步 buffer-compute 子集：`Device / Library / Function / ComputePipelineState / CommandQueue / CommandBuffer / ComputeCommandEncoder / Buffer` 对象 API；文本 LLVM IR、raw AIR、offset-zero wrapper；exact-thread dispatch（含 tail）；有界资源校验；单命令缓冲区最多 8 个串行 pass；每 pass 资源子集；多 pipeline 切换；跨 pass 重绑定；最多 64 个稳定 owned view；整个 command buffer 单次提交；完整校验后写回；完整 readback。
 - 共享 provider：`PipelineProvider` 统一编译、元数据和释放；native Rust Metal backend 接受 6 个审查过的 MSL fixture；Vulkan backend 接受文本 IR/raw AIR；已有 device epoch、结构化 refusal、static/affine footprint proof、completion token 等契约。
 - 异步 completion/readback 契约（`76f6102`）：新增 `CompletionReadback` 与 `ComputeProvider::readback`；provider 可返回 `Submitted`，对象 API 在首次 `wait_until_completed` 时重试非终态超时、按精确 trace 校验 readback、全部校验通过后写回，并在整个 commit→completion 窗口用 buffer reservation 阻止 CPU 访问和重叠命令；`Failed` / `DeviceLost` / `SubmittedUnknown` 不写回；丢弃 pending command 释放 reservation 与 completion 记录，但不声称 GPU 已退役。
@@ -343,11 +343,13 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 验证（`ebca75e` 本地与云端）：90 core / 7 native / 34 Vulkan / 14 capture = 145 Rust + 113 Python 全通过；Lavapipe standalone/provider smoke 与 v1–v7 异步 object 捕获通过；macOS target check/clippy 通过；CI run `34219297172` 成功：standalone、native-oracle（含 v1–v7 native async object 捕获）、五路 compare（26 cases）全绿。证据归档在 `evidence/native-async-ebca75e-2026-09-08/run-34219297172/`。
 - Vulkan 设备侧 fence 等待（`15bf79a`）：异步 `submit` 在调用线程完成 plan/record/`queue_submit` 并返回 `Submitted`，不再为每个提交开 worker；`wait` 在调用线程按 caller timeout（上限 20 秒 deadline）等待 per-submission fence 并 readback；`release_completion` 把仍 pending 的提交交给共享 retirement 线程，provider drop 也会 drain。20 秒 deadline 报 `vulkan-completion-unknown` + `SubmittedUnknown` 并弃用 executor。默认同步路径与 direct rail 不变。
 - 验证（`15bf79a` 本地与云端）：145 Rust（90/7/34/14）+ 113 Python 全通过；Lavapipe standalone/provider smoke 与 v1–v7 direct/object/async-object 捕获全部通过；macOS target check/clippy 通过；CI run `34219887881` 成功：standalone、native-oracle（含 v1–v7 async object 捕获）、五路 compare（26 cases）全绿。证据归档在 `evidence/vulkan-fence-15bf79a-2026-09-08/run-34219887881/`。
+- 共享 observation deadline（`45a7427`）：`metal_api_core::completion::ObservationDeadline` 统一 remaining/expired/clamp 语义；两端 provider 新增 `with_observation_deadline`，默认 20 秒；deadline 过期后返回各自的 terminal unknown completion 而不是非终态 `TimedOut`。两个新 core 测试覆盖 clamp 与 expiry。
+- 验证（`45a7427` 本地与云端）：147 Rust（92/7/34/14）+ 113 Python 全通过；Lavapipe v1–v7 async-object 捕获通过；macOS target check/clippy 通过；CI run `34220240822` 成功：standalone、native-oracle、五路 compare（26 cases）全绿。证据归档在 `evidence/observation-deadline-45a7427-2026-09-08/run-34220240822/`。
 - 验证（`489b489`）：本地 133 Rust + 113 Python 测试通过；云端五路径（Swift native、Vulkan direct、Rust Metal provider、Vulkan object API、Rust Metal object API）在 v1–v7 共 26 case/path 上一致，CI `34011824447`；更早 RTX 5060/Lavapipe smoke 通过。证据在 `metal-api-emulator/evidence/`。
 
 ### 13.3 未完成
 
-1. 异步提交与结果回收：契约、对象 API、Vulkan 与 native Metal provider 均已支持 `Submitted` → `wait` → `readback` → 写回（Vulkan 用设备侧 fence 在调用线程等待，native 用 `MTLCommandBuffer` completion handler）；仍缺显式取消与 deadline 契约、超时后的资源回收、completion 驱动的 lease 生命周期，以及生产错误传播。
+1. 异步提交与结果回收：契约、对象 API、Vulkan 与 native Metal provider 均已支持 `Submitted` → `wait` → `readback` → 写回（Vulkan 用设备侧 fence，native 用 `MTLCommandBuffer` handler），并有共享、可配置的 observation deadline（默认 20 秒）；仍缺显式取消、超时后的资源回收、completion 驱动的 lease 生命周期，以及生产错误传播。
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor；生产 guest/display 路径未调用 canonical Metal provider；缺跨进程协议、真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
@@ -358,12 +360,12 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 
 - `metal2vulkan`：pin 已从 `9e0e99a` 升级到 upstream master `43c46ac`（2026-09-06，squash 680 commits，reflection v41→v55）。主工作区验证：133 Rust + 113 Python 测试通过，Lavapipe standalone/provider smoke 通过，clippy/fmt 通过。已提交 `69dab48` 并推送到 `main`；CI run `34215960535` 成功：standalone、macOS native-oracle、五路 compare 全绿，v1–v7 共 26 cases 的 native Metal / Vulkan / Rust Metal / Vulkan objects / Rust Metal objects 结果一致。证据归档在 `evidence/metal2vulkan-43c46ac-2026-09-08/run-34215960535/`。WSL 内 RTX 5060 Vulkan 枚举失败属环境限制。详见 [12-上游更新评估-2026-09-08](12-上游更新评估-2026-09-08.md)。
 - `reims-vgpu`：facade 基线 `69a57dd` 与 upstream master 一致；新工作集中在 open PR #78/#79/#80，其中 #79（guest write release ordering）和 #80（synthesized read sampler reflection）与 provider/内存生命周期直接相关。
-- `metal-api-emulator` 远端 `main` 已更新到 `15bf79a`（含 pin 升级、异步 completion/readback 契约、Vulkan 与 native Metal 异步 provider，以及 Vulkan 设备侧 fence 等待）；本地与远端同步。`76f6102` 的 CI run `34216817216` 成功；`31a0ba8` 的 CI run `34218661059` 成功；`ebca75e` 的 CI run `34219297172` 成功；`15bf79a` 的 CI run `34219887881` 成功：standalone（145 Rust + 113 Python + Lavapipe v1–v7 direct/object/async-object）、macOS native-oracle（含 v1–v7 native async object 捕获）、五路 compare（v1–v7 共 26 cases）全绿。证据归档在 `evidence/vulkan-fence-15bf79a-2026-09-08/run-34219887881/`。
+- `metal-api-emulator` 远端 `main` 已更新到 `45a7427`（含 pin 升级、异步 completion/readback 契约、Vulkan 与 native Metal 异步 provider、Vulkan 设备侧 fence 等待与共享可配置 observation deadline）；本地与远端同步。`76f6102` 的 CI run `34216817216` 成功；`31a0ba8` 的 CI run `34218661059` 成功；`ebca75e` 的 CI run `34219297172` 成功；`15bf79a` 的 CI run `34219887881` 成功；`45a7427` 的 CI run `34220240822` 成功：standalone（147 Rust + 113 Python + Lavapipe v1–v7 direct/object/async-object）、macOS native-oracle（含 v1–v7 native async object 捕获）、五路 compare（v1–v7 共 26 cases）全绿。证据归档在 `evidence/observation-deadline-45a7427-2026-09-08/run-34220240822/`。
 - `qemu-reims-vgpu`：master 仍为 `300438f`（2026-07-24），没有与 provider 直接相关的新 master 变化。
 
 ### 13.5 下一步
 
-- 设计取消与超时资源回收：`TimedOut` 重试已有，但缺取消 token、显式 deadline、设备丢失后的完成记录清理，以及 completion 驱动的 lease 释放；两端 provider 的 20 秒 deadline 只是当前的安全边界。
+- 设计取消与超时资源回收：`TimedOut` 重试与可配置 observation deadline 已有，但缺取消 token、超时/设备丢失后的资源回收、completion 驱动的 lease 释放，以及生产错误传播。
 - 评估设备丢失时 Vulkan/native completion handler 的完成记录与资源清理路径（当前 unknown 路径按“保留到进程退出”处理）。
 - 跟踪 reims PR #79/#80；合并后再决定 facade worktree 是否 rebase。
 - 保持 direct Vulkan rail 作为控制路径，直到 Gate 1/2/3 逐类通过。
