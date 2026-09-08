@@ -314,10 +314,58 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 - **D6（hard release rule）：** research 文档已在用户确认后发布；emulator/reims 源码、
   新仓库、Issue 或 PR 动作仍必须先得到用户确认。
 
-## 13. 关联资料
+## 13. 当前进度快照（2026-09-08）
+
+> 本节是状态记录，不改变第 1–12 节的目标与合同。结论以当前仓库、可复现测试和已归档证据为准。
+
+### 13.1 暂定目标（复述）
+
+不替换 guest `Metal.framework`，不做任意 macOS Mach-O 在 Windows 上的二进制兼容；目标是在 reims 宿主侧建立统一的 Metal API provider：
+
+```text
+guest Metal.framework / AppleParavirtGPU / vGPU wire
+  -> reims neutral decode / transaction / memory owners
+  -> canonical Metal semantic execution path
+  -> provider: macOS native Metal | Windows Vulkan-backed emulator
+```
+
+让同一份调用轨迹可在 native Metal 与 Windows Vulkan provider 上离线复现；`metal2vulkan` 仍只是 shader translator；neutral owners 不迁移；direct Vulkan rail 在迁移期保留为控制路径；逐类 parity 后才切换。
+
+### 13.2 已完成
+
+- `metal-api-emulator` 的 `shared-provider-objects` 分支：HEAD `07a6a32`（docs-only，尚未推送），`origin/main = 489b489`。
+- 同步 buffer-compute 子集：`Device / Library / Function / ComputePipelineState / CommandQueue / CommandBuffer / ComputeCommandEncoder / Buffer` 对象 API；文本 LLVM IR、raw AIR、offset-zero wrapper；exact-thread dispatch（含 tail）；有界资源校验；单命令缓冲区最多 8 个串行 pass；每 pass 资源子集；多 pipeline 切换；跨 pass 重绑定；最多 64 个稳定 owned view；整个 command buffer 单次提交；完整校验后写回；完整 readback。
+- 共享 provider：`PipelineProvider` 统一编译、元数据和释放；native Rust Metal backend 接受 6 个审查过的 MSL fixture；Vulkan backend 接受文本 IR/raw AIR；已有 device epoch、结构化 refusal、static/affine footprint proof、completion token 等契约。
+- 验证（`489b489`）：本地 133 Rust + 113 Python 测试通过；云端五路径（Swift native、Vulkan direct、Rust Metal provider、Vulkan object API、Rust Metal object API）在 v1–v7 共 26 case/path 上一致，CI `34011824447`；更早 RTX 5060/Lavapipe smoke 通过。证据在 `metal-api-emulator/evidence/`。
+
+### 13.3 未完成
+
+1. 异步提交与结果回收：`commit` 仍是同步路径；缺 async worker、fence/event、取消、超时资源回收、completion 驱动的 lease 生命周期，以及“完成后取回 writeback”的接口。
+2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
+3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
+4. reims 生产接入：只有可选、离线的 Vulkan A/B executor；生产 guest/display 路径未调用 canonical Metal provider；缺跨进程协议、真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
+5. 图形与显示路径：纹理、render pass、sampler、render pipeline、presentation、swapchain、heaps、ICB 均未实现；当前范围仍是 compute buffer 子集。
+6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
+
+### 13.4 外部依赖状态（2026-09-08）
+
+- `metal2vulkan`：pin 已从 `9e0e99a` 升级到 upstream master `43c46ac`（2026-09-06，squash 680 commits，reflection v41→v55）。主工作区验证：133 Rust + 113 Python 测试通过，Lavapipe standalone/provider smoke 通过，clippy/fmt 通过。已提交 `69dab48` 并推送到 `main`；CI run `34215960535` 成功：standalone、macOS native-oracle、五路 compare 全绿，v1–v7 共 26 cases 的 native Metal / Vulkan / Rust Metal / Vulkan objects / Rust Metal objects 结果一致。证据归档在 `evidence/metal2vulkan-43c46ac-2026-09-08/run-34215960535/`。WSL 内 RTX 5060 Vulkan 枚举失败属环境限制。详见 [12-上游更新评估-2026-09-08](12-上游更新评估-2026-09-08.md)。
+- `reims-vgpu`：facade 基线 `69a57dd` 与 upstream master 一致；新工作集中在 open PR #78/#79/#80，其中 #79（guest write release ordering）和 #80（synthesized read sampler reflection）与 provider/内存生命周期直接相关。
+- `metal-api-emulator` 远端 `main` 已更新到 `69dab48`（含 `07a6a32` 验证记录与 pin 升级提交）；本地与远端同步。
+- `qemu-reims-vgpu`：master 仍为 `300438f`（2026-07-24），没有与 provider 直接相关的新 master 变化。
+
+### 13.5 下一步
+
+- 优先补“异步提交 + completion 后 writeback 回收”契约；当前同步 `commit` 是生产接线的阻塞项。
+- 评估并落地 `metal2vulkan` pin 升级（需用户确认后修改 `Cargo.toml`/`Cargo.lock`）。
+- 跟踪 reims PR #79/#80；合并后再决定 facade worktree 是否 rebase。
+- 保持 direct Vulkan rail 作为控制路径，直到 Gate 1/2/3 逐类通过。
+
+## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)
 - [本机实施计划](05-本机实施计划.md)
+- [上游更新评估（2026-09-08）](12-上游更新评估-2026-09-08.md)
 - `metal-api-emulator` README：本地 sibling workspace，尚未发布为本研究仓库文件
 - [metal2vulkan 上游仓库](https://github.com/steelbrain/metal2vulkan)
 - [用户提供的 Discord 原文](#2-discord-原意)
