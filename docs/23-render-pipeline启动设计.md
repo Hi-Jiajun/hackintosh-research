@@ -584,8 +584,27 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
 
 ## 9. 待确认清单（实现前必须钉死）
 
-1. **linear tiling 附件可用性**（§3.5/§7.2）：Lavapipe 与 RTX 5060 各测一次；决定候选 1 还是候选 2，
-   并把 count 口径的后果写进 §5.3。这是唯一会改变实现形状的未知项。
+**2026-09-14 深夜的落地状态**（实现已推进到"离屏渲染在三条证据源上跑通"）：
+
+| 项 | 状态 |
+|---|---|
+| ① linear tiling 附件可用性 | **已裁决**：探针实测 Lavapipe 全支持、RTX 5060 原生与 dzn 全不支持 → 固定候选 2（§3.5）；count 口径 `copy_out=1` 已落进 v13 |
+| ② 渲染能力位与线格式 | **已落地**：渲染帧走 `SUBMIT_RENDER_REQUEST` + pass kind tag，compute-only 帧逐字节不变（`b14f496`）；两个 provider 的能力位先后翻开 |
+| ③ 执行形状 | **已落地**：`VkRenderPass` + framebuffer（`2e64eff`）；附件在 `vkCreateImage` 前按精确 `COLOR_ATTACHMENT` 位准入 |
+| ④ 顶点/片元承载 | **部分落地**：契约层 `RenderPipelineContract{vertex_entry, fragment_entry, color_format, VertexLayout::None}`（`8c0fc3b`）；**表条目扩展仍未做**（见下） |
+| ⑤ 附件观测 | **已落地**：附件字节走既有 writeback 通道（`e581562`），v13 套件在 Vulkan 三轨进 CI（`8430446`）|
+| Apple 真机证据 | **已拿到**：CI run `34774478149` 在 `Apple Paravirtual device` 上自检读回 `4080c0ff` ×4（`render_selftest: PASS`）；native provider 据此翻开能力位（`cce2656`）|
+| RTX 5060 真机证据 | **已拿到**：`evidence/windows-render-priority-2026-09-14/`——v13 捕获在 5060 上 `compare.py` PASS；队列优先级 `queues=8`、`max_high_streak=4 ≤ limit=4`、`low_per_window_min=1` |
+
+仍未钉死的两条：
+
+1. **表条目承载渲染契约**（本清单第 4 条的下半）：trace 的管线表条目（`CompiledComputePipeline`）
+   目前**不带**渲染契约，因此 core 无法在准入阶段校验"附件格式 == 管线 `color_format`"，
+   这条不变式现在由每个 provider 各自再查一遍注册表。要收口必须给
+   `SUBMIT_RENDER_REQUEST` 帧的表条目加 kind 判别与渲染字段（compute-only 帧保持逐字节不变），
+   并同步两个 provider 的注册元数据。
+2. **顶点属性与多附件**：第一版只支持"无顶点缓冲的全屏三角 + 单附件"，
+   `VertexLayout` 的扩展点与 MRT 的 location 映射都还没定。
 2. **附件的 count 契约**（§5.3）：`copy_in`/`copy_out` 的取值与是否在 v12 强制；以及
    `LoadOp::Clear` 是否真的不需要 `copy_in`。
 3. **render pass 对象形态**（§5.2/§7.1）：`VkRenderPass` 兼容对象还是 dynamic rendering；若用后者，
