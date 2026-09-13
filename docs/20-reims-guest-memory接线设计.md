@@ -141,7 +141,7 @@ HostRegion（还要乘 RAMBlock 数）。`docs/19` 说的"注册一次"仍然成
 | `guest_import_levels ramblocks=n/m aliases=…` | `crates/reims-vgpu/src/backend/vulkan/census.rs:88`（调用 :78） | 惰性导入的真实水平（分母是 shim 报的 span 数，见 `span_census()` :331） | 谁在借哪一段窗口、何时归还 |
 | `vk_caps ... host_pointer_import=supported host_pointer_align=<granularity>` | `crates/reims-vgpu/src/backend/vulkan/caps/mod.rs:132` | 该驱动的导入粒度与导入预算 | 运行时窗口拒绝率 |
 | `GuestRamError` 的逐项 slug | `crates/reims-vgpu-memory/src/lib.rs:269`（枚举，`slug()` 逐项给出）与单测 `every_refusal_has_its_own_slug`（:1525，断言"两个检查不共用 slug"） | 每种拒绝在 fail 日志里可区分（如 `guest_ram_slice_end_past_import`） | provider 侧 `ContractError` 的对齐 |
-| provider 侧 `provider_host_region_window ... import=no-copy write=in-place release=ok` | `metal-api-emulator/examples/metal-smoke/src/provider_suite.rs:1814` | "注册区间 → 派生窗口 → 无拷贝导入 → 设备原地写入 → lease 释放"这条链在 Lavapipe 与 RTX 5060 上都 PASS（`docs/19` §3.1 步骤 2） | reims 的 guest RAM 是否接得上（无调用方） |
+| provider 侧 `provider_host_region_window ... import=no-copy write=in-place release=ok` | `metal-api-emulator/examples/metal-smoke/src/provider_suite.rs`（用例 `provider_host_region_window`，按名字检索） | "注册区间 → 派生窗口 → 无拷贝导入 → 设备原地写入 → lease 释放"这条链在 Lavapipe 与 RTX 5060 上都 PASS（`docs/19` §3.1 步骤 2） | reims 的 guest RAM 是否接得上（无调用方） |
 
 **必须说清的边界**：`vk_caps` 与 `guest_import_levels` 证明的是"reims 自己那条轨道通了"，
 **不等于** provider 侧 owner 契约被使用过。
@@ -198,6 +198,18 @@ HostRegion（还要乘 RAMBlock 数）。`docs/19` 说的"注册一次"仍然成
 2. **packed alias**：整个 allocation 是**一个**宿主分配（`docs/15` 的"每 allocation 一次
    import"），所以一个 reference = 一个 import = 一个 `HostRegion`；绑定时取
    `head + offset` 起的一段（`bound_buffers.rs:583`），映射成该 HostRegion 上的一个窗口。
+
+**坐标约定（2026-09-14 实测补充，接线前必读）**：窗口不在注册区基址时，wire 侧的
+`BufferView.offset` 必须携带**窗口在 allocation 内的相对偏移**，resource 表里该
+allocation 的 size 必须是**整个注册区**、不是窗口长度。实测两条反例（都在
+`provider-smoke` 的 `provider_host_region_window` 里复现过）：
+
+- 视图 offset 写 0 而窗口偏移非 0 → `ProviderError { slug: resource_contract_invalid }`
+  报 `lease LeaseId(120) range end 4 exceeds allocation size 20480`；
+- allocation size 写成窗口长度 → `LeaseRangeOutOfBounds { end: 20480, allocation_size: 8192 }`。
+
+也就是说三个坐标各司其职：**allocation = 整个注册区**、**reservation = 窗口**、
+**BufferView.offset = 窗口内偏移（allocation 坐标）**。
    这才是 `docs/14` range hazard 说的"同一 allocation 多 view"在 reims 侧的真实来源。
 
 **对齐规则（这是最容易接错的一点）**：
@@ -289,11 +301,12 @@ provider 侧的 `ContractError` 已经有到 `ProviderErrorClass` 的映射
 
 | 情形 | provider 类型（行号） | 映射后的 slug | owner 应做什么 |
 |---|---|---|---|
-| 窗口越界 | `HostRegionWindowOutOfBounds`（:3392） | `Resource` 类 | 拒绝该次提交；退休/重解析该引用，不要截断后重试 |
-| offset/length 未对齐 | `UnalignedHostRegion`（:3387） | `Resource` 类 | 这是 reims 接线 bug（忘了用外扩区间），应当 fail closed 并打印 |
-| page_size 非法（0 或非 2 的幂） | `InvalidHostRegionPageSize`（:3386） | — | 注册期拒绝，退回 copying rail |
+| 窗口越界 | `HostRegionWindowOutOfBounds` | `Args` 类，slug `host_region_invalid` | 拒绝该次提交；退休/重解析该引用，不要截断后重试 |
+| offset/length 未对齐 | `UnalignedHostRegion` | `Args` 类，slug `host_region_invalid` | 这是 reims 接线 bug（忘了用外扩区间），应当 fail closed 并打印 |
+| 注册基址未按 page_size 对齐 | `UnalignedHostRegion{field:"pointer"}` | `Args` 类，slug `host_region_invalid` | 同上；owner 必须按最粗粒度分配/对齐注册基址（2026-09-14 实测补充） |
+| page_size 非法（0 或非 2 的幂） | `InvalidHostRegionPageSize` | — | 注册期拒绝，退回 copying rail |
 | 未注册 GPA | reims `GpaNotInAnyImport` | — | 保持 reims 现有拒绝路径 |
-| lease 未退休就回收 | `GuestWindowStillActive`（:3385，测试 :4019） | `guest_window_still_active`（:3072） | 说明有在途提交；**保持窗口注册**，等 stamp 观察后重试 |
+| lease 未退休就回收 | `GuestWindowStillActive` | `guest_window_still_active` | 说明有在途提交；**保持窗口注册**，等 stamp 观察后重试 |
 | 未知 lease 的退休观察 | `UnknownLease` | — | 拒绝，防止跨 owner 误退休 |
 | 设备丢失 | reims 侧 `vk::Result::ERROR_DEVICE_LOST`（`crates/reims-vgpu/src/backend/vulkan/engine/queue_owner.rs:48`、:443） | `docs/13` §3.3 的设备丢失快速路径 | 走 provider teardown：所有 lease 视为退休并释放；`DirtySet` 不再导出到 guest（字节可信度已丢） |
 
@@ -327,14 +340,26 @@ cargo test -p reims-vgpu-memory
 ### 步骤 B：窗口派生（Lavapipe 可验）
 
 ```sh
-# 已存在的远端证据（步骤 2，provider_host_region_window），重跑用同一入口
+# 已有证据（步骤 2，provider_host_region_window）；2026-09-14 起该用例扩展为
+# 对齐矩阵 + 回收链断言，重跑用下面这个入口（注意：`--executor standalone` 不打印它）
 cd /home/hiliang/hackintosh/metal-api-emulator
-cargo run --locked -p metal-smoke -- --executor standalone   # README:199
-# 期望出现 provider_host_region_window ... release=ok（examples/metal-smoke/src/provider_suite.rs:1814）
-# 真机另有 provider-smoke 入口：cargo run --locked -p metal-smoke --bin provider-smoke（README:200）
+cargo run --locked -p metal-smoke --bin provider-smoke
+# 期望出现（参数化 PASS 行；用例体在 provider_suite.rs，按名字检索即可）：
+#   PASS provider_host_region_window page_size=<实测> page_source=backend_measured
+#        refusals=unaligned_offset|unaligned_length|out_of_bounds|granularity
+#        import=no-copy write=in-place outside_window=untouched release=ok
+#   PASS provider_guest_window_reclaim lease=<n> retired=false reclaimable=false
+#        refusal=guest_window_still_active release_ready=false
+#   PASS provider_guest_window_reclaim lease=<n> retired=true reclaimable=true reclaimed=true
 ```
 
 - 本机期望：Lavapipe 上 `import=no-copy` 成功、设备原地写入可见、lease 释放通过。
+- **粒度不再是假设**：用例从 `provider.no_copy_alignment()`（即驱动上报的
+  `minImportedHostPointerAlignment`）取 `page_size`，并额外用 2× 粒度做一次"粗粒度注册"
+  门禁，因此即使后端恰好报 4096 该用例也不会退化成恒过。RTX 5060 上请核对打印出的
+  `page_size=` 是否 ≠ 4096。
+- **回收链断言**：`provider_guest_window_reclaim` 证明"未退休不可回收、退休后可回收"，
+  对应 §3.4 的单向链。
 - reims 侧的等价断言**当前不存在**（没有 provider 调用方），所以这一步在 Linux 上只能验证到
   "窗口边界/对齐/拒绝规则"这一层——用 `GuestRamImport::slice()` 现有单测风格补即可：
   外扩对齐、越界拒绝、跨 import 边界切分成两个 run。
