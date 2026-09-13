@@ -57,6 +57,14 @@ guest 侧释放页时在途访问如何收尾。
   **Lavapipe 与 RTX 5060 双驱动 PASS**（真机日志 26 PASS，归档
   `evidence/guest-region-smoke-306e4e2-2026-09-14/`）。
 
+- **步骤 3 完成（`5bec724`）**：`DirtySet` —— 页对齐脏页集合，支持 mark 合并相邻/重叠页、
+  从 writeback 派生（`mark_writebacks`）、零长度 no-op、页大小必须为非零 2 的幂；两个单测。
+- **步骤 4 完成（`1577023`）**：`GuestWindows` 回收状态机 —— 每个 lease 一个窗口；只有
+  lease 观察退休后才可 `reclaim`，未退休回收被 `guest_window_still_active` 拒绝且窗口保持
+  注册；retire 幂等、未知/畸形注册被拒；单测覆盖完整序列。
+
+**剩余**：步骤 5（reims 侧接线，跨仓库）。
+
 ## 4. 边界（本文不做）
 
 - 不做 guest 页内容的迁移/交换（那是 VM 侧的职责）；
