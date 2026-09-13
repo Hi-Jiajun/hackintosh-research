@@ -316,6 +316,12 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 
 ## 13. 当前进度快照（2026-09-08）
 
+> ⚠️ **更新指引（2026-09-13）**：本节的 HEAD 与完成项停在 `cc38dd4`，已被后续提交超越。
+> 当前状态以 `docs/14` §9 与 `docs/15` §9 的实施状态、以及 git 历史为准：metal-api-emulator
+> `shared-provider-objects` 已推进到 `83bdbce`（range hazard Step 1–6、v10 disjoint-view
+> conformance、shared per-allocation device buffer、分配级 copy 计数契约、按 view 字节的
+> 部分上传），research 侧同步记录在 `5c921e6` 之后。本节其余文字保留为历史快照。
+
 > 本节是状态记录，不改变第 1–12 节的目标与合同。结论以当前仓库、可复现测试和已归档证据为准。
 
 ### 13.1 暂定目标（复述）
