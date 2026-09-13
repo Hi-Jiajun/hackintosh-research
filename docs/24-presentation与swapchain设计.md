@@ -804,3 +804,40 @@ Exiting ...
 7. **Apple 侧的替代证据形式**（§5.5）：`--render-selftest` 式的一设备检查是否就是最终形式；以及
    `allocation_observation` 这个名称（`compare.py:21-26`）在出现"呈现目标"之后是否还合适（改名
    属于报告 schema 决策）。
+
+## 10. 实施状态（2026-09-14 更新）
+
+- **Step 1–2 完成**：core 的 `PresentMode`/`AcquirePolicy`/`InitialState`/`PresentTarget`/
+  `PresentDescriptor` 与校验（`6ba8834`）、`RenderPassDescriptor::present` 与能力位（`e4f451f`）、
+  MCC1 的 presenting pass tag 与 present 四位（`541be0c`）。
+- **Step 3 完成**：Vulkan 轨的 surface-less 目标（`8fdd61b`）——provider 持有按
+  `(allocation, view)` 复用的 optimal-tiling image、sentinel 预置、渲染与 present 同一提交、
+  目标字节经既有 writeback 通道落地、`VkContext` 级 acquire/present 原子计数与
+  `"present": {"acquire", "present"}` 报告字段；评审发现的两个 Important（target layout 的
+  并发 TOCTOU、subpass dependency 与 present barrier 的 access scope 不衔接）在 `c45f001`
+  修复，并各配一条可证伪测试（后者做了 RED 实测）。
+- **Step 4 完成**：`compare.py` 的 present 段（`725a557`）：suite 侧白名单（fifo / image_count=1 /
+  acquire=present=1 / sentinel 4 字节且 ≠ 期望 texel）、capture 侧恰好 `{acquire, present}` 两个
+  u32、点名 rail 必报、未点名 rail 不得报、未声明一律拒；`conformance/test_suite_v14.py` 用合成
+  报告钉住正反例并冻结 v1–v13 的 plan。
+- **Step 5 未完成**：对象 API 仍只有 `compute_command_encoder`，present 与 render 都还没有对象层
+  encoder；两条 object-API rail 继续按 marker 规则跳过 render/present case
+  （`present_unsupported_on_object_api` 是"被点名才拒绝"的显式失败，不是静默丢弃）。
+- **Step 6 完成（只进 evidence）**：`evidence/presentation-surface-probe-2026-09-14/` 的四路探针
+  （WSL llvmpipe、WSL dzn、无 DISPLAY 对照、Windows 原生 RTX 5060）回答了 §7.1/§7.3 的开放问题：
+  surface 格式两个驱动都只给 `B8G8R8A8_*`（原生 NVIDIA 7 种）、`minImageCount` 为 2（NVIDIA 原生）
+  与 3（dzn/llvmpipe）、graphics family 均支持 present；另发现 0.5 UNORM 半值在 B8G8R8A8 下跨
+  ICD 有 1 ULP 差异（llvmpipe `80`，NVIDIA/dzn `7f`）。真 surface 仍未接进 provider（§7.2 的裁决
+  不变）。
+- **Step 7 完成**：native 轨 present 等价物（`5f09fa3`，跨提交存活到 lease 释放、`present_counts()`
+  访问器）+ Swift oracle 的 `--present-selftest` 与 CI 步骤（`7c528f2`）；能力位在 CI run
+  `34781060564` 的真实 Apple Paravirtual `present_selftest: PASS` 后翻为 true（`be43275`）。
+- **Step 8 完成**：`conformance/suite-v14.json`（2×2 附件 + present，marker 点名 `vulkan` /
+  `native-metal-provider`）、CI 的五条 rail 接线与对象 API 版本循环（`1f8adc1`/`49e68a2`）、
+  `RENDER-CAPTURE.md` §7 与 README 状态更新。CI run `34782615760` 五 job 全绿：Lavapipe 三形状、
+  Rust native provider 在 Apple Paravirtual 上执行 present case、oracle present selftest PASS、
+  compare-captures 报 v14 五路 parity；RTX 5060 真机证据在
+  `evidence/windows-rtx5060-v14-1f8adc1-2026-09-14/`。
+- **仍未做**：Step 5（对象 API present）、真实 surface/swapchain（§7.2/§7.3 的开放问题在探针后可以
+  重新裁决，但当前仍保持不变）、多缓冲/其它 present mode/vsync/suboptimal、以及 §9 里尚未裁决的
+  其它条目。

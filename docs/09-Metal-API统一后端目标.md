@@ -389,7 +389,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；v8 已覆盖 raw AIR 与 Apple wrapper 两种固定编码，但仍缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor（pin 升级后适配器已在 `6e5df5b` 修复，并由 `81d6cbe` 的 CI job 持续验证）；生产 guest/display 路径未调用 canonical Metal provider；owner→provider 命令通道已由 `0ed4f60`/`cd5fcf0` 完成、`134d746` 把 descriptor 传递纳入协议、`630260f` 支持 chunked payload、`574aca1` 修复拒绝重复 import 时的通道失步（provider outbox、IPC writer 与 owner receiver 由 `9226ef2`–`83b3f23` 提供，`8913e37` 单进程端到端打通，`9ac0dfe` 两进程拆分）；`e891102` 还让 `reims-smoke.exe` 在 Windows RTX 5060 上跑通（`PASS suite executor=reims`）；仍缺真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
-5. 图形与显示路径：纹理、render pass、sampler、render pipeline、presentation、swapchain、heaps、ICB 均未实现；当前范围仍是 compute buffer 子集。
+5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）与 surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、对象 API 的 present action、heaps 与 ICB 仍未实现（design 见 `docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
 6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
 
 ### 13.4 外部依赖状态（2026-09-08）
@@ -406,6 +406,23 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - Windows/RTX 5060 v8 已完成：`7e67a0e` 的二进制在 RTX 5060 上跑通 v1–v8 三条 rail（每 rail 29 cases），证据在 `evidence/windows-rtx5060-v8-7e67a0e-2026-09-08/`。
 - 跟踪 reims PR #79/#80；合并后再决定 facade worktree 是否 rebase。
 - 保持 direct Vulkan rail 作为控制路径，直到 Gate 1/2/3 逐类通过。
+
+### 13.6 2026-09-14 增量：presentation 落地与后续轨道
+
+- **presentation Steps 1–4、7–8 已完成**（`docs/24` §6）：core present 值类型与 admission（`6ba8834`、
+  `e4f451f`）、MCC1 presenting pass tag 与能力位（`541be0c`）、Vulkan surface-less 目标执行 + 计数
+  （`8fdd61b`，修复轮 `c45f001` 序列化 target layout 与统一 colour-write scope）、比较器 present 段
+  （`725a557`）、native 等价物 + Apple `--present-selftest`（`5f09fa3`/`7c528f2`）、v14 套件与 CI
+  接线（`1f8adc1`/`49e68a2`）。
+- 证据：CI run `34782615760` 五 job 全绿；v14 五路 parity（Swift oracle / Vulkan trace / Rust native
+  provider / 两条 object rail）PASS，其中 present case 由 Vulkan 与 Rust native provider 两条 provider
+  轨执行并上报 `present={"acquire":1,"present":1}`，Apple Paravirtual 上 present selftest PASS；RTX 5060
+  真机证据在 `evidence/windows-rtx5060-v14-1f8adc1-2026-09-14/`；真实 surface 探针（Step 6）证据在
+  `evidence/presentation-surface-probe-2026-09-14/`（四路跑通，记录了 surface 格式/`minImageCount`
+  跨驱动差异与 0.5 UNORM 半值 tie 的 1-ULP 不一致）。
+- 剩余：`docs/24` §6 Step 5（对象 API 的 present action）、渲染泛化（顶点缓冲/MRT/`LoadOp::Load`）、
+  heaps/ICB（`docs/25` 已给出八步设计与三处可得性论证）、guest memory 的 reims 侧接线（`docs/20`）、
+  真实设备丢失恢复与队列公平性的生产级负载感知。Gate 2/3 仍是项目终点。
 
 ## 14. 关联资料
 
