@@ -596,14 +596,18 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
 | Apple 真机证据 | **已拿到**：CI run `34774478149` 在 `Apple Paravirtual device` 上自检读回 `4080c0ff` ×4（`render_selftest: PASS`）；native provider 据此翻开能力位（`cce2656`）|
 | RTX 5060 真机证据 | **已拿到**：`evidence/windows-render-priority-2026-09-14/`——v13 捕获在 5060 上 `compare.py` PASS；队列优先级 `queues=8`、`max_high_streak=4 ≤ limit=4`、`low_per_window_min=1` |
 
-仍未钉死的两条：
+**2026-09-14 深夜再推进（三条提交，CI run `34778065718` 五 job 全绿）**：
 
-1. **表条目承载渲染契约**（本清单第 4 条的下半）：trace 的管线表条目（`CompiledComputePipeline`）
-   目前**不带**渲染契约，因此 core 无法在准入阶段校验"附件格式 == 管线 `color_format`"，
-   这条不变式现在由每个 provider 各自再查一遍注册表。要收口必须给
-   `SUBMIT_RENDER_REQUEST` 帧的表条目加 kind 判别与渲染字段（compute-only 帧保持逐字节不变），
-   并同步两个 provider 的注册元数据。
-2. **顶点属性与多附件**：第一版只支持"无顶点缓冲的全屏三角 + 单附件"，
+| 项 | 状态 |
+|---|---|
+| 表条目承载渲染契约（本清单第 4 条的下半）| **已落地**（`99e30c6`）：`SUBMIT_RENDER_REQUEST` 帧的管线表条目带渲染契约，core 准入顺序为"能力位 → `trace.pipeline()`（未知 id 语义不变）→ `validate_against`"；compute-only 帧逐字节不变（既有 369 字节硬编码帧测试仍绿），两个 provider 的注册同步携带，且各自保留 `validate_against` 作为纵深防御 |
+| 顺序语义（I4）| **已落地**（`e3b3aea`）：本增量固定 compute→render 写进 core 契约，provider 侧不再各自解释 |
+| 附件冲突按字节范围（M3）| **已落地**（`e0e5240`）：同一 allocation 的兄弟 view 若与附件字节重叠即拒绝（复用 `RangeSet` 语义），不重叠则放行（有对照用例）|
+| 形状诊断（M4）| **已落地**（`e0e5240`）：纹理声明形状不符的拒绝能同时给出形状与期望字节数，不再出现 `expected: 16, declared: 16` 那种无法定位的输出 |
+
+仍未钉死的一条：
+
+1. **顶点属性与多附件**：第一版只支持"无顶点缓冲的全屏三角 + 单附件"，
    `VertexLayout` 的扩展点与 MRT 的 location 映射都还没定。
 2. **附件的 count 契约**（§5.3）：`copy_in`/`copy_out` 的取值与是否在 v12 强制；以及
    `LoadOp::Clear` 是否真的不需要 `copy_in`。
