@@ -423,6 +423,24 @@ Select-String -Path /tmp/reims-vgpu-fail.log -Pattern 'guest_ram_'
 
 ---
 
+**2026-09-14 深夜进展（fork `reims-vgpu`，分支 `guest-memory-wiring`）**：
+
+| 步骤 | 状态 |
+|---|---|
+| 投影 | 已落地：`guest_ram_map::host_regions`（`d2f6b07`）|
+| 注册候选（对齐数学） | 已落地：`registration_candidates` + 结构化拒绝（`fea4ba5`）|
+| 注册账本（窗口派生 / 计数退休 / reset 失效） | 已落地：`GuestRamRegistrations`（`7ade996`，53 条模块测试）|
+| **注册调用点** | **已落地**：`register_imports` 在握手建立的导入上驱动投影 → 候选 → 账本，并输出本文件 §7 第 3 条要求的诊断行（`d38e706`）。**不改变任何导入决策** |
+| 窗口派生接进 bind 路径 | **仍未做**：账本能派生窗口，但 `bound_buffers` 的绑定路径还没消费它 |
+| `reset`/epoch 与设备重建配对 | **仍未做**：账本支持 `reset()` 递增 epoch，但触发点尚未接线 |
+| 真机 `page_size` | 仍未做（见下条）|
+
+诊断行形态（可直接与 `guest_ram_span` 对上）：
+
+```text
+guest_ram_registration imports=<n> candidates=<m> skipped=<k> epoch=<e> registered=<r>
+```
+
 ## 7. 待确认（不要当成已核实事实使用）
 
 1. **`min_alignment` 的真机取值**：`caps/mod.rs:199` 断言的是 4096，但那是 fixture；
