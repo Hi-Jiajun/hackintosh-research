@@ -316,11 +316,18 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 
 ## 13. 当前进度快照（2026-09-08）
 
-> ⚠️ **更新指引（2026-09-13）**：本节的 HEAD 与完成项停在 `cc38dd4`，已被后续提交超越。
-> 当前状态以 `docs/14` §9 与 `docs/15` §9 的实施状态、以及 git 历史为准：metal-api-emulator
-> `shared-provider-objects` 已推进到 `83bdbce`（range hazard Step 1–6、v10 disjoint-view
-> conformance、shared per-allocation device buffer、分配级 copy 计数契约、按 view 字节的
-> 部分上传），research 侧同步记录在 `5c921e6` 之后。本节其余文字保留为历史快照。
+> ⚠️ **更新指引（2026-09-14 修订）**：本节的 HEAD 与完成项停在 `cc38dd4`，已被后续提交
+> 大幅超越。当前状态以实施状态节与 git 历史为准：metal-api-emulator
+> `shared-provider-objects` 已推进到 `1577023`，包含
+> （a）range hazard Step 1–6、v10 disjoint-view conformance、shared per-allocation device
+> buffer、分配级 copy 计数契约、按 view 字节的部分上传（`docs/14` §9、`docs/15` §9）；
+> （b）**纹理路径全程**：core 类型 → trace/MCC1 wire → Vulkan/native 执行 → 对象 API
+> （`new_texture_with_bytes`/`set_texture`）→ **v11 五路径 conformance**（`docs/16`、`docs/18`，
+> CI 全绿并含 Lavapipe/RTX 5060/Apple Paravirtual 证据）；
+> （c）**guest memory owner 侧前 4 步**：`HostRegion`、双驱动无拷贝窗口用例、`DirtySet`、
+> `GuestWindows` 回收状态机（`docs/19` §3.1）。
+> 仍阻塞：多 invocation 纹理读取（上游 translator，`docs/17`）；仍缺：render
+> pipeline/presentation、guest memory 生产接线、reims Gate 2/3。本节其余文字保留为历史快照。
 
 > 本节是状态记录，不改变第 1–12 节的目标与合同。结论以当前仓库、可复现测试和已归档证据为准。
 
