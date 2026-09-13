@@ -49,6 +49,14 @@ guest 侧释放页时在途访问如何收尾。
 5. **reims 侧接线（跨仓库）**：用 reims 的 guest RAM 区注册 `HostRegion`，把 wire 命令的
    allocation 映射到窗口；这一步需要 reims 侧的配合，另开文档。
 
+## 3.1 实施状态
+
+- **步骤 1 完成（`2f35ce5`）**：`HostRegion` + `borrowed_window` + 校验与两个单测；零行为变化。
+- **步骤 2 完成（`306e4e2`）**：`provider-smoke` 的 `provider_host_region_window` —— 注册 8 KiB
+  页对齐宿主区间、owner 类型拒绝越界窗口、派生窗口、无拷贝导入、设备原地写入、lease 释放；
+  **Lavapipe 与 RTX 5060 双驱动 PASS**（真机日志 26 PASS，归档
+  `evidence/guest-region-smoke-306e4e2-2026-09-14/`）。
+
 ## 4. 边界（本文不做）
 
 - 不做 guest 页内容的迁移/交换（那是 VM 侧的职责）；
