@@ -86,9 +86,11 @@ acquire → present 之后该目标在宿主侧可读回，读回的 4 个 texel
 
 - **尺寸与格式**：2×2，与 `docs/23` 的附件同尺寸；格式从 `Rgba8Unorm` 起步（为什么不是
   swapchain 偏好的 `B8G8R8A8_*`，见 §7.3 与 §7.6）。
-- **防伪**：呈现目标由 provider 用哨兵预置（沿用 v13 的 `fefefefe` 先例，见
-  `conformance/suite-v13.json` 的 `clear_hex`），因此"present 没发生"、"present 了但没写"与
-  "写对了"三者可区分。
+- **防伪**：呈现目标由 provider 用哨兵预置（`InitialState::Sentinel`），哨兵必须与期望 texel 不同。
+  **哨兵本身是否可观测取决于 pass 的 load**：`load: "load"`（`--present-selftest` 用的形状）直接以哨兵
+  为初值，draw 没跑就能读到哨兵；`load: "clear"`（suite-v14 用的形状）会在同一提交里把哨兵覆盖掉，
+  此时"present 没发生"由 clear 色（≠ 期望 texel）与 acquire/present 计数兜底，哨兵只固定目标的初始
+  状态。三态可区分性据此成立，但不要把 clear 形状说成"哨兵不复现即证明 present 发生"。
 - **出口**：宿主可见字节、texel 级（`docs/23` §3.5 的口径）；不看窗口像素，不引入图像相似度。
 - **计数**：present 次数、acquire 次数、目标 allocation 的 `copy_out` 三项都进报告（§5.3）。
 - **明确不进第一段**：真实 surface/窗口、resize 与 recreate、多缓冲（imageCount > 1）、
@@ -244,7 +246,7 @@ present 两者都要有；一个只会算不能呈现的设备，用**能力位 
 | `format` | `AttachmentFormat` | 第一版必须与来源附件相同（不匹配在 admission 阶段 typed-refuse） |
 | `width` / `height` | `u64` | 与 `RenderAttachment::expected_bytes` 同口径（紧排 texel 数） |
 | `image_count` | `u32` | 第一版固定 1；"多缓冲"用"字段存在但只接受 1"表达，而不是"字段不存在" |
-| `initial` | `InitialState::{Sentinel([u8;4]), Undefined}` | 哨兵让"present 没发生"可证伪（沿用 v13 口径） |
+| `initial` | `InitialState::{Sentinel([u8;4]), Undefined}` | 哨兵固定目标的初始内容；`load: "load"` 时它自身可观测，`load: "clear"` 时防伪由 clear 色与计数承担（见 §1.4） |
 
 ### 3.2 格式与 extent 的来源
 
@@ -841,3 +843,7 @@ Exiting ...
 - **仍未做**：Step 5（对象 API present）、真实 surface/swapchain（§7.2/§7.3 的开放问题在探针后可以
   重新裁决，但当前仍保持不变）、多缓冲/其它 present mode/vsync/suboptimal、以及 §9 里尚未裁决的
   其它条目。
+- **终审修正（2026-09-14）**：整分支评审指出 v14 的哨兵在 `load: "clear"` 下会被同提交的 clear
+  覆盖，文档对"哨兵防伪"的表述过强；§1.4 与 §3.1 已按"哨兵可观测性取决于 load"收紧，
+  `conformance/RENDER-CAPTURE.md` §7 与 `compare.py` 的注释同步修正。该修正只改表述，不改规则：
+  suite 仍要求 `initial_hex` 与期望 texel 不同，计数仍由点名 rail 强制上报。
