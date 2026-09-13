@@ -312,15 +312,26 @@ struct RenderPipelineContract {
 
 ### 4.3 旧 trace 解码兼容策略
 
-- `PROVIDER_SCHEMA_VERSION` 从 2 升到 3（`provider.rs:19`）；`get_trace` 目前是**无条件顺序
-  解码**（`command_codec.rs:1288-1336`），因此必须先把 `schema_version` 读出来并**分支解码**：
-  版本 1/2 走现有字段序列，版本 3 走新序列。
-- 未知版本沿用 `ContractError::UnsupportedSchemaVersion` 的 typed 拒绝（`provider.rs:2246`，
-  回归测试形态见 `:5709`），不做"尽力猜测"。
-- **回归判据**：v1–v11 的 suite 在变更后仍字节一致通过（`compare.py --check` + 既有 capture
-  计数），并新增一条 render pass 的 IPC 往返用例（先例：纹理往返，`docs/16` §4.2 第 2 步）。
-- **不要做**：不要让"文本 IR 默认、v8 raw/wrapped"的 `air_encoding` 维度与版本升级互相放大
-  （§6 Step 2 的验收里显式跑 v8）。
+**已实现口径（2026-09-14，提交 `b14f496`；取代本节原先"升 `PROVIDER_SCHEMA_VERSION` 到 3"
+的建议）**：改为**按帧 payload tag 分支**，`PROVIDER_SCHEMA_VERSION` 保持 2。理由：升版本会让
+compute-only 流的字节与 `schema_version` 同时变形，而按 tag 分支能让旧 compute 帧**逐字节不变**
+（`command::tests::compute_only_submit_keeps_its_pre_render_bytes` 用改动前实测抓取的 369 字节
+硬编码帧钉住）。
+
+- compute-only trace 仍用 `SUBMIT_REQUEST = 0x03`，布局不变；
+- 含 render pass 的 trace 用新 tag `SUBMIT_RENDER_REQUEST = 0x0f`，其内部每个 pass 前置 kind
+  tag（compute `0x00` / render `0x01`）；旧解码器遇到 0x0f 回 `UnknownCommandTag` 而不是误读；
+- 能力位同理：默认（不支持渲染）仍用旧 `CAPABILITIES_RESPONSE = 0x01` 的旧字节；声明了非默认
+  render 位时才用新 tag `0x0a`，旧 tag 解码时 render 位补"不支持"。
+
+这条路与队列优先级的加法式先例（`65da9e6`）一致：**新能力走新 tag，旧流量字节不变**。
+未知版本仍沿用 `ContractError::UnsupportedSchemaVersion` 的 typed 拒绝（`provider.rs:2246`），
+不做"尽力猜测"。
+
+- **回归判据（已满足）**：v1–v12 的 suite 在变更后全部通过（`LAVAPIPE_SMOKE_OK suites=12
+  captures=36`），并新增 render pass 帧的 IPC 往返与截断/超长/未知 kind 的拒绝用例。
+- **不要做**：不要让"文本 IR 默认、v8 raw/wrapped"的 `air_encoding` 维度与任何版本/分支升级
+  互相放大（§6 Step 2 的验收里显式跑 v8）。
 
 ## 5. 五路径比较方式
 
