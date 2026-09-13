@@ -249,9 +249,34 @@ struct RenderPipelineContract {
 3. **optimal tiling 附件 + 独立 staging 池**。与候选 2 同类，只是把 staging 复用；复杂度最高，
    第一版不建议。
 
-本设计的**建议**：先按候选 1 做，在 Lavapipe 与 RTX 5060 上各测一次（§6 Step 4 的验收）；
-若任一设备拒绝 linear tiling 附件，再退到候选 2，并把 count 口径的改动写进 §5.3 的契约。
-**待确认**：这一点必须实测，不能靠文档推断。
+**实测结论（2026-09-14，探针已跑）**：**固定走候选 2**（optimal tiling 附件 +
+`vkCmdCopyImageToBuffer`），候选 1 不作为实现路径。证据：
+
+- Lavapipe（`llvmpipe LLVM 22.1.8`）：六种候选格式的 `linearTilingFeatures` **都含**
+  `COLOR_ATTACHMENT`，端到端渲染 + 映射读回逐字节一致（2×2 `R8G8B8A8_UNORM` 读回
+  `40 80 c0 ff` ×4）；`rowPitch=64`（紧密排列 8）、`memoryRequirements.size=256`。
+- RTX 5060 原生驱动（api 1.4.351）与 dzn/D3D12 后端：六种格式的 `linearTilingFeatures`
+  **都不含** `COLOR_ATTACHMENT`（`PASS=5 SKIP=7`，linear 全跳过）；optimal 路径五条格式
+  PASS，`vkCmdCopyImageToBuffer` 每次 1 次（`copy_out=1`）。
+- **能力位陷阱**：NVIDIA 的 linear 位里**有** `COLOR_ATTACHMENT_BLEND`(0x100) 却**没有**
+  `COLOR_ATTACHMENT`(0x80)（`0x0001dd03` vs optimal `0x0001dd83`）。判定必须精确查
+  `COLOR_ATTACHMENT` 本身；查 BLEND 或"任何附件相关位"都会误判。
+- **忽略能力位强建的后果**：dzn 上 `--force` 强用 linear 时 `vkCreateImage` 与
+  `vkCreateGraphicsPipelines` 都返回成功，随后以**迟到的** `VK_ERROR_OUT_OF_HOST_MEMORY`
+  炸掉设备（`D3D12: Removing Device.`）。所以准入必须**在 `vkCreateImage` 之前**按能力位判定，
+  不能指望驱动在创建期报 `VK_ERROR_FORMAT_NOT_SUPPORTED` 兜底。
+
+**count 口径（§5.3 需要据此定稿）**：候选 2 每条链路 1 次 image→buffer copy（`copy_out=1`）；
+候选 1 是 0 次（直接映射）。另外字节 parity 的粒度必须是 **texel / 按 `rowPitch` 逐行**，
+不能是"整块镜像内存"——Lavapipe 的 `rowPitch=64`、`size=256`，NVIDIA optimal 附件
+`size=512/alignment=1024`，dzn 是 `65536/65536`，这些都是实现相关值，进不了 parity 口径。
+
+**格式与用色纪律（§7.4 需要据此定稿）**：`float→UNORM8` 的半整数 tie 是**实现相关**的——
+同一片元常量 `0.5`，Lavapipe 读回 `0x80`(128)，NVIDIA 原生与 dzn 都读回 `0x7f`(127)。
+**fixture 里的片元/清屏值必须避开 `f*255` 为半整数的取值**（即 `f=(2k+1)/510`，如 0.5）；
+写"字节值/255"（64/255、128/255、192/255）即可稳定。探针主路径已按此改写。
+
+（原"先按候选 1 做，失败退候选 2"的建议作废；历史讨论保留在上一段。）
 
 ### 3.6 附件与既有资源语义的关系
 
@@ -372,7 +397,7 @@ stage 与 `render_targets`/`varyings` 白名单，创建图形管线（render pa
 不在白名单内的反射（tessellation/imageblock/深度）仍是明确拒绝。
 
 **Step 4 — Vulkan 直连执行。** 附件 image/view、framebuffer、`vkCmdDraw`、附件 → 宿主字节落地
-（先按 §3.5 候选 1，失败退候选 2）、必要的布局迁移与 barrier。
+（按 §3.5 实测结论：候选 2）、必要的布局迁移与 barrier。
 *验收*：Lavapipe 上 2×2 用例的 4 个 texel 与 fixture 期望字节逐字节一致；哨兵未被保留；
 `provider-capture` 的 direct 轨报告能过 `compare.py --check`。
 
@@ -410,8 +435,8 @@ oracle 侧按 §5.1 扩展。
 
 `VK_IMAGE_TILING_LINEAR` 的 host-visible image 能否作为颜色附件，取决于实现的
 `VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT` 与 linear tiling 的组合；这是 §3.5 候选 1 与候选 2 的
-分水岭。**待确认**：Lavapipe（`llvmpipe`）与 RTX 5060 驱动两边都要实测；两边结论不一致时，
-应选**都能过**的那条（大概率是候选 2），并接受多一次 image→buffer copy。
+分水岭。**已实测（2026-09-14）**：Lavapipe 六个格式 linear 全支持、RTX 5060 原生与 dzn 后端全不支持 ——
+按"两边都能过"的判据固定走候选 2，并接受多一次 image→buffer copy（`copy_out=1`）。
 
 ### 7.3 presentation 队列族与 compute-only family 的关系
 
