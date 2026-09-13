@@ -326,7 +326,8 @@ tracking、display/present 的端到端行为。任何一门未过，都不能�
 > CI 全绿并含 Lavapipe/RTX 5060/Apple Paravirtual 证据）；
 > （c）**guest memory owner 侧前 4 步**：`HostRegion`、双驱动无拷贝窗口用例、`DirtySet`、
 > `GuestWindows` 回收状态机（`docs/19` §3.1）。
-> 仍阻塞：多 invocation 纹理读取（上游 translator，`docs/17`）；仍缺：render
+> 已解除：多 invocation 纹理读取（真因是本仓库上传未按 `rowPitch` 落行，`15a6be3` 修复；
+> v12 套件与 CI 已覆盖；详见 `docs/16` §4.5 归因修正与 `docs/17`）；仍缺：render
 > pipeline/presentation、guest memory 生产接线、reims Gate 2/3。本节其余文字保留为历史快照。
 
 > 本节是状态记录，不改变第 1–12 节的目标与合同。结论以当前仓库、可复现测试和已归档证据为准。
