@@ -3,6 +3,11 @@
 > 目标仓库：pinned metal2vulkan `43c46ac`（`metal-api-emulator` 的 workspace 依赖）。
 > 本文是可直接提交的 issue 草稿；最小复现、期望行为与实测证据都在 `docs/16` §4.5 的
 > 诊断链里。**提交前需要复验一次**（见 §4）。
+>
+> **2026-09-14 标注：本文 §1–§6 已被 §7 取代，不再提交上游。** §7 的复验证明缺陷不在
+> translator，而在本仓库 Vulkan provider 的上传未尊重 `VkSubresourceLayout.rowPitch`：
+> 修复提交 `15a6be3`，多 invocation 纹理用例由 v12 套件 `3463528` 覆盖，CI 接入
+> `b437e67`/`f41b3c6`。阅读时以 §7 为准，§1–§6 只作当时的过程记录。
 
 ## 1. 现象
 
@@ -38,6 +43,18 @@
 
 ## 4. 已排除项（复验清单）
 
+> **归因修正提示（2026-09-14，指向 §7）**：本表是旧归因（缺陷在 translator 的纹理降级
+> 路径）的复验清单，其结论已被 **§7"2026-09-14 复验结果：不提交上游 issue"** 取代。其中
+> 两行尤其不能单独引用：
+>
+> - **"驱动特有 = 不是"**：两个驱动都复现这一事实仍成立，但它支持的不再是"我们的多
+>   invocation 语义/translator 降级不可移植"，而是本仓库的宿主上传按紧密排列落行、在两个
+>   驱动上都写错了偏移。
+> - **"显式 group/local 坐标替代方案 = 不可用"**：该地址式被本项目的 footprint 证明拒绝这
+>   一点在 §7 里仍然成立，但它与真实根因无关，不能再用来支持"坐标路径可疑"。
+>
+> 真实根因、修复提交 `15a6be3` 与 v12 套件（`3463528`）见 §7。
+
 | 嫌疑 | 结论 | 证据 |
 |---|---|---|
 | provider 特化/dispatch 参数 | 正确 | `METAL_API_DEBUG_DISPATCH=1`：`spec data=[4,4,1]`、`local=[4,4,1] groups=[1,1,1] base=[0,0,0]` |
@@ -49,11 +66,18 @@
 
 ## 5. 求助
 
+> **已被 §7 取代（2026-09-14）**：本节的前提不成立——缺陷不在 translator，因此不再向上游
+> 求助。下面两问保留为当时的草稿内容。
+
 1. 这是 translator 在"纹理读取 + thread position"组合下的已知限制，还是缺陷？
 2. 若有推荐的替代写法（不依赖 `GlobalInvocationID`、且能被 footprint 证明表达），
    请指路——`metal-api-emulator` 的 conformance 需要在 v11 引入多 invocation 的纹理用例。
 
 ## 6. 状态
+
+> **已被 §7 + v12 取代（2026-09-14）**：多 invocation 纹理用例**已经进入** conformance 与
+> CI（v12 套件 `3463528`、CI `b437e67`、native allowlist `f41b3c6`），不再是"issue 有结论
+> 前不进入 v11"。下面三条是当时的草稿状态。
 
 - 本仓库当前保留**单 invocation** 的纹理用例（已通过，Lavapipe + RTX 5060）；
 - 多 invocation 纹理用例在 issue 有结论前不进入 v11；
