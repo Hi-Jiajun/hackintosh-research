@@ -653,10 +653,21 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
   reviewed 形状校验、`test_suite_v16.py`、CI 四轨与版本循环 1..16、oracle `loadSuite` v16 分支。
   证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
   `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`（direct 轨 `4080c0ff`×4 + `--check` PASS）。
-- **marker 纪律**：`suite-v16.json` 当前只点名 `vulkan`。对象 API 的顶点绑定面与 native 的
-  `MTLVertexDescriptor` 路径是同一增量的后续支线（各自独立 worktree/CI 证据），落地后按
-  "点名必报、未点名不得报"扩 marker——这与 v15 的 indirect case（Vulkan-only，native heap 之后才扩）
-  是同一套纪律。
+- **marker 已扩到全部五条轨**（`d1ce4bf`/`53c2db5`）：对象 API 的顶点绑定面（`set_vertex_buffer`/
+  `set_index_buffer`/`draw_indexed_primitives`）与 native 的 `MTLVertexDescriptor` 路径落地后，
+  `suite-v16.json` 的 `capture_rails` 点名全部五条轨。CI run `34868060103` 五 job 全绿：
+  Lavapipe 的 trace/object/object-async 三条 Vulkan 轨、Apple Paravirtual 的 native provider
+  trace/object/object-async 三条，compare-captures 给出
+  `PASS parity: native-metal / vulkan / native-metal-provider / vulkan-objects /
+  native-metal-provider-objects; compute-buffer-v16; 1 cases; 1 render cases`；同一 run 的
+  `native-oracle-build` 打印 `vertex_selftest: PASS (vertex_quad_indexed_2x2 4080c0ff...)`
+  （`MTLVertexDescriptor` + `setVertexBuffer` + `drawIndexedPrimitives` 在真 Apple GPU 上落字节）。
+  证据归档在 `evidence/conformance-v16-53c2db5-2026-09-15/run-34868060103/` 与
+  `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`。
+- **修复轮**：native provider 的 suite 路径原先无条件编译里程碑 MSL（`REVIEWED_SOURCE`），
+  顶点注册因此以 `metal_render_vertex_function_missing` 失败（CI run `34867034258`）；修复为使用
+  计划携带的 `planned.source`（`53c2db5`），设备无关的 plan 断言
+  `plan_translates_the_indexed_layout_into_a_descriptor_plan` 已钉住该来源。
 - **本段明确不做（仍在 §3.3 清单里）**：实例化步进、MRT（`render_targets` location 映射）、
   `LoadOp::Load` 的附件上传路径、`StoreOp::DontCare`、`rgba8_unorm` 之外的 suite 内格式、
   深度/模板、动态状态（blend/cull/scissor）。

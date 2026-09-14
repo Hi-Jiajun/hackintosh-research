@@ -441,9 +441,11 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   形状校验、`test_suite_v16.py`、CI 四轨与版本循环 1..16、oracle `loadSuite` v16 分支。
   证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
   `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`。
-- **marker 纪律**：`suite-v16.json` 当前只点名 `vulkan`；对象 API 的顶点绑定面（`feat-render-objects`）
-  与 native 的 `MTLVertexDescriptor` 路径（`feat-render-native`，含 Apple `--vertex-selftest`）
-  落地并通过各自证据后扩 marker，规则仍是"点名必报、未点名不得报"。
+- **五路落地**（`53c2db5`）：对象 API 的顶点绑定面与 native 的 `MTLVertexDescriptor` 路径先后落地，
+  `suite-v16.json` 的 marker 扩到全部五条轨。CI run `34868060103` 五 job 全绿：Lavapipe 三条 Vulkan 轨
+  与 Apple Paravirtual 三条 native 轨都执行 `quad_indexed_clear_2x2`，compare-captures 给出 v16 五路
+  parity，同一 run 的 `vertex_selftest: PASS (vertex_quad_indexed_2x2 4080c0ff...)` 是 native 翻位证据
+  （归档 `evidence/conformance-v16-53c2db5-2026-09-15/run-34868060103/`）。
 
 ## 14. 关联资料
 
