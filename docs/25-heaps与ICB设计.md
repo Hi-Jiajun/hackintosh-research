@@ -597,9 +597,13 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   Swift 完全没有 `indirectRenderCommand` 访问器（两次 CI 编译错误实测）。因此 `--icb-selftest`
   无法用 Swift 写出来，该 selftest 与 CI step 已撤回；`icb_capability_bits()` 全默认关闭，
   core admission 对 ICB-bearing trace 继续 `icb_unsupported`（不声明无法证明的能力）。
-  CI run `34844550529` 五 job 全绿。下一步（未做）：用 ObjC++（`.mm`，clang++ 编译后与 swiftc 链接）
-  探针直接调 `indirectRenderCommandAtIndex:` / `executeCommandsInBuffer:withRange:`，若在 Apple
-  Paravirtual 上可达且字节正确，再翻位并把 v15 的 icb case marker 扩到 native provider。
+  CI run `34844550529` 五 job 全绿。**平台阻塞已用 ObjC++ 探针确认**（`conformance/icb_probe.mm`，
+  CI run `34845904082`）：选择器 `newIndirectCommandBufferWithDescriptor:maxCommandCount:options:`
+  存在且探针能走到 Metal 调用，但驱动在 `-[IOGPUMetalResource initWithResource:]` 直接断言崩溃
+  （`Assertion failed: (resource != nil)`，abort trap 6）。因此 native ICB **不交付**：探针保留在仓库
+  作为可复现检查但不接 CI（驱动 abort 无法变成通过步骤），`icb_capability_bits()` 永久保持默认关闭，
+  core admission 继续 `icb_unsupported`，v15 的 indirect case 保持 Vulkan-only。证据归档
+  `evidence/icb-probe-platform-block-34845904082-2026-09-14/`；CI run `34846218399` 五 job 全绿。
 - **Step 7 其余**：indexed draw 与 heap aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
