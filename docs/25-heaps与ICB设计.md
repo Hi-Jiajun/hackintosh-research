@@ -529,8 +529,18 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   评审抓到"能力帧无条件追加 heap/ICB 字段"的真实回归 → 修复为**可选尾段**（编码按 `declares_*` 门控、
   解码按剩余字节判定），并用 pre-heap 提交 `2ad57d1` 实测出的帧字节做钉子（`7a9c98e`）。
   合并 `ad48dad`，CI run `34787709274` 五 job 全绿；v1–v14 捕获字节不变。
-- **Step 3 进行中**：Vulkan heap placement（先 placement、不做 aliasing；texture placement 明确拒绝），
-  见 `feat-heaps-step3`。
+- **Step 3 完成**：Vulkan heap placement（`ff5385f` + 修复轮 `9f0e853`）：placements 与升序
+  distinct owned allocation 一一对应（数量/尺寸/heap-id 不符走 `heap_placement_mismatch`，texture
+  走 `heap_placement_unsupported`），单 `VkDeviceMemory` slab + 逐 allocation `bind_buffer_memory`，
+  per-view upload/readback/writeback 不变；观测器
+  `heap_placement_observations() -> Vec<HeapPlacementObservation{heap_id, allocation_id, offset, byte_size}>`
+  每次 submit 整向量替换；能力位翻转（`supports_heaps=true`、`max_heap_bytes=64 MiB`、
+  `[OwnedBytes]`、`supports_heap_aliasing=false`）。评审 Spec ✅ / Needs work（1 Important：bind 失败
+  清理顺序先 free 后销毁 buffer）→ 修复轮已落地并加无设备单测钉顺序，另修 placement 尺寸裁决与观测
+  无界累积。合并 `4d7aefb`，CI run `34817436502` 五 job 全绿；RTX 5060 真机
+  `PASS provider_heap_placement heap=61 same_slab=true offsets=0,256 writeback=exact observations=2`
+  （证据 `evidence/windows-rtx5060-heaps-step3-4d7aefb-2026-09-14/`）。
+- **Step 4 进行中**：Vulkan ICB 等价回放（indirect draw/dispatch，DGC 只做探针），见 `feat-heaps-step4`。
 - 仍待裁决（§9）：ICB 的等价物选择（DGC 只在 llvmpipe 可用，dzn 走 indirect draw/secondary CB）、
   placement alignment 的 provider 回填接口、heap 观测是否进报告 schema、Apple 侧 heap/ICB 的
   selftest 形式。
