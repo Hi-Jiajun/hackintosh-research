@@ -389,7 +389,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；v8 已覆盖 raw AIR 与 Apple wrapper 两种固定编码，但仍缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor（pin 升级后适配器已在 `6e5df5b` 修复，并由 `81d6cbe` 的 CI job 持续验证）；生产 guest/display 路径未调用 canonical Metal provider；owner→provider 命令通道已由 `0ed4f60`/`cd5fcf0` 完成、`134d746` 把 descriptor 传递纳入协议、`630260f` 支持 chunked payload、`574aca1` 修复拒绝重复 import 时的通道失步（provider outbox、IPC writer 与 owner receiver 由 `9226ef2`–`83b3f23` 提供，`8913e37` 单进程端到端打通，`9ac0dfe` 两进程拆分）；`e891102` 还让 `reims-smoke.exe` 在 Windows RTX 5060 上跑通（`PASS suite executor=reims`）；仍缺真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
-5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）与 surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、对象 API 的 present action、heaps 与 ICB 仍未实现（design 见 `docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
+5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）与调用方顶点/索引缓冲的 indexed draw（v16，见 §13.7）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、MRT/`LoadOp::Load`/`StoreOp::DontCare`、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
 6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
 
 ### 13.4 外部依赖状态（2026-09-08）
@@ -423,6 +423,27 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 剩余：`docs/24` §6 Step 5（对象 API 的 present action）、渲染泛化（顶点缓冲/MRT/`LoadOp::Load`）、
   heaps/ICB（`docs/25` 已给出八步设计与三处可得性论证）、guest memory 的 reims 侧接线（`docs/20`）、
   真实设备丢失恢复与队列公平性的生产级负载感知。Gate 2/3 仍是项目终点。
+
+### 13.7 2026-09-14 增量：调用方顶点/索引缓冲（v16）
+
+- **契约**（`1936c98`，`docs/23` §10）：`VertexFormat`/`VertexAttribute`/`VertexBufferLayout`/
+  `IndexFormat` + `VertexLayout::Buffers(...)`；`RenderPassDescriptor` 增 `vertex_buffers`/`indices`；
+  能力位 `max_vertex_buffers`/`supported_vertex_formats`/`supported_index_formats` 与 admission；
+  MCC1 新 `PASS_KIND_RENDER_EXT = 0x10` + feature 字节（既有帧字节不变）。同日裁决：渲染输入
+  **自带字节**（`Vec<BufferView>`），因为对象 API 轨没有 compute pass 可依托（`e71553e`）。
+- **Vulkan 执行**（`e71553e`）：由契约 layout 生成 vertex input state、上传每个流、
+  `vkCmdBindVertexBuffers` + `vkCmdBindIndexBuffer` + `vkCmdDrawIndexed`，footprint 证明三条
+  （流覆盖 stride×顶点数、索引 view 覆盖 count×宽度、索引值 < 流能容纳的顶点数）；新 reviewed
+  SPIR-V `quad_indexed.vert.spv`。Lavapipe `render_e2e` 18 passed，其中"顶点流塌缩 ⇒ 留哨兵"
+  证明读的是调用方字节而非 `vertex_id`。
+- **conformance v16**（`4a926a0`）：新 reviewed MSL `quad_indexed_2x2.metal`、`suite-v16.json`
+  （4 顶点 `float32x2` + 6 个 `uint16` 索引 + `4080c0ff`×4）、capture/compare 的同一套 reviewed
+  形状校验、`test_suite_v16.py`、CI 四轨与版本循环 1..16、oracle `loadSuite` v16 分支。
+  证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
+  `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`。
+- **marker 纪律**：`suite-v16.json` 当前只点名 `vulkan`；对象 API 的顶点绑定面（`feat-render-objects`）
+  与 native 的 `MTLVertexDescriptor` 路径（`feat-render-native`，含 Apple `--vertex-selftest`）
+  落地并通过各自证据后扩 marker，规则仍是"点名必报、未点名不得报"。
 
 ## 14. 关联资料
 
