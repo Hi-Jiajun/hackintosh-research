@@ -604,7 +604,14 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   作为可复现检查但不接 CI（驱动 abort 无法变成通过步骤），`icb_capability_bits()` 永久保持默认关闭，
   core admission 继续 `icb_unsupported`，v15 的 indirect case 保持 Vulkan-only。证据归档
   `evidence/icb-probe-platform-block-34845904082-2026-09-14/`；CI run `34846218399` 五 job 全绿。
-- **Step 7 其余**：indexed draw 与 heap aliasing。
+- **indexed indirect draw 完成**（`2c18f4b`，评审 Spec ✅ / Approved 无 finding）：Vulkan 轨的
+  `DrawIndexed` 回放用 rail 自建的 `[0,1,2]` UINT32 索引缓冲 + `vkCmdBindIndexBuffer` +
+  `vkCmdDrawIndexedIndirect`，字节与直连一致，`index_count != 3`/`instance_count == 0` typed 拒绝；
+  能力位扩为 `[Draw, DrawIndexed, Dispatch]`；compare/capture 契约（`draw_indexed` 声明与报告段）
+  同步。CI run `34850378639` 五 job 全绿；**RTX 5060 真机** suite 路径证据在
+  `evidence/windows-rtx5060-indexed-icb-631a4e6-2026-09-14/`
+  （`icb={"kind":"draw_indexed",...}` + `4080c0ff`×4）。调用方持有的顶点/索引缓冲仍属渲染泛化轨。
+- **Step 7 其余**：heap aliasing（第一增量明确拒绝）；对象 API 的 `draw_indexed` 形状。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
