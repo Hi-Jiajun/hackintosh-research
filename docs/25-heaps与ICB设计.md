@@ -541,6 +541,15 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   `PASS provider_heap_placement heap=61 same_slab=true offsets=0,256 writeback=exact observations=2`
   （证据 `evidence/windows-rtx5060-heaps-step3-4d7aefb-2026-09-14/`）。
 - **Step 4 进行中**：Vulkan ICB 等价回放（indirect draw/dispatch，DGC 只做探针），见 `feat-heaps-step4`。
+- **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
+  suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
+  完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
+  marker）；capture 侧要求点名 rail 上报恰好
+  `{"heap","same_slab","placements"}` 且逐字段等于 suite 声明，未点名 rail 不得上报 case；v1–v14
+  的 plan 与捕获不变（`python3 -m unittest discover` 203 tests OK，Lavapipe v13/v14 捕获实测不变）。
+  **count 口径裁决**：heap 内每个 resource 仍按 distinct allocation 计数（copy_in/copy_out 语义
+  不变），原因是第一增量没有 aliasing；若将来放行 aliasing，再在 v16 起改口径。
+  ICB 段（`icb` 观测与 count）与 Step 4 的捕获接线一起落地。
 - 仍待裁决（§9）：ICB 的等价物选择（DGC 只在 llvmpipe 可用，dzn 走 indirect draw/secondary CB）、
   placement alignment 的 provider 回填接口、heap 观测是否进报告 schema、Apple 侧 heap/ICB 的
   selftest 形式。
