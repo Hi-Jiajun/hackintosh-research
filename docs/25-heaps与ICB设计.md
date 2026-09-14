@@ -558,9 +558,18 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   （222 Python 单测全绿）。CI run `34821068667` 五 job 全绿；**RTX 5060 真机** suite 路径证据在
   `evidence/windows-rtx5060-icb-suite-f9c57f0-2026-09-14/`（`icb={"kind":"draw","start":0,
   "count":1,"commands":1}` + `4080c0ff`×4）。
-- **Step 4/6/8 剩余**：indirect compute dispatch 回放（进行中）+ 其 capture 接线、native 侧
-  `MTLHeap`/`MTLIndirectCommandBuffer`（Step 7，需 Apple selftest）、committed `suite-v15.json`
-  与 v15 五路径（Step 8）。
+- **Step 4 完成**：indirect dispatch 回放（`8bcfbff`）：`VkDispatchIndirectCommand` 编码与
+  `vkCmdDispatchIndirect` 回放，threadgroups 必须等于计划中唯一 full-workgroup region 的
+  group_count（否则 `icb_command_unsupported`），能力位扩为 `[Draw, Dispatch]`；评审 Spec ✅ /
+  Approved（证据：94 vulkan 测试 + GATES_OK）。CI run `34822802058` 五 job 全绿。
+- **Step 6 第一增量完成**：`provider-capture` 把 compute case 的 `icb`（dispatch）也翻译成 trace
+  载荷（单 dispatch、draw/dispatch 参数按 kind 校验、render trace 不继承 declaring case 的 icb），
+  并从 `icb_replay_observations()` 报告段（`98f9d03`）。**RTX 5060 真机** suite 路径证据在
+  `evidence/windows-rtx5060-icb-dispatch-suite-98f9d03-2026-09-14/`
+  （`icb={"kind":"dispatch",...}` + `fefefefe` 写回）。CI run `34823203862` 五 job 全绿。
+- **Step 7/8 剩余**：native 侧 `MTLHeap`/`MTLIndirectCommandBuffer`（需 Apple selftest）、
+  committed `suite-v15.json` 与 v15 五路径、对象 API 的 heap/ICB 形状（Step 6 剩余）、
+  indexed draw 与 aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
