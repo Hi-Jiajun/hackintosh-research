@@ -591,8 +591,16 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   `heap_selftest: PASS (fefefefe)` 证据后翻为 true；v15 的 heap case marker 扩到
   `native-metal-provider`，CI run `34838686248` 五 job 全绿（native provider 轨在 Apple 上执行该
   case 并按 compare 的规则上报 placements）。
-- **Step 7b 剩余**：native `MTLIndirectCommandBuffer`（ICB 的 draw/dispatch 回放 + selftest + 翻位 +
-  v15 的 icb case marker 扩到 native provider）；随后 indexed draw 与 heap aliasing。
+- **Step 7b 平台阻塞（2026-09-14 实测）**：native ICB 的 provider 编码体与 plan 规则已实现并评审
+  （`72c5cfd` + 修复 `5727e1e`，能力位保持 false），但 **macOS Swift SDK 不暴露 CPU 侧 ICB 编码
+  API**：`MTLIndirectComputeCommand` 被标记 unavailable in macOS，且 `MTLIndirectCommandBuffer` 对
+  Swift 完全没有 `indirectRenderCommand` 访问器（两次 CI 编译错误实测）。因此 `--icb-selftest`
+  无法用 Swift 写出来，该 selftest 与 CI step 已撤回；`icb_capability_bits()` 全默认关闭，
+  core admission 对 ICB-bearing trace 继续 `icb_unsupported`（不声明无法证明的能力）。
+  CI run `34844550529` 五 job 全绿。下一步（未做）：用 ObjC++（`.mm`，clang++ 编译后与 swiftc 链接）
+  探针直接调 `indirectRenderCommandAtIndex:` / `executeCommandsInBuffer:withRange:`，若在 Apple
+  Paravirtual 上可达且字节正确，再翻位并把 v15 的 icb case marker 扩到 native provider。
+- **Step 7 其余**：indexed draw 与 heap aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
