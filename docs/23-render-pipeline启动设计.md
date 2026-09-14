@@ -619,3 +619,44 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
    `native-metal` 的 `allocation_observation` 是否仍写 `gpu-buffer-readback`（这个名称已不能覆盖
    纹理/附件，是否改名属于报告 schema 决策）。
 6. **MCC1 v3 的最终字段顺序**（§4.1）：定死后不再回改，避免第二次版本升级。
+
+## 10. 实施状态（2026-09-14 更新）
+
+本节记录 v12（离屏单附件全屏三角）之后的**第一段渲染泛化**：调用方持有顶点/索引缓冲 +
+`vertex_id` 之外的 indexed draw。边界不变：不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **Step 3.3-1（core + 线格式）完成**（`1936c98`，`feat-render-vertex`）：新增
+  `VertexFormat`（`float32x2/x3/x4`、`uint32`，闭集 code 0..3）、`VertexAttribute`、
+  `VertexBufferLayout`、`IndexFormat`（`uint16`/`uint32`）与 `VertexLayout::Buffers(...)`
+  （与 `None` 并存）；`RenderPassDescriptor` 增 `vertex_buffers`/`indices`，`vertices` 在索引画中
+  是索引数；`RenderPipelineContract::validate_against` 比对 layout 与绑定；能力位新增
+  `max_vertex_buffers`/`supported_vertex_formats`/`supported_index_formats`，在
+  `admit_render_passes` 中按"capability 先于 pipeline 比对"的既有顺序拒绝。
+- **契约裁决（同日修订，`e71553e`）**：渲染输入**自带字节**——`vertex_buffers: Vec<BufferView>`、
+  `IndexBufferBinding { view: BufferView, format }`。理由是对象 API 轨没有 compute pass 可依托：
+  若沿用"附件式引用池中 view"的形状，一个只有 render pass 的对象轨 trace 无法携带自己的字节。
+  随之删掉"未声明 view / 分配不匹配"两个拒绝，保留**同一 allocation 上的 compute 写冲突**与
+  **render pass 之后 compute 再绑同一字节**两条顺序规则，并把 render-only 流排除在 compute rail
+  的上传池之外（`serial_resources()` 只提升"已被 compute 绑定的同 view"的可读性）。
+- **Step 3.3-2（Vulkan 执行）完成**（`e71553e`）：新 reviewed SPIR-V
+  `render_spv/quad_indexed.vert.spv`（`vertex_buffer_main`，`spirv-as --target-env vulkan1.0` +
+  `spirv-val`）；rail 由契约 layout 生成 `VkPipelineVertexInputStateCreateInfo`，把每个流上传到
+  自己的 host-visible buffer，`vkCmdBindVertexBuffers` + `vkCmdBindIndexBuffer` +
+  `vkCmdDrawIndexed`；footprint 证明为"流覆盖 `stride × 顶点数`"、"索引 view 覆盖
+  `count × 宽度`"、"每个索引值 < 流能容纳的顶点数"。证据：`tests/render_e2e.rs` 18 passed
+  （Lavapipe），其中 `the_draw_reads_the_caller_bytes_rather_than_vertex_id` 用"四个顶点塌缩到同一
+  NDC 角点 ⇒ 全部留 clear 哨兵"证明读的是调用方字节而非 `vertex_id`。
+- **Step 3.3-3（conformance v16）完成**（`4a926a0`）：新 reviewed MSL
+  `conformance/shaders/quad_indexed_2x2.metal`（`[[stage_in]]` attribute 0 + 同形片元）、
+  `suite-v16.json`（declaring compute case + `quad_indexed_clear_2x2`；4 顶点 `float32x2`、
+  6 个 `uint16` 索引、期望 `4080c0ff`×4、clear 哨兵 `fefefefe`）、capture/compare 的同一套
+  reviewed 形状校验、`test_suite_v16.py`、CI 四轨与版本循环 1..16、oracle `loadSuite` v16 分支。
+  证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
+  `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`（direct 轨 `4080c0ff`×4 + `--check` PASS）。
+- **marker 纪律**：`suite-v16.json` 当前只点名 `vulkan`。对象 API 的顶点绑定面与 native 的
+  `MTLVertexDescriptor` 路径是同一增量的后续支线（各自独立 worktree/CI 证据），落地后按
+  "点名必报、未点名不得报"扩 marker——这与 v15 的 indirect case（Vulkan-only，native heap 之后才扩）
+  是同一套纪律。
+- **本段明确不做（仍在 §3.3 清单里）**：实例化步进、MRT（`render_targets` location 映射）、
+  `LoadOp::Load` 的附件上传路径、`StoreOp::DontCare`、`rgba8_unorm` 之外的 suite 内格式、
+  深度/模板、动态状态（blend/cull/scissor）。
