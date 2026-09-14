@@ -550,8 +550,17 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   与 dispatch 拒绝用例）；**RTX 5060 真机**（Windows 目标编译的 `render_e2e` 二进制跑 10/10 通过，
   `indirect draw readback: 40 80 c0 ff ×4`）在
   `evidence/windows-rtx5060-icb-indirect-draw-fbf6973-2026-09-14/`；CI run `34819349891` 五 job 全绿。
-- **Step 4 剩余**：indirect dispatch 回放、ICB 的 suite/compare 段（Step 5 ICB 半）与
-  `provider-capture` 接线、native 侧 `MTLIndirectCommandBuffer`（Step 7，需 Apple selftest）。
+- **Step 5（ICB 半）完成**：render case 新增可选 `icb` 段（`kind/max_commands/kinds/range/command`
+  白名单；render case 只放行 draw），capture 侧要求恰好
+  `{"kind","start","count","commands"}` 且逐字段等于 suite 声明；`provider-capture` 把 `icb` 段
+  翻译成 trace 的 `indirect` 载荷，并按 marker 跳过未点名 rail 的 render case；报告段来自 provider
+  自己的 `icb_replay_observations()`（不是请求回显）。规则测试在 `conformance/test_suite_v15.py`
+  （222 Python 单测全绿）。CI run `34821068667` 五 job 全绿；**RTX 5060 真机** suite 路径证据在
+  `evidence/windows-rtx5060-icb-suite-f9c57f0-2026-09-14/`（`icb={"kind":"draw","start":0,
+  "count":1,"commands":1}` + `4080c0ff`×4）。
+- **Step 4/6/8 剩余**：indirect compute dispatch 回放（进行中）+ 其 capture 接线、native 侧
+  `MTLHeap`/`MTLIndirectCommandBuffer`（Step 7，需 Apple selftest）、committed `suite-v15.json`
+  与 v15 五路径（Step 8）。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
