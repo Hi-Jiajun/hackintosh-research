@@ -449,7 +449,9 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   并给出 v17 parity，`vertex_selftest`/`present_selftest` 无回归），RTX 5060 真机证据在
   `evidence/windows-rtx5060-v17-be0f9ca-2026-09-15/`。该 fixture 还暴露并修正了两个真实差异：
   Vulkan 与 Metal 的 NDC y 手性（改用上下翻转对称的覆盖带）与自检 fixture 的可证伪性边界。
-  仍未做：对象 API 的 load 形状、MRT、`StoreOp::DontCare`、更多附件格式。
+  对象 API 的 load 形状随后落地（`63d52c2`：`RenderAttachmentLoad::{Clear, Load}`，commit 期快照
+  附件 view 的字节），v17 marker 扩到全部五条轨，CI run `34908990117` 五 job 全绿 + 五路 parity。
+  仍未做：MRT、`StoreOp::DontCare`、更多附件格式。
 - **五路落地**（`53c2db5`）：对象 API 的顶点绑定面与 native 的 `MTLVertexDescriptor` 路径先后落地，
   `suite-v16.json` 的 marker 扩到全部五条轨。CI run `34868060103` 五 job 全绿：Lavapipe 三条 Vulkan 轨
   与 Apple Paravirtual 三条 native 轨都执行 `quad_indexed_clear_2x2`，compare-captures 给出 v16 五路
