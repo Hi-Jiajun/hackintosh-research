@@ -575,8 +575,16 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   轨 validate+capture、compare-captures v15 五路 parity）；**RTX 5060 真机**证据在
   `evidence/windows-rtx5060-v15-suite-87cd4bc-2026-09-14/`（trace 轨 3 case + object 轨按 marker
   省略 0 case）。
-- **Step 6 剩余 / Step 7 剩余**：对象 API 的 heap/ICB 形状；native 侧 `MTLHeap`/
-  `MTLIndirectCommandBuffer`（需 Apple selftest）；indexed draw 与 heap aliasing。
+- **Step 6 完成**：对象 API 的 heap/ICB 形状（`311e4d8`：`Device::new_heap` +
+  `Heap::place` + `CommandBuffer::set_heap`、`Device::new_indirect_command_buffer` +
+  encoder 的 `draw_indirect`/`dispatch_indirect`、typed 拒绝与单测；`08512e3`：objects/async 轨
+  接线），评审 Spec ✅ / Approved（4 条 Minor 延后）。`suite-v15` 的 marker 扩到
+  `["vulkan", "vulkan-objects"]`（`f48dfb8`），三条 Vulkan 轨字节与观测一致；CI run `34830232781`
+  五 job 全绿；**RTX 5060 真机**三轨证据在
+  `evidence/windows-rtx5060-v15-three-rails-f48dfb8-2026-09-14/`（heap id 跨轨不同：trace 61 vs
+  object 5，compare 只要求非零且 placements 一致）。
+- **Step 7 剩余**：native 侧 `MTLHeap`/`MTLIndirectCommandBuffer`（需 Apple selftest）；
+  indexed draw 与 heap aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
