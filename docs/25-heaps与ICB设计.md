@@ -583,8 +583,16 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   五 job 全绿；**RTX 5060 真机**三轨证据在
   `evidence/windows-rtx5060-v15-three-rails-f48dfb8-2026-09-14/`（heap id 跨轨不同：trace 61 vs
   object 5，compare 只要求非零且 placements 一致）。
-- **Step 7 剩余**：native 侧 `MTLHeap`/`MTLIndirectCommandBuffer`（需 Apple selftest）；
-  indexed draw 与 heap aliasing。
+- **Step 7a 完成（native heap）**：`crates/metal-api-native/src/heap.rs`（单 slab `MTLBuffer` +
+  逐 allocation 子范围，尊重套件声明的 offset/byte_size；`heap_placement_observations()` 整向量替换）
+  + Swift `--heap-selftest`（`MTLHeap` 两 buffer + reviewed `copy_word` 回读）+ CI step（`92f3fe0`，
+  修复 Swift `heapOffset` 与校验字面量后 CI run `34838302150` 全绿）。评审 Spec ✅ / Approved。
+  翻位（`c33d528`）：native heap 位集中到 `heap_capability_bits()`，在 Apple
+  `heap_selftest: PASS (fefefefe)` 证据后翻为 true；v15 的 heap case marker 扩到
+  `native-metal-provider`，CI run `34838686248` 五 job 全绿（native provider 轨在 Apple 上执行该
+  case 并按 compare 的规则上报 placements）。
+- **Step 7b 剩余**：native `MTLIndirectCommandBuffer`（ICB 的 draw/dispatch 回放 + selftest + 翻位 +
+  v15 的 icb case marker 扩到 native provider）；随后 indexed draw 与 heap aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
