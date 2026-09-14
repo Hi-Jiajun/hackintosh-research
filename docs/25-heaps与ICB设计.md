@@ -515,3 +515,22 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
    等价物是否进契约。
 8. **dzn 设备选择不一致**（§7.5）：`shaderInt8=false`/`apiVersion=1.2.354` 与 `docs/23` §2.2 的
    选择条件冲突，是否影响 heap/ICB 真机宿主，留给设备选择轨确认。
+
+## 10. 实施状态（2026-09-14 更新）
+
+- **Step 1 完成**：heap/ICB 值类型与校验（`HeapId`/`HeapDescriptor`/`HeapPlacement`/`HeapResource`、
+  `IndirectCommandBufferDescriptor`/`IndirectCommandDescriptor`/`IndirectCommandRange`）、默认关闭的
+  能力位与 8 个 typed-refuse slug（`2f9e4ed`）；admission 门本轮为独立 `pub` 方法，Step 2 起接进
+  `ProviderCapabilities::admit`。评审 Approved（3 个 Minor 记入延后清单）。
+- **Step 2 完成**：`ComputeTrace` 新增可选 `heap`/`indirect` 载荷（`HeapPayload`/`IndirectCommandPayload`）、
+  MCC1 新增加法式 `SUBMIT_HEAP_ICB_REQUEST = 0x10` 与 tagged 尾段、能力位按 `declares_heap_support()`/
+  `declares_icb_support()` 进入扩展能力帧、`admit` 在碰资源前接线 `admit_heap_payload`/
+  `admit_indirect_payload`（默认快照 slug `heap_unsupported`/`icb_unsupported`）（`e8a9b21`）。
+  评审抓到"能力帧无条件追加 heap/ICB 字段"的真实回归 → 修复为**可选尾段**（编码按 `declares_*` 门控、
+  解码按剩余字节判定），并用 pre-heap 提交 `2ad57d1` 实测出的帧字节做钉子（`7a9c98e`）。
+  合并 `ad48dad`，CI run `34787709274` 五 job 全绿；v1–v14 捕获字节不变。
+- **Step 3 进行中**：Vulkan heap placement（先 placement、不做 aliasing；texture placement 明确拒绝），
+  见 `feat-heaps-step3`。
+- 仍待裁决（§9）：ICB 的等价物选择（DGC 只在 llvmpipe 可用，dzn 走 indirect draw/secondary CB）、
+  placement alignment 的 provider 回填接口、heap 观测是否进报告 schema、Apple 侧 heap/ICB 的
+  selftest 形式。
