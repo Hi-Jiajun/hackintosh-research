@@ -441,6 +441,15 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   形状校验、`test_suite_v16.py`、CI 四轨与版本循环 1..16、oracle `loadSuite` v16 分支。
   证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
   `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`。
+- **v17 加载路径**（`bd6775e`，2026-09-15）：渲染泛化第二段落地——附件的 `LoadOp::Load` 上传路径
++ 部分覆盖期望。Vulkan 轨用 `vkCmdCopyBufferToImage` 把 declaring view 的字节写进附件再以
+  `LOAD_OP_LOAD` 打开 render pass（准入要求 `TRANSFER_DST` 且在 `vkCreateImage` 之前判定），
+  native 轨用 `MTLTexture.replaceRegion` + `MTLLoadAction.Load`；比较口径允许"片元输出"与"上传字节"
+  混合但要求两者都出现。CI run `34872919672` 五 job 全绿（三条 trace 轨执行 `load_partial_quad_2x2`
+  并给出 v17 parity，`vertex_selftest`/`present_selftest` 无回归），RTX 5060 真机证据在
+  `evidence/windows-rtx5060-v17-be0f9ca-2026-09-15/`。该 fixture 还暴露并修正了两个真实差异：
+  Vulkan 与 Metal 的 NDC y 手性（改用上下翻转对称的覆盖带）与自检 fixture 的可证伪性边界。
+  仍未做：对象 API 的 load 形状、MRT、`StoreOp::DontCare`、更多附件格式。
 - **五路落地**（`53c2db5`）：对象 API 的顶点绑定面与 native 的 `MTLVertexDescriptor` 路径先后落地，
   `suite-v16.json` 的 marker 扩到全部五条轨。CI run `34868060103` 五 job 全绿：Lavapipe 三条 Vulkan 轨
   与 Apple Paravirtual 三条 native 轨都执行 `quad_indexed_clear_2x2`，compare-captures 给出 v16 五路
