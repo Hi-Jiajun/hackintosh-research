@@ -540,7 +540,18 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   无界累积。合并 `4d7aefb`，CI run `34817436502` 五 job 全绿；RTX 5060 真机
   `PASS provider_heap_placement heap=61 same_slab=true offsets=0,256 writeback=exact observations=2`
   （证据 `evidence/windows-rtx5060-heaps-step3-4d7aefb-2026-09-14/`）。
-- **Step 4 进行中**：Vulkan ICB 等价回放（indirect draw/dispatch，DGC 只做探针），见 `feat-heaps-step4`。
+- **Step 4 第一增量完成**：Vulkan indirect draw 回放（`fbf6973`）：`render.rs` 新增
+  `create_indirect_draw`（CPU 写一条 `VkDrawIndirectCommand` 到 host-visible `INDIRECT_BUFFER`）与
+  `execute_indirect_render_pass`，`vkCmdDrawIndirect` 回放与直连 draw 相同的 2×2 附件；能力位
+  `supports_indirect_command_buffers=true`、`max_indirect_commands=1`、
+  `supported_indirect_commands=[Draw]`。多 pass / presenting pass / indexed draw / dispatch 命令均
+  typed 拒绝（`icb_command_unsupported`）。证据：`cargo test -p metal-api-vulkan`
+  （76 lib + 2 + 10 e2e，新增 `an_indirect_draw_replays_the_same_attachment_bytes_as_a_direct_draw`
+  与 dispatch 拒绝用例）；**RTX 5060 真机**（Windows 目标编译的 `render_e2e` 二进制跑 10/10 通过，
+  `indirect draw readback: 40 80 c0 ff ×4`）在
+  `evidence/windows-rtx5060-icb-indirect-draw-fbf6973-2026-09-14/`；CI run `34819349891` 五 job 全绿。
+- **Step 4 剩余**：indirect dispatch 回放、ICB 的 suite/compare 段（Step 5 ICB 半）与
+  `provider-capture` 接线、native 侧 `MTLIndirectCommandBuffer`（Step 7，需 Apple selftest）。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
