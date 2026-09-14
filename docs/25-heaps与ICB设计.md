@@ -567,9 +567,16 @@ rg -n "ALLOCATION_OBSERVATIONS|capture_rails|copy_in|copy_out" conformance/compa
   并从 `icb_replay_observations()` 报告段（`98f9d03`）。**RTX 5060 真机** suite 路径证据在
   `evidence/windows-rtx5060-icb-dispatch-suite-98f9d03-2026-09-14/`
   （`icb={"kind":"dispatch",...}` + `fefefefe` 写回）。CI run `34823203862` 五 job 全绿。
-- **Step 7/8 剩余**：native 侧 `MTLHeap`/`MTLIndirectCommandBuffer`（需 Apple selftest）、
-  committed `suite-v15.json` 与 v15 五路径、对象 API 的 heap/ICB 形状（Step 6 剩余）、
-  indexed draw 与 aliasing。
+- **Step 8 完成**：committed `conformance/suite-v15.json`（`heap_placement_copy_word` +
+  `icb_dispatch_copy_word` + `icb_draw_clear_2x2`，marker 均点名 `vulkan`）、oracle/provider 的 case-id
+  表、CI 的 suite 行与四个版本循环（`7c0e552`/`f75d3d5`/`8e49361`/`87cd4bc`）。Swift oracle 现在
+  对带 marker 的 compute case 也按 marker 过滤，并把 render declaring case 的"整 allocation 视图"
+  例外推广到 v15 的声明形状。CI run `34826165116` 五 job 全绿（Lavapipe 三形状、macOS 两条 native
+  轨 validate+capture、compare-captures v15 五路 parity）；**RTX 5060 真机**证据在
+  `evidence/windows-rtx5060-v15-suite-87cd4bc-2026-09-14/`（trace 轨 3 case + object 轨按 marker
+  省略 0 case）。
+- **Step 6 剩余 / Step 7 剩余**：对象 API 的 heap/ICB 形状；native 侧 `MTLHeap`/
+  `MTLIndirectCommandBuffer`（需 Apple selftest）；indexed draw 与 heap aliasing。
 - **Step 5（heap 半）完成**：`compare.py` 新增 heap 段规则与 `conformance/test_suite_v15.py`（合成
   suite，20 个正反例）：suite 侧 heap 白名单（单 slab、`allows_aliasing=false`、placement 覆盖
   完整 allocation、按 allocation 序、越界/重叠拒绝）+ case 级 `capture_rails` marker（有 heap 必有
