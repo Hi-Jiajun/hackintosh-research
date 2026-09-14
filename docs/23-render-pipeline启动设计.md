@@ -671,3 +671,37 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
 - **本段明确不做（仍在 §3.3 清单里）**：实例化步进、MRT（`render_targets` location 映射）、
   `LoadOp::Load` 的附件上传路径、`StoreOp::DontCare`、`rgba8_unorm` 之外的 suite 内格式、
   深度/模板、动态状态（blend/cull/scissor）。
+
+## 11. 实施状态：`LoadOp::Load`（v17，2026-09-15）
++
++本节记录 v16（调用方顶点/索引缓冲）之后的下一条渲染泛化：**在已有内容上继续画**。边界不变：
++不是完整 Metal conformance，Gate 2/3 仍是终点。
++
++- **执行路径（Vulkan）**（`9eb3e3b`）：附件的**前序字节来自 declaring case 声明的 view**
++  （`BufferSource::OwnedBytes`），经 host-visible staging buffer 用 `vkCmdCopyBufferToImage`
++  落到 `TRANSFER_DST_OPTIMAL`，再以 barrier 交到 `COLOR_ATTACHMENT_OPTIMAL`，render pass 以
++  `LOAD_OP_LOAD` 打开。准入要求该格式在 optimal tiling 上同时具备 `COLOR_ATTACHMENT` 与
++  `TRANSFER_DST`（在 `vkCreateImage` 之前判定），image 的 usage 只在真的要上传时才带
++  `TRANSFER_DST`；lease 字节 typed 拒绝。loading pass 即使不要求 host readback 也必须能解析
++  declaring view。
++- **native 对称**（`94778e7`）：`MTLTexture.replaceRegion` 预置同一批字节 + `MTLLoadAction.Load`；
++  Swift oracle 的 suite 路径同形（present 自检保持"target 初始状态 + .load"的既有语义）。
++- **部分覆盖口径**：`LoadOp::Load` 的期望允许"片元输出"与"该位置的上传字节"混合，但要求
++  二者都出现、且所有被绘制的 texel 是同一个输出（否则这条用例两边都不可证伪）。`clear` 形状保留
++  v12 以来的"全 texel 相同"严格规则。capture/compare/oracle 三处同一口径。
++- **fixture（v17）**：`load_partial_quad_2x2`——reviewed 顶点流移到**左列**（`x∈[-1,0]`，`y∈[-1,1]`），
++  6 个索引画两块 texel，另两块保留 `fefefefe`；期望 `4080c0ff fefefefe 4080c0ff fefefefe`。
++  marker 点名三条 trace 轨（object 轨的"load"形状是下一增量）。
++- **两个被 fixture 暴露的真实差异**（都已修复并写进证据）：
++  1. **NDC 手性**：第一版用左上象限，Lavapipe 覆盖左上 texel、Apple Paravirtual 覆盖左下——Vulkan
++     的 NDC y 向下、Metal 向上，单一期望无法描述两轨（CI run `34870722991`）。改用**上下翻转对称**
++     的左列后，两轨覆盖同一对 texel。
++  2. **自检 fixture 的可证伪性**：present 自检故意"load + 全覆盖"（它要证的是哨兵被替换），比较器
++     对 suite 保持"必须有一个保留 texel"，oracle 只要求"至少一个绘制 texel"；两套规则差异恰在
++     fixture 差异处，且 CI 仍用比较器核对 oracle 的 suite 捕获。
++- **证据**：CI run `34872919672` 五 job 全绿 + v17 三轨 parity
++  （`evidence/conformance-v17-bd6775e-2026-09-15/run-34872919672/`），RTX 5060 真机
++  `evidence/windows-rtx5060-v17-be0f9ca-2026-09-15/`；同 run 的 `vertex_selftest`/`present_selftest`
++  仍 PASS（无回归）。
++- **仍未做**：对象 API 的 load 形状、MRT（>1 附件）、`StoreOp::DontCare`、`rgba8_unorm` 之外的
++  suite 内格式、深度/模板、实例化步进与动态状态。
