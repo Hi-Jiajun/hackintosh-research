@@ -873,24 +873,49 @@ conformance，Gate 2/3 仍是终点。
   实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
 
 ## 17. 实施状态：native 的单通道浮点模块（v23，2026-09-16）
-+
-+v22 把 `r32float` 的字节钉在了两条 Vulkan 轨上，但 native 两条轨当时对所有单输出形状都编译
-+四分量 MSL 模块，因此 marker 只能点名 Vulkan。本增量补齐 native 半边：
-+
-+- **新 reviewed MSL**（`conformance/shaders/quad_indexed_2x2_r32f.metal`）：沿用
-+  `quad_indexed_2x2.metal` 的索引顶点入口，片元入口 `render_solid_r32f` 只写一个分量
-+  （`64/255`），与 Vulkan 的 `solid_r32f.frag.spv` 同形。三处 pin 同步：native 的
-+  `REVIEWED_MODULES[3]`、Swift 的 `reviewedR32fModule()`、suite 的 `metal` sha。
-+- **选择逻辑**：native `reviewed_module` 在通用单格式臂**之前**加
-+  `(Buffers, [R32Float])` → 新模块（fail-closed 不变：其它单输出形状仍选四分量模块）；
-+  provider-capture 的入口校验与 MSL 入口对同步（`render_quad_vertex`/`render_solid_r32f`），
-+  Swift 的 `reviewedModule(for:)` 同样按 `r32float` 分派。
-+- **v22 marker 扩到五轨**：`suite-v22.json` 的 `capture_rails` 现点名全部五条轨，
-+  `test_suite_v22.py` 的 marker 门控同步；Vulkan 两轨的字节不变（RTX 5060 复跑确认）。
-+- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`）——macOS 作业里
-+  `r32float_clear_2x2` 在 Swift oracle 与 native provider 的 trace/object 三条路径上都执行并
-+  `PASS native capture validated`（`evidence/conformance-v23-55ba7e2-2026-09-16/`）；
-+  RTX 5060 复跑 `8180803e`×4（`evidence/windows-rtx5060-v23-55ba7e2-2026-09-16/`）；
-+  本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=22 captures=66`。
-+- **仍未做**：3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
-+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+v22 把 `r32float` 的字节钉在了两条 Vulkan 轨上，但 native 两条轨当时对所有单输出形状都编译
+四分量 MSL 模块，因此 marker 只能点名 Vulkan。本增量补齐 native 半边：
+
+- **新 reviewed MSL**（`conformance/shaders/quad_indexed_2x2_r32f.metal`）：沿用
+  `quad_indexed_2x2.metal` 的索引顶点入口，片元入口 `render_solid_r32f` 只写一个分量
+  （`64/255`），与 Vulkan 的 `solid_r32f.frag.spv` 同形。三处 pin 同步：native 的
+  `REVIEWED_MODULES[3]`、Swift 的 `reviewedR32fModule()`、suite 的 `metal` sha。
+- **选择逻辑**：native `reviewed_module` 在通用单格式臂**之前**加
+  `(Buffers, [R32Float])` → 新模块（fail-closed 不变：其它单输出形状仍选四分量模块）；
+  provider-capture 的入口校验与 MSL 入口对同步（`render_quad_vertex`/`render_solid_r32f`），
+  Swift 的 `reviewedModule(for:)` 同样按 `r32float` 分派。
+- **v22 marker 扩到五轨**：`suite-v22.json` 的 `capture_rails` 现点名全部五条轨，
+  `test_suite_v22.py` 的 marker 门控同步；Vulkan 两轨的字节不变（RTX 5060 复跑确认）。
+- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`）——macOS 作业里
+  `r32float_clear_2x2` 在 Swift oracle 与 native provider 的 trace/object 三条路径上都执行并
+  `PASS native capture validated`（`evidence/conformance-v23-55ba7e2-2026-09-16/`）；
+  RTX 5060 复跑 `8180803e`×4（`evidence/windows-rtx5060-v23-55ba7e2-2026-09-16/`）；
+  本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=22 captures=66`。
+- **仍未做**：3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 19. 实施状态：三附件形状（v25，2026-09-16）
+
+v24 把能力位抬到契约上限 4，但只覆盖 1/2/4：三个附件既不是"两个"也不是"上限"，而四输出的
+片元模块不能顶替它——写一个没有附件对应的 location 是未定义行为。本增量补上这一形状：
+
+- **新 reviewed 模块**：Vulkan `solid_unorm8_triple.frag.spv`（三个 location，三个互不相同的
+  字节串 `4080c0ff`/`ff8040c0`/`c040ff80`）与 native
+  `conformance/shaders/quad_indexed_2x2_triple.metal`（入口 `render_solid_rgba8_triple`）；
+  选择逻辑在两条 rail 与 Swift oracle 三处同步扩展为 1/2/3/4，比较器去掉"3 个附件拒绝"
+  的那条临时规则。
+- **declaring 形状**：复用 v24 的四读 kernel `mrt_declare4` 但换一个用例 id
+  （`render_declaring_three_attachments`）：三个附件视图仍是 16 字节的整 allocation 视图，
+  第四个只读视图缩成 4 字节 scratch——"被声明但不被附件使用的视图"必须保留 guard 字节
+  （provider-capture 的既有 canary 规则；第一版直接复用 v24 的 id 正是被这条规则拒掉的）。
+- **fixture（v25）**：`three_attachments_2x2`，期望 `copy_in == 5`（三个附件 + scratch 读 +
+  scratch 写）与 `copy_out == 4`（三个附件 + declaring 落点；scratch 读从不写回）。
+  marker 五轨全点名。
+- **证据**：CI run `35003468122` 五 job 全绿（main `ac345d8`），macOS 作业在 Swift oracle 与
+  native provider 的 trace/object 三条路径执行三附件形状
+  （`evidence/conformance-v25-ac345d8-2026-09-16/`）；RTX 5060 双轨三条不同 texel 字符串
+  （`evidence/windows-rtx5060-v25-ac345d8-2026-09-16/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=24 captures=72`。
+- **仍未做**：双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
