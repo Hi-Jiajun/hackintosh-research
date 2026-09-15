@@ -846,3 +846,28 @@ conformance，Gate 2/3 仍是终点。
   `LAVAPIPE_SMOKE_OK suites=21 captures=63`。
 - **仍未做**：`R32Float`（单通道 store 的字节规则尚未钉）、3/4 附件、双格式组合、深度/模板、
   实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 16. 实施状态：单通道浮点附件（v22 `r32float`，2026-09-15）
+
+本节把附件格式矩阵收口：`r32float` 是 `AttachmentFormat::ADMITTED` 的第三种颜色格式，也是
+第一个**单分量 store** 的格式。边界不变：不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **Vulkan rail：已就绪**。`solid_r32f.frag.spv` 写 `64/255` 一个 `float`；rail 的
+  `render_fragment_stage_mismatch` 审阅门会**拒绝**把 UNORM 模块用在这个格式上——
+  provider-capture 因此按 case 声明的格式选择片元模块（`(1, [R32Float])` →
+  `solid_r32f.frag.spv`，其它单附件形状 → `solid_unorm8.frag.spv`）。
+- **观测通道**（`37d5f13`）：比较器把格式白名单扩到三项（`rgba8_unorm`/`bgra8_unorm`/`r32float`），
+  既有规则不变；capture 的格式解析与 Swift 的 `MTLPixelFormat.r32Float` 同步。
+- **fixture（v22）**：`r32float_clear_2x2`——单附件 2×2 `r32float`、`load: "clear"`（`00000000`）、
+  `store: "store"`，期望每 texel `8180803e`（`f32(64/255)` 小端）。计数 `copy_in == 2`、
+  `copy_out == 2`。
+- **marker 首轮只点名两条 Vulkan 轨**（`vulkan`/`vulkan-objects`）：native 两条轨目前对**所有**
+  单输出形状都编译四分量 MSL 模块，`r32float` 的单分量 store 需要自己的 reviewed MSL 模块，
+  属下一增量；未点名的轨必须**不报告**该用例（`test_suite_v22.py` 钉死）。
+- **既有测试口径调整**：`test_suite_v13.py` 与 `test_suite_v21.py` 的"未准入格式"探针改为
+  `r32_uint`（core admission 仍拒），`test_suite_v14.py` 的 shipped-plan 计数 21→22。
+- **证据**：CI run `34990977005` 五 job 全绿（main `c13d727`）；RTX 5060 双轨
+  `8180803e`×4（`evidence/windows-rtx5060-v22-c13d727-2026-09-15/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
+- **仍未做**：native 的 `r32float` reviewed MSL 模块、3/4 附件、双格式组合、深度/模板、
+  实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。

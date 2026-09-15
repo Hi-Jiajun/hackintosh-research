@@ -389,7 +389,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；v8 已覆盖 raw AIR 与 Apple wrapper 两种固定编码，但仍缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor（pin 升级后适配器已在 `6e5df5b` 修复，并由 `81d6cbe` 的 CI job 持续验证）；生产 guest/display 路径未调用 canonical Metal provider；owner→provider 命令通道已由 `0ed4f60`/`cd5fcf0` 完成、`134d746` 把 descriptor 传递纳入协议、`630260f` 支持 chunked payload、`574aca1` 修复拒绝重复 import 时的通道失步（provider outbox、IPC writer 与 owner receiver 由 `9226ef2`–`83b3f23` 提供，`8913e37` 单进程端到端打通，`9ac0dfe` 两进程拆分）；`e891102` 还让 `reims-smoke.exe` 在 Windows RTX 5060 上跑通（`PASS suite executor=reims`）；仍缺真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
-5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）、调用方顶点/索引缓冲的 indexed draw（v16）、`LoadOp::Load` 的附件上传路径（v17）、多渲染目标 MRT（v18）、不可观测附件 `StoreOp::DontCare`（v19）、未定义初值 `LoadOp::DontCare`（v20）与 `bgra8_unorm` 附件格式（v21，见 §13.7–§13.11）已落地——`Clear/Load/DontCare` × `Store/DontCare` 的 load/store 矩阵与两种 8-bit UNORM 附件布局至此全部放行；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、`R32Float` 附件、3/4 附件的 reviewed 模块、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
+5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）、调用方顶点/索引缓冲的 indexed draw（v16）、`LoadOp::Load` 的附件上传路径（v17）、多渲染目标 MRT（v18）、不可观测附件 `StoreOp::DontCare`（v19）、未定义初值 `LoadOp::DontCare`（v20）与 `bgra8_unorm` 附件格式（v21）与单通道浮点附件 `r32float`（v22，见 §13.7–§13.12）已落地——`Clear/Load/DontCare` × `Store/DontCare` 的 load/store 矩阵与两种 8-bit UNORM 附件布局至此全部放行；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、native 的 `r32float` 模块、3/4 附件的 reviewed 模块、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
 6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
 
 ### 13.4 外部依赖状态（2026-09-08）
@@ -533,8 +533,19 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   `compute-buffer-v21`，Apple 自检全 PASS（`evidence/conformance-v21-f821733-2026-09-15/`）；
   RTX 5060 双轨（`evidence/windows-rtx5060-v21-f821733-2026-09-15/`）；本地 `GATES_OK` +
   `LAVAPIPE_SMOKE_OK suites=21 captures=63`。
-- 仍未做：`R32Float`、3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
-  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+- 仍未做：native 的 `r32float` 模块、3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、
+  heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
+### 13.12 2026-09-15 增量：单通道浮点附件（v22 `r32float`）
+
+- **Vulkan rail**：按 case 声明的格式选片元模块（`(1, [R32Float])` → `solid_r32f.frag.spv`）；
+  rail 的审阅门拒绝把 UNORM 模块用于该格式。
+- **观测通道**（`37d5f13`）：格式白名单扩到三项；Swift 映射 `MTLPixelFormat.r32Float`；
+  fixture `r32float_clear_2x2` 期望每 texel `8180803e`，计数 2/2。
+- **marker 首轮只点名两条 Vulkan 轨**：native 的单分量 MSL 模块是下一增量，未点名的轨必须不报告。
+- **证据**：CI run `34990977005` 五 job 全绿（main `c13d727`），parity 到 `compute-buffer-v22`；
+  RTX 5060 双轨（`evidence/windows-rtx5060-v22-c13d727-2026-09-15/`）；本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
 
 ## 14. 关联资料
 
