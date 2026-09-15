@@ -594,6 +594,15 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：深度/模板、实例化步进、动态状态、更大附件尺寸、heap aliasing、真实设备丢失恢复、
   guest memory 的 reims 侧接线与 Gate 2/3。
 
+### 13.17 2026-09-16 增量：更大的附件尺寸（v27）
+
+- 附件 extent 上限从 2×2 抬到每轴 4 texel（两条 rail 的能力位、比较器、capture、Swift 同步）；
+  fixture `quad_extent_clear_4x4` 期望 64 字节 `4080c0ff`，declaring 视图 64 字节。
+- **证据**：CI run `35005449249` 五 job 全绿（main `f03ea25`）；RTX 5060 双轨 64 字节 writeback；
+  本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=26 captures=78`。
+- 仍未做：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
 ## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)
