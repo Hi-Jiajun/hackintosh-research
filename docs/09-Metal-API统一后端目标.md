@@ -584,6 +584,16 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、真实设备丢失恢复、
   guest memory 的 reims 侧接线与 Gate 2/3。
 
+### 13.16 2026-09-16 增量：混合 8-bit 布局（v26）
+
+- 8-bit UNORM 模块改为布局无关：一次 draw 的附件列表可以是 `rgba8_unorm`/`bgra8_unorm` 的任意
+  混合（1..=4），`r32float` 仍是独占形状。
+- fixture `mixed_layout_dual_2x2`：同一颜色读回 `4080c0ff`（RGBA）与 `4080ffc0`（BGRA）。
+- **证据**：CI run `35004402984` 五 job 全绿（main `2e82461`）；RTX 5060 双轨；
+  本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=25 captures=75`。
+- 仍未做：深度/模板、实例化步进、动态状态、更大附件尺寸、heap aliasing、真实设备丢失恢复、
+  guest memory 的 reims 侧接线与 Gate 2/3。
+
 ## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)

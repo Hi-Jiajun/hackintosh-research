@@ -919,3 +919,20 @@ v24 把能力位抬到契约上限 4，但只覆盖 1/2/4：三个附件既不�
   `LAVAPIPE_SMOKE_OK suites=24 captures=72`。
 - **仍未做**：双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 20. 实施状态：混合 8-bit 布局（v26，2026-09-16）
+
+- **规则**（`d98ae6c`）：reviewed 的 8-bit UNORM 模块是**布局无关**的——同一个 store 落在哪个字节
+  由每个附件自己的 `VkFormat`/`MTLPixelFormat` 决定——所以一次 draw 的附件列表可以是
+  `rgba8_unorm` 与 `bgra8_unorm` 的**任意混合**（1..=4 个），由对应附件数的模块服务；
+  `r32float` 仍是单通道模块独占的形状，混进 8-bit 列表会被拒。两条 rail 与 Swift oracle 的
+  模块选择都改用"全 8-bit"谓词，比较器无需改动（它本来就只比字节）。
+- **fixture（v26）**：`mixed_layout_dual_2x2`——location 0 是 `rgba8_unorm`、location 1 是
+  `bgra8_unorm`，同一个颜色读回 `4080c0ff` 与 `4080ffc0`；两个 texel 必须不同，所以"只认一种
+  布局"的 capture 会被拒。计数 3/3。
+- **证据**：CI run `35004402984` 五 job 全绿（main `2e82461`），macOS 作业在三条 native 路径执行
+  混合布局用例（`evidence/conformance-v26-2e82461-2026-09-16/`）；RTX 5060 双轨
+  `4080c0ff`/`4080ffc0`（`evidence/windows-rtx5060-v26-2e82461-2026-09-16/`）；
+  本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=25 captures=75`。
+- **仍未做**：深度/模板、实例化步进、动态状态、更大附件尺寸、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
