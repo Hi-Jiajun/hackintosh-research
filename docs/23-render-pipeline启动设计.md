@@ -938,25 +938,25 @@ v24 把能力位抬到契约上限 4，但只覆盖 1/2/4：三个附件既不�
   真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
 
 ## 21. 实施状态：更大的附件尺寸（v27，2026-09-16）
-+
-+此前所有 fixture 都是 2×2——不是契约限制，而是各层（两条 rail 的能力位、比较器、capture、
-+Swift oracle）都把它写死了。reviewed 片元阶段其实与 extent 无关（全屏 quad 覆盖任意尺寸的
-+附件），所以本增量把可执行上限抬到**每轴四个 texel**：
-+
-+- **能力位与校验**：Vulkan `MAX_ATTACHMENT_DIMENSION` 与 native 的同名常量 2→4；
-+  比较器与 capture 的"必须是 2×2"改为"每轴 1..=4"，Swift oracle 同步。
-+- **fixture（v27）**：`quad_extent_clear_4x4`——单附件 4×4 `rgba8_unorm`，全屏 quad 覆盖 16 个
-+  texel，期望 64 字节的 `4080c0ff`；declaring 用例 `render_declaring_quad_extent` 是 v13
-+  `copy_word` 形状的 64 字节只读视图版本（初值 `cdcdcdcd`×16），所以"只读回一个角"的 rail
-+  会因为 writeback 长度不符被拒。计数 2/2。
-+- **既有探针的两处口径调整**：v13 的"未准入形状"探针从 4×4 改为 8×8；Vulkan e2e 的 3×3
-+  `oversized_trace` 现在撞的是"视图与 extent 不一致"（不再是尺寸上限）。
-+- **证据**：CI run `35005449249` 五 job 全绿（main `f03ea25`），macOS 作业在三条 native 路径执行
-+  4×4 用例（`evidence/conformance-v27-f03ea25-2026-09-16/`）；RTX 5060 双轨 64 字节 writeback
-+  （`evidence/windows-rtx5060-v27-f03ea25-2026-09-16/`）；本地 `GATES_OK`、
-+  `LAVAPIPE_SMOKE_OK suites=26 captures=78`。
-+- **仍未做**：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
-+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+此前所有 fixture 都是 2×2——不是契约限制，而是各层（两条 rail 的能力位、比较器、capture、
+Swift oracle）都把它写死了。reviewed 片元阶段其实与 extent 无关（全屏 quad 覆盖任意尺寸的
+附件），所以本增量把可执行上限抬到**每轴四个 texel**：
+
+- **能力位与校验**：Vulkan `MAX_ATTACHMENT_DIMENSION` 与 native 的同名常量 2→4；
+  比较器与 capture 的"必须是 2×2"改为"每轴 1..=4"，Swift oracle 同步。
+- **fixture（v27）**：`quad_extent_clear_4x4`——单附件 4×4 `rgba8_unorm`，全屏 quad 覆盖 16 个
+  texel，期望 64 字节的 `4080c0ff`；declaring 用例 `render_declaring_quad_extent` 是 v13
+  `copy_word` 形状的 64 字节只读视图版本（初值 `cdcdcdcd`×16），所以"只读回一个角"的 rail
+  会因为 writeback 长度不符被拒。计数 2/2。
+- **既有探针的两处口径调整**：v13 的"未准入形状"探针从 4×4 改为 8×8；Vulkan e2e 的 3×3
+  `oversized_trace` 现在撞的是"视图与 extent 不一致"（不再是尺寸上限）。
+- **证据**：CI run `35005449249` 五 job 全绿（main `f03ea25`），macOS 作业在三条 native 路径执行
+  4×4 用例（`evidence/conformance-v27-f03ea25-2026-09-16/`）；RTX 5060 双轨 64 字节 writeback
+  （`evidence/windows-rtx5060-v27-f03ea25-2026-09-16/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=26 captures=78`。
+- **仍未做**：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
 
 
 ## 22. 实施状态：多目标与加载的合流（v28，2026-09-16）
