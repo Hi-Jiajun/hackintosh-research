@@ -816,3 +816,33 @@ conformance，Gate 2/3 仍是终点。
   `docs/24` §3.1 的 target 契约拥有）；部分覆盖下的 `DontCare` 需要"通配 texel"观测（尚未做）。
 - **仍未做**：3/4 附件、非双 `rgba8_unorm` 的附件格式组合、深度/模板、实例化步进、动态状态、
   heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 15. 实施状态：附件格式矩阵（v21 `bgra8_unorm`，2026-09-15）
+
+本节记录首个"非 `rgba8_unorm`"的附件格式落地：把"格式的通道顺序由附件决定"这件事变成
+可观测的证据。边界不变：不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **契约与 rail：零改动**。`AttachmentFormat::ADMITTED` 早已含 `Bgra8Unorm`；
+  Vulkan `attachment_vk_format` 映射 `B8G8R8A8_UNORM`，片元模块沿用 `solid_unorm8`
+  （着色器写同一个颜色，是 `VkFormat` 决定哪个通道落进哪个字节）；native
+  `pixel_format` 映射 `RenderPixelFormat::Bgra8Unorm`，`MTLPixelFormat.bgra8Unorm` 同义。
+- **观测通道**（`6b50c5f`）：比较器把附件格式白名单从一项扩到两项（`rgba8_unorm` 与
+  `bgra8_unorm`），**既有规则一字未改**：`clear_hex` 的语义仍是"附件内存里的字节"
+  （与 Vulkan `clear_value_for(Bgra8Unorm)` 的通道交换一致），期望必须与 clear/初值不同，
+  `load`/`dontcare` 的字段互斥不变。capture 轨的注册改为**按 case 声明的逐附件格式**构造
+  `color_formats`（缓存键相应从数量改成格式列表）；对象轨的 `RenderColorAttachment.format`
+  与 present target 的 format 同样来自声明。Swift oracle 增 `ValidatedRenderAttachment.pixelFormat`
+  （texture 与 pipeline attachment 都由它驱动），`loadSuite` 接受 `compute-buffer-v21`。
+- **既有测试的两处口径调整**：`test_suite_v13.py` 的"未准入格式被拒"探针从 `bgra8_unorm`
+  改为 `r32float`（v21 起两种 UNORM 布局都准入），`test_suite_v14.py` 的 shipped-plan 计数
+  20→21。
+- **fixture（v21）**：`bgra8_clear_2x2`——单附件 2×2 `bgra8_unorm`、`load: "clear"`
+  （`00000000`）、`store: "store"`，全屏 quad，期望每 texel `c08040ff`；declaring case 沿用
+  v13 的 `copy_word`（视图初值 `fefefefe`）。计数 `copy_in == 2`、`copy_out == 2`。
+  marker 五轨全点名。
+- **证据**：CI run `34989832299` 五 job 全绿（main `f821733`），五轨 parity 到 `compute-buffer-v21`，
+  Apple 五个自检全 PASS（`evidence/conformance-v21-f821733-2026-09-15/`）；RTX 5060 双轨
+  `c08040ff`×4（`evidence/windows-rtx5060-v21-f821733-2026-09-15/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=21 captures=63`。
+- **仍未做**：`R32Float`（单通道 store 的字节规则尚未钉）、3/4 附件、双格式组合、深度/模板、
+  实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
