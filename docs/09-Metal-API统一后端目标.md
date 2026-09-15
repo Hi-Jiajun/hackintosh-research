@@ -536,16 +536,6 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
-### 13.13 2026-09-16 增量：native 的单通道浮点模块（v23）
-+
-+- 新 reviewed MSL `conformance/shaders/quad_indexed_2x2_r32f.metal`（入口
-+  `render_quad_vertex`/`render_solid_r32f`）；native `reviewed_module` 在通用单格式臂之前
-+  按 `[R32Float]` 选择它；provider-capture 与 Swift 的入口校验/模块分派同步。
-+- `suite-v22.json` 的 marker 扩到五轨；Vulkan 两轨字节不变。
-+- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`），macOS 作业执行
-+  `r32float_clear_2x2`（Swift oracle + native provider trace/object）并 `PASS`；
-+  RTX 5060 复跑 `8180803e`×4；本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
-
 ### 13.12 2026-09-15 增量：单通道浮点附件（v22 `r32float`）
 
 - **Vulkan rail**：按 case 声明的格式选片元模块（`(1, [R32Float])` → `solid_r32f.frag.spv`）；
@@ -556,6 +546,32 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - **证据**：CI run `34990977005` 五 job 全绿（main `c13d727`），parity 到 `compute-buffer-v22`；
   RTX 5060 双轨（`evidence/windows-rtx5060-v22-c13d727-2026-09-15/`）；本地 `GATES_OK` +
   `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
+
+### 13.13 2026-09-16 增量：native 的单通道浮点模块（v23）
++
++- 新 reviewed MSL `conformance/shaders/quad_indexed_2x2_r32f.metal`（入口
++  `render_quad_vertex`/`render_solid_r32f`）；native `reviewed_module` 在通用单格式臂之前
++  按 `[R32Float]` 选择它；provider-capture 与 Swift 的入口校验/模块分派同步。
++- `suite-v22.json` 的 marker 扩到五轨；Vulkan 两轨字节不变。
++- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`），macOS 作业执行
++  `r32float_clear_2x2`（Swift oracle + native provider trace/object）并 `PASS`；
++  RTX 5060 复跑 `8180803e`×4；本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
+
+### 13.14 2026-09-16 增量：四附件上限（v24）
+
+- 两条 rail 的能力位抬到 `MAX_COLOR_ATTACHMENTS = 4`；新 reviewed 模块
+  `solid_unorm8_quad.frag.spv`（四个 location 写四个互不相同的字节串）与
+  `quad_indexed_2x2_quad.metal`；新 declaring kernel `mrt_declare4`（AIR+MSL，四个只读附件视图 +
+  一个 scratch 写视图），native compute 白名单同步。
+- 比较器放行 2..=4 个附件（3 个附件仍明确拒绝）并把"字节必须不同"推广为成对互不相同；
+  fixture `four_attachments_2x2` 计数 `copy_in == copy_out == 5`。
+- **证据**：CI run `35002359256` 五 job 全绿（main `4b150bc`），macOS 作业在 Swift oracle 与
+  native provider 的 trace/object 三条路径执行四附件形状
+  （`evidence/conformance-v24-4b150bc-2026-09-16/`）；RTX 5060 双轨四条不同 texel 字符串
+  （`evidence/windows-rtx5060-v24-4b150bc-2026-09-16/`）；本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=23 captures=69`。
+- 仍未做：3 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
 ## 14. 关联资料
 
