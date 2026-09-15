@@ -603,6 +603,15 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
+### 13.18 2026-09-16 增量：多目标与加载的合流（v28）
+
+- fixture `mrt_partial_load_2x2`：两个附件各自从自己的上传字节开始，左列被绘制、右列各自保留；
+  计数 3/3。执行代码零改动（v18/v19 的逐附件 previous 与 load/store 已覆盖）。
+- **证据**：CI run `35006352449` 五 job 全绿（main `57c3ab8`）；RTX 5060 双轨各自的保留字节；
+  本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=27 captures=81`。
+- 仍未做：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
 ## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)

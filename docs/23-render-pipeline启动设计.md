@@ -957,3 +957,23 @@ v24 把能力位抬到契约上限 4，但只覆盖 1/2/4：三个附件既不�
 +  `LAVAPIPE_SMOKE_OK suites=26 captures=78`。
 +- **仍未做**：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
 +  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+
+## 22. 实施状态：多目标与加载的合流（v28，2026-09-16）
+
+v17 教给比较器"加载 pass 在没画到的地方保留上传字节"，v18 教给它"一次 draw 可以写多个目标"。
+本增量把两者合起来，并确认**不需要新的执行代码**——v18 的逐附件 `previous` 与 v19 的逐附件
+load/store 已经把这条路径建好：
+
+- **fixture（v28）**：`mrt_partial_load_2x2`——两个附件各自从**自己的**上传字节开始
+  （`fefefefe…` 与 `01010101…`），左列被覆盖，右列各自保留自己的字节：
+  `4080c0ff fefefefe 4080c0ff fefefefe` 与 `ff8040c0 01010101 ff8040c0 01010101`。计数 3/3。
+- **可证伪性**：两个附件的上传字节与输出都不同，所以"两块目标共用一次上传"或"两块都按第一块的
+  字节加载"的 rail 一定会读错右列；`test_suite_v27.py` 还钉了"用另一块的上传字节造期望"在
+  规划期被拒。
+- **证据**：CI run `35006352449` 五 job 全绿（main `57c3ab8`），macOS 作业在三条 native 路径执行
+  该用例（`evidence/conformance-v28-57c3ab8-2026-09-16/`）；RTX 5060 双轨两块目标各自的保留字节
+  （`evidence/windows-rtx5060-v28-57c3ab8-2026-09-16/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=27 captures=81`。
+- **仍未做**：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
