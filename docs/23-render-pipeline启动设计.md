@@ -871,3 +871,26 @@ conformance，Gate 2/3 仍是终点。
   `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
 - **仍未做**：native 的 `r32float` reviewed MSL 模块、3/4 附件、双格式组合、深度/模板、
   实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 17. 实施状态：native 的单通道浮点模块（v23，2026-09-16）
++
++v22 把 `r32float` 的字节钉在了两条 Vulkan 轨上，但 native 两条轨当时对所有单输出形状都编译
++四分量 MSL 模块，因此 marker 只能点名 Vulkan。本增量补齐 native 半边：
++
++- **新 reviewed MSL**（`conformance/shaders/quad_indexed_2x2_r32f.metal`）：沿用
++  `quad_indexed_2x2.metal` 的索引顶点入口，片元入口 `render_solid_r32f` 只写一个分量
++  （`64/255`），与 Vulkan 的 `solid_r32f.frag.spv` 同形。三处 pin 同步：native 的
++  `REVIEWED_MODULES[3]`、Swift 的 `reviewedR32fModule()`、suite 的 `metal` sha。
++- **选择逻辑**：native `reviewed_module` 在通用单格式臂**之前**加
++  `(Buffers, [R32Float])` → 新模块（fail-closed 不变：其它单输出形状仍选四分量模块）；
++  provider-capture 的入口校验与 MSL 入口对同步（`render_quad_vertex`/`render_solid_r32f`），
++  Swift 的 `reviewedModule(for:)` 同样按 `r32float` 分派。
++- **v22 marker 扩到五轨**：`suite-v22.json` 的 `capture_rails` 现点名全部五条轨，
++  `test_suite_v22.py` 的 marker 门控同步；Vulkan 两轨的字节不变（RTX 5060 复跑确认）。
++- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`）——macOS 作业里
++  `r32float_clear_2x2` 在 Swift oracle 与 native provider 的 trace/object 三条路径上都执行并
++  `PASS native capture validated`（`evidence/conformance-v23-55ba7e2-2026-09-16/`）；
++  RTX 5060 复跑 `8180803e`×4（`evidence/windows-rtx5060-v23-55ba7e2-2026-09-16/`）；
++  本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=22 captures=66`。
++- **仍未做**：3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
++  真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。

@@ -533,8 +533,18 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   `compute-buffer-v21`，Apple 自检全 PASS（`evidence/conformance-v21-f821733-2026-09-15/`）；
   RTX 5060 双轨（`evidence/windows-rtx5060-v21-f821733-2026-09-15/`）；本地 `GATES_OK` +
   `LAVAPIPE_SMOKE_OK suites=21 captures=63`。
-- 仍未做：native 的 `r32float` 模块、3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、
-  heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+- 仍未做：3/4 附件、双格式组合、深度/模板、实例化步进、动态状态、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
+### 13.13 2026-09-16 增量：native 的单通道浮点模块（v23）
++
++- 新 reviewed MSL `conformance/shaders/quad_indexed_2x2_r32f.metal`（入口
++  `render_quad_vertex`/`render_solid_r32f`）；native `reviewed_module` 在通用单格式臂之前
++  按 `[R32Float]` 选择它；provider-capture 与 Swift 的入口校验/模块分派同步。
++- `suite-v22.json` 的 marker 扩到五轨；Vulkan 两轨字节不变。
++- **证据**：CI run `35000667045` 五 job 全绿（main `55ba7e2`），macOS 作业执行
++  `r32float_clear_2x2`（Swift oracle + native provider trace/object）并 `PASS`；
++  RTX 5060 复跑 `8180803e`×4；本地 `GATES_OK` + `LAVAPIPE_SMOKE_OK suites=22 captures=66`。
 
 ### 13.12 2026-09-15 增量：单通道浮点附件（v22 `r32float`）
 
