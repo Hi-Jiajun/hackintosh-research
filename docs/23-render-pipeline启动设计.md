@@ -1002,3 +1002,22 @@ load/store 已经把这条路径建好：
 - **仍未做**：对象 API 的 scissor、实例化步进、深度/模板、MSAA、blend/cull/winding、
   heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
 
+## 24. 实施状态：对象 API 的 scissor（v30，2026-09-16）
+
+v29 把 scissor 放进契约与两条 trace 轨，但对象 API 的 encoder 还没有这个字段，所以 v28 的
+fixture 只能点名三条 trace 轨。本增量把对象半边补齐：
+
+- **对象 API**（`c0b12c2`）：`RenderCommandEncoder::set_scissor(Option<[u32; 4]>)`——与 Metal 的
+  `setScissorRect` 同形，是**encoder 状态**：调用之后记录的每个 pass 都带这个矩形；`RenderTarget`
+  把它抄进 `RenderPassDescriptor.scissor`，因此校验（非空、落在附件内）与两条 rail 的执行路径
+  完全复用 v29 的实现。capture 的对象轨在开 encoder 后按 case 声明调用它。
+- **fixture（v30）**：`scissor_left_half_4x4` 的 marker 扩到**全部五轨**；
+  `test_suite_v28.py` 的门控测试同步（点名必须报、未点名不得报）。
+- **证据**：CI run `35009631530` 五 job 全绿（main `7eb4efc`），macOS 作业在 Swift oracle、
+  native provider 的 trace/对象三条路径执行该用例；RTX 5060 **直轨与对象轨**都读到
+  `4080c0ff`/`11223344` 分列（`evidence/windows-rtx5060-v30-7eb4efc-2026-09-16/`、
+  `evidence/conformance-v30-7eb4efc-2026-09-16/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=28 captures=84`。
+- **仍未做**：实例化步进、深度/模板、MSAA、blend/cull/winding、"通配 texel"观测、
+  heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+

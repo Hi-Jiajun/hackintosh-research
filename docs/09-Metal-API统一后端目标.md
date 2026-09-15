@@ -624,6 +624,17 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：对象 API 的 scissor、实例化步进、深度/模板、MSAA、blend/cull/winding、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
+### 13.20 2026-09-16 增量：对象 API 的 scissor（v30）
+
+- `RenderCommandEncoder::set_scissor(Option<[u32;4]>)`（encoder 状态，同 Metal 的
+  `setScissorRect`）；`RenderTarget` 把矩形抄进 pass 描述符，校验与执行复用 v29。
+- fixture `scissor_left_half_4x4` 的 marker 扩到五轨；RTX 5060 直轨与对象轨都读到
+  `4080c0ff`/`11223344` 分列。
+- **证据**：CI run `35009631530` 五 job 全绿（main `7eb4efc`）；本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=28 captures=84`。
+- 仍未做：实例化步进、深度/模板、MSAA、blend/cull/winding、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
 ## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)
