@@ -783,3 +783,36 @@ conformance，Gate 2/3 仍是终点。
   `copy_in = 3`、`copy_out = 2`）；本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=19 captures=57`。
 - **仍未做**：`LoadOp::DontCare`、3/4 附件、非双 `rgba8_unorm` 的附件格式组合、深度/模板、
   实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 14. 实施状态：未定义初值（v20 `LoadOp::DontCare`，2026-09-15）
+
+本节记录 v19 之后的下一条渲染泛化，也是契约里**最后一个"携带但被拒"的形状**：允许附件的初值
+未定义，但 rail 必须**不读、不预置**它。边界不变：不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **契约**（`e4a3563`）：`RenderAttachment::validate_shape` 删除 `LoadOp::DontCare` 的拒绝——
+  三种 load op（`Clear`/`Load`/`DontCare`）全部放行。不需要新的 pass 级规则：v19 的"至少一个
+  附件 `Store`"已经保证可观测面非空，而 `DontCare` 的字节全部来自 draw 自身。
+  `UnsupportedAttachmentLoadOp` 变体与 slug 保留（core 不再产生）。
+- **Vulkan rail**（`a04544a`）：`DontCare` → `initial_layout = UNDEFINED` + `LOAD_OP_DONT_CARE`，
+  不解析 declaring 字节、不建上传缓冲、因此不要求 `TRANSFER_DST`；`OffscreenColorAttachment` 的
+  `clear: ClearColor` 字段改为 `load: LoadOp`（单一事实源，`VkClearValue` 由它派生）。
+  `DontCare` 携带字节时以保留 slug 拒绝，而不是静默忽略。
+- **native rail**（`70dd974`）：`RenderLoadAction::DontCare` + `MTLLoadAction::DontCare`；
+  `previous_bytes` 对 `DontCare` 返回 `None`（不 `replaceRegion` 预置）；`plan` 对
+  `DontCare + Some(bytes)` 以 `render_attachment_initial_mismatch` 拒绝。
+- **对象 API**（`3ff66dc`）：`RenderAttachmentLoad::DontCare`；既有四个方法的快捷路径仍是 `Clear`。
+- **观测通道**（`a4fd148`）：附件 `load: "dontcare"` **不得**带 `clear_hex`/`initial_hex`，
+  `expected_hex` 必须逐 texel 相同（初值未定义 ⇒ 只有整张被覆盖的期望可比较），且期望必须与
+  declaring case 声明的字节不同（`cdcdcdcd` 不能等于期望——一条把 `DontCare` 当 `Load` 实现的
+  rail 会被这条规则与"不上传"的计数一起挡住）。
+- **fixture（v20）**：`dontcare_load_quad_2x2`——单附件 2×2 `rgba8_unorm`、`load: "dontcare"`、
+  `store: "store"`，全屏 quad 覆盖全部 4 texel，期望 `4080c0ff`×4；declaring case 的视图初值
+  `cdcdcdcd`×4。marker 五轨全点名。
+- **证据**：CI run `34925106004` 五 job 全绿（main `dccac6d`），五轨 parity 到 `compute-buffer-v20`，
+  Apple 五个自检全 PASS（`evidence/conformance-v20-dccac6d-2026-09-15/`）；RTX 5060 双轨
+  （`evidence/windows-rtx5060-v20-dccac6d-2026-09-15/`）；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=20 captures=60`。
+- **已知边界**：present 附件的 `DontCare` 不在本增量范围（present 的初始状态由
+  `docs/24` §3.1 的 target 契约拥有）；部分覆盖下的 `DontCare` 需要"通配 texel"观测（尚未做）。
+- **仍未做**：3/4 附件、非双 `rgba8_unorm` 的附件格式组合、深度/模板、实例化步进、动态状态、
+  heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
