@@ -977,3 +977,28 @@ load/store 已经把这条路径建好：
   `LAVAPIPE_SMOKE_OK suites=27 captures=81`。
 - **仍未做**：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+
+## 23. 实施状态：scissor（v29，2026-09-16）
+
+契约里的第一个**动态状态**字段：pass 可以把 draw 裁剪到一个矩形。
+
+- **契约**（core + MCC1）：`RenderPassDescriptor.scissor: Option<[u32; 4]>`，校验"非空且落在
+  viewport 内"（新 `ScissorOutOfBounds`，Args/`trace_contract_invalid`）；MCC1 新特征位
+  `RENDER_FEATURE_SCISSOR = 0x04`，scissor 块写在 `PASS_KIND_RENDER_EXT` 的尾部
+  （旧帧字节不变；无顶点输入但带 scissor 的 pass 也走扩展 kind）。
+- **两条 rail**：Vulkan 把矩形写进 record 阶段的 `vkCmdSetScissor`（管线已是动态 scissor 状态）；
+  native 在编码器上 `setScissorRect`。两边的矩形都在**framebuffer 坐标**里，原点在 render area
+  左上，所以两轨对同一份 fixture 给出同样的字节。
+- **观测口径**：声明 scissor 的用例，比较器**知道覆盖范围**——矩形内每个 texel 是片元输出、
+  矩形外每个 texel 是 clear 色；并要求"矩形既不是空、也不覆盖全图"（否则这条用例证明不了
+  rail 真的执行了裁剪）。Swift oracle 用同一套规则。
+- **fixture（v29）**：`scissor_left_half_4x4`——4×4 附件、clear `11223344`、scissor `[0,0,2,4]`，
+  期望左半 8 个 `4080c0ff`、右半 8 个 `11223344`。marker 只点名三条 trace 轨：对象 API 的
+  编码器还没有 scissor 字段（v30 补），未点名的轨必须不报告。
+- **证据**：CI run `35008617757` 五 job 全绿（main `b329516`），macOS 作业在 Swift oracle 与
+  native provider 上执行该用例（`evidence/conformance-v29-b329516-2026-09-16/`）；RTX 5060
+  直轨 `4080c0ff`/`11223344` 分列（`evidence/windows-rtx5060-v29-b329516-2026-09-16/`）；
+  本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=28 captures=84`。
+- **仍未做**：对象 API 的 scissor、实例化步进、深度/模板、MSAA、blend/cull/winding、
+  heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。
+

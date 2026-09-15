@@ -612,6 +612,18 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 - 仍未做：深度/模板、实例化步进、动态状态、每轴超过四个 texel、heap aliasing、
   真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
+### 13.19 2026-09-16 增量：scissor（v29）
+
+- 契约增 `scissor: Option<[u32;4]>`（`ScissorOutOfBounds`）；MCC1 新特征位
+  `RENDER_FEATURE_SCISSOR = 0x04`（旧帧字节不变）；Vulkan 走 `vkCmdSetScissor`、native 走
+  `setScissorRect`，两边都在 framebuffer 坐标。
+- 比较器对声明 scissor 的用例知道覆盖范围（内=输出、外=clear），并要求矩形既非空也不全覆盖；
+  fixture `scissor_left_half_4x4` 期望左半 `4080c0ff`、右半 `11223344`，marker 只点名三条 trace 轨。
+- **证据**：CI run `35008617757` 五 job 全绿（main `b329516`）；RTX 5060 直轨；本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=28 captures=84`。
+- 仍未做：对象 API 的 scissor、实例化步进、深度/模板、MSAA、blend/cull/winding、heap aliasing、
+  真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
 ## 14. 关联资料
 
 - [现有路线图](03-开发路线图.md)
