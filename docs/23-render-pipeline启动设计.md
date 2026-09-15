@@ -673,35 +673,77 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
   深度/模板、动态状态（blend/cull/scissor）。
 
 ## 11. 实施状态：`LoadOp::Load`（v17，2026-09-15）
-+
-+本节记录 v16（调用方顶点/索引缓冲）之后的下一条渲染泛化：**在已有内容上继续画**。边界不变：
-+不是完整 Metal conformance，Gate 2/3 仍是终点。
-+
-+- **执行路径（Vulkan）**（`9eb3e3b`）：附件的**前序字节来自 declaring case 声明的 view**
-+  （`BufferSource::OwnedBytes`），经 host-visible staging buffer 用 `vkCmdCopyBufferToImage`
-+  落到 `TRANSFER_DST_OPTIMAL`，再以 barrier 交到 `COLOR_ATTACHMENT_OPTIMAL`，render pass 以
-+  `LOAD_OP_LOAD` 打开。准入要求该格式在 optimal tiling 上同时具备 `COLOR_ATTACHMENT` 与
-+  `TRANSFER_DST`（在 `vkCreateImage` 之前判定），image 的 usage 只在真的要上传时才带
-+  `TRANSFER_DST`；lease 字节 typed 拒绝。loading pass 即使不要求 host readback 也必须能解析
-+  declaring view。
-+- **native 对称**（`94778e7`）：`MTLTexture.replaceRegion` 预置同一批字节 + `MTLLoadAction.Load`；
-+  Swift oracle 的 suite 路径同形（present 自检保持"target 初始状态 + .load"的既有语义）。
-+- **部分覆盖口径**：`LoadOp::Load` 的期望允许"片元输出"与"该位置的上传字节"混合，但要求
-+  二者都出现、且所有被绘制的 texel 是同一个输出（否则这条用例两边都不可证伪）。`clear` 形状保留
-+  v12 以来的"全 texel 相同"严格规则。capture/compare/oracle 三处同一口径。
-+- **fixture（v17）**：`load_partial_quad_2x2`——reviewed 顶点流移到**左列**（`x∈[-1,0]`，`y∈[-1,1]`），
-+  6 个索引画两块 texel，另两块保留 `fefefefe`；期望 `4080c0ff fefefefe 4080c0ff fefefefe`。
-+  marker 点名三条 trace 轨（object 轨的"load"形状是下一增量）。
-+- **两个被 fixture 暴露的真实差异**（都已修复并写进证据）：
-+  1. **NDC 手性**：第一版用左上象限，Lavapipe 覆盖左上 texel、Apple Paravirtual 覆盖左下——Vulkan
-+     的 NDC y 向下、Metal 向上，单一期望无法描述两轨（CI run `34870722991`）。改用**上下翻转对称**
-+     的左列后，两轨覆盖同一对 texel。
-+  2. **自检 fixture 的可证伪性**：present 自检故意"load + 全覆盖"（它要证的是哨兵被替换），比较器
-+     对 suite 保持"必须有一个保留 texel"，oracle 只要求"至少一个绘制 texel"；两套规则差异恰在
-+     fixture 差异处，且 CI 仍用比较器核对 oracle 的 suite 捕获。
-+- **证据**：CI run `34872919672` 五 job 全绿 + v17 三轨 parity
-+  （`evidence/conformance-v17-bd6775e-2026-09-15/run-34872919672/`），RTX 5060 真机
-+  `evidence/windows-rtx5060-v17-be0f9ca-2026-09-15/`；同 run 的 `vertex_selftest`/`present_selftest`
-+  仍 PASS（无回归）。
-+- **仍未做**：对象 API 的 load 形状、MRT（>1 附件）、`StoreOp::DontCare`、`rgba8_unorm` 之外的
-+  suite 内格式、深度/模板、实例化步进与动态状态。
+
+本节记录 v16（调用方顶点/索引缓冲）之后的下一条渲染泛化：**在已有内容上继续画**。边界不变：
+不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **执行路径（Vulkan）**（`9eb3e3b`）：附件的**前序字节来自 declaring case 声明的 view**
+  （`BufferSource::OwnedBytes`），经 host-visible staging buffer 用 `vkCmdCopyBufferToImage`
+  落到 `TRANSFER_DST_OPTIMAL`，再以 barrier 交到 `COLOR_ATTACHMENT_OPTIMAL`，render pass 以
+  `LOAD_OP_LOAD` 打开。准入要求该格式在 optimal tiling 上同时具备 `COLOR_ATTACHMENT` 与
+  `TRANSFER_DST`（在 `vkCreateImage` 之前判定），image 的 usage 只在真的要上传时才带
+  `TRANSFER_DST`；lease 字节 typed 拒绝。loading pass 即使不要求 host readback 也必须能解析
+  declaring view。
+- **native 对称**（`94778e7`）：`MTLTexture.replaceRegion` 预置同一批字节 + `MTLLoadAction.Load`；
+  Swift oracle 的 suite 路径同形（present 自检保持"target 初始状态 + .load"的既有语义）。
+- **部分覆盖口径**：`LoadOp::Load` 的期望允许"片元输出"与"该位置的上传字节"混合，但要求
+  二者都出现、且所有被绘制的 texel 是同一个输出（否则这条用例两边都不可证伪）。`clear` 形状保留
+  v12 以来的"全 texel 相同"严格规则。capture/compare/oracle 三处同一口径。
+- **fixture（v17）**：`load_partial_quad_2x2`——reviewed 顶点流移到**左列**（`x∈[-1,0]`，`y∈[-1,1]`），
+  6 个索引画两块 texel，另两块保留 `fefefefe`；期望 `4080c0ff fefefefe 4080c0ff fefefefe`。
+  marker 点名三条 trace 轨（object 轨的"load"形状是下一增量）。
+- **两个被 fixture 暴露的真实差异**（都已修复并写进证据）：
+  1. **NDC 手性**：第一版用左上象限，Lavapipe 覆盖左上 texel、Apple Paravirtual 覆盖左下——Vulkan
+     的 NDC y 向下、Metal 向上，单一期望无法描述两轨（CI run `34870722991`）。改用**上下翻转对称**
+     的左列后，两轨覆盖同一对 texel。
+  2. **自检 fixture 的可证伪性**：present 自检故意"load + 全覆盖"（它要证的是哨兵被替换），比较器
+     对 suite 保持"必须有一个保留 texel"，oracle 只要求"至少一个绘制 texel"；两套规则差异恰在
+     fixture 差异处，且 CI 仍用比较器核对 oracle 的 suite 捕获。
+- **证据**：CI run `34872919672` 五 job 全绿 + v17 三轨 parity
+  （`evidence/conformance-v17-bd6775e-2026-09-15/run-34872919672/`），RTX 5060 真机
+  `evidence/windows-rtx5060-v17-be0f9ca-2026-09-15/`；同 run 的 `vertex_selftest`/`present_selftest`
+  仍 PASS（无回归）。
+- **仍未做**：对象 API 的 load 形状、MRT（>1 附件）、`StoreOp::DontCare`、`rgba8_unorm` 之外的
+  suite 内格式、深度/模板、实例化步进与动态状态。
+
+## 12. 实施状态：多渲染目标（v18 MRT，2026-09-15）
+
+本节记录 v17（`LoadOp::Load` 上传路径）之后的下一条渲染泛化：**一次 draw 写多个颜色附件**。
+边界不变：不是完整 Metal conformance，Gate 2/3 仍是终点。
+
+- **契约**（`da26872`）：`MAX_COLOR_ATTACHMENTS` 1 → 4（**契约/线路上限**）；
+  `RenderPipelineContract.color_format` → `color_formats: Vec<AttachmentFormat>`，entry `i` = location `i`。
+  准入先查"格式数 == 附件数"（新 `RenderPipelineFormatCountMismatch`），再逐位置相等
+  （沿用 `RenderPipelineFormatMismatch`）；空列表是 `EmptyRenderPipelineColorFormats`。
+  `RenderPassDescriptor::validate()` 的 viewport 校验同步收紧为逐附件（`ViewportExtentMismatch`）。
+- **线格式**（`63cf494`）：新 tag `PIPELINE_KIND_RENDER_MRT = 0x02`（u64 长度前缀 + N 个格式字节，
+  N ∈ 1..=4）；`PIPELINE_KIND_RENDER`（0x01）保持单格式字节逐字节不变，旧解码器遇 0x02 以
+  `UnknownPipelineTag` 硬拒（fail-closed）。
+- **Vulkan rail**（`87e0352`）：N 个 image/view/readback、N 个 attachment description、N 个 blend
+  state、每附件一次 `vkCmdCopyImageToBuffer`（`copy_out == N`；v18 fixture 为 3 = declaring scratch 1 +
+  附件 2）；双输出 reviewed 片元模块 `solid_unorm8_dual.frag.spv`（location 0 `4080c0ff`、
+  location 1 `ff8040c0`）。能力位 `max_color_attachments = 2`——reviewed 双输出模块只覆盖两个 location，
+  3/4 附件在该落地之前必须 typed 拒绝而不是沉默执行前两个。
+- **native rail**（`ae6df2a`）：`MTLRenderPassDescriptor` 的 `colorAttachments[0..N]` + 多输出 reviewed
+  MSL `quad_indexed_2x2_dual.metal`（sha256 `5afc95dd…7eba`）；模块选择按 (vertex layout,
+  color_formats) fail-closed；能力位同为 2。
+- **对象 API**（`392c7c6`）：`RenderColorAttachment { view, format, load }` +
+  `draw_primitives_with_attachments` / `draw_indexed_primitives_with_attachments`；附件列表顺序即
+  location，逐附件 `Clear`/`Load`（`Load` 按自己的 view 在提交期快照字节）；空列表、重复视图、
+  超限三类 typed 拒绝。
+- **观测通道**（`410af7e`）：render case 允许 `attachments: [...]`（每个附件有自己的声明与
+  `expected_hex`，与单 `attachment` 互斥）；比较器逐附件比较 writeback 与 allocation 观测。
+  v18 fixture `mrt_dual_output_2x2` 用新 reviewed declaring kernel `mrt_declare`（两个只读附件视图 +
+  一个 scratch 写视图），计数契约 `copy_in == copy_out == 3`。两个附件的期望字节必须不同，否则
+  "写了两个目标"不可证伪。
+- **两处 fixture 偏差（已记录）**：declaring 写视图 offset 移到 4（provider-capture 与 NativeOracle
+  共有的 canary 规则要求非附件视图前后各 ≥4 guard 字节）；顶点流改用 v16 的全屏 quad 字节
+  （v17 的左半屏 quad 在 clear + 全 texel 同值期望下会留下右列清除色）。
+- **证据**：CI run `34918043996` 五 job 全绿（main `96af05a`），五轨 parity 到 `compute-buffer-v18`，
+  Apple Paravirtual `mrt_selftest: PASS (mrt_dual_output_2x2 4080c0ff… ff8040c0…)`
+  （`evidence/conformance-v18-96af05a-2026-09-15/`）；RTX 5060 真机双轨捕获
+  `evidence/windows-rtx5060-v18-96af05a-2026-09-15/`；本地 `GATES_OK`、
+  `LAVAPIPE_SMOKE_OK suites=18 captures=54`。
+- **仍未做**：3/4 附件（需要 3/4 输出的 reviewed 模块）、非双 `rgba8_unorm` 的附件格式组合、
+  `StoreOp::DontCare`、深度/模板、实例化步进、动态状态、heap aliasing、真实设备丢失恢复、
+  guest memory 的 reims 侧接线、Gate 2/3。

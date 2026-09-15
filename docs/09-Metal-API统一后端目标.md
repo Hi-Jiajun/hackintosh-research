@@ -389,7 +389,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；v8 已覆盖 raw AIR 与 Apple wrapper 两种固定编码，但仍缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor（pin 升级后适配器已在 `6e5df5b` 修复，并由 `81d6cbe` 的 CI job 持续验证）；生产 guest/display 路径未调用 canonical Metal provider；owner→provider 命令通道已由 `0ed4f60`/`cd5fcf0` 完成、`134d746` 把 descriptor 传递纳入协议、`630260f` 支持 chunked payload、`574aca1` 修复拒绝重复 import 时的通道失步（provider outbox、IPC writer 与 owner receiver 由 `9226ef2`–`83b3f23` 提供，`8913e37` 单进程端到端打通，`9ac0dfe` 两进程拆分）；`e891102` 还让 `reims-smoke.exe` 在 Windows RTX 5060 上跑通（`PASS suite executor=reims`）；仍缺真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
-5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）与调用方顶点/索引缓冲的 indexed draw（v16，见 §13.7）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、MRT/`LoadOp::Load`/`StoreOp::DontCare`、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
+5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）、调用方顶点/索引缓冲的 indexed draw（v16）、`LoadOp::Load` 的附件上传路径（v17）与多渲染目标 MRT（v18，见 §13.7/§13.8）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、3/4 附件的 reviewed 模块、`StoreOp::DontCare`、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
 6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
 
 ### 13.4 外部依赖状态（2026-09-08）
@@ -442,7 +442,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   证据：`LAVAPIPE_SMOKE_OK suites=16 captures=48`、`GATES_OK`、RTX 5060 真机
   `evidence/windows-rtx5060-v16-4a926a0-2026-09-14/`。
 - **v17 加载路径**（`bd6775e`，2026-09-15）：渲染泛化第二段落地——附件的 `LoadOp::Load` 上传路径
-+ 部分覆盖期望。Vulkan 轨用 `vkCmdCopyBufferToImage` 把 declaring view 的字节写进附件再以
+  与部分覆盖期望。Vulkan 轨用 `vkCmdCopyBufferToImage` 把 declaring view 的字节写进附件再以
   `LOAD_OP_LOAD` 打开 render pass（准入要求 `TRANSFER_DST` 且在 `vkCreateImage` 之前判定），
   native 轨用 `MTLTexture.replaceRegion` + `MTLLoadAction.Load`；比较口径允许"片元输出"与"上传字节"
   混合但要求两者都出现。CI run `34872919672` 五 job 全绿（三条 trace 轨执行 `load_partial_quad_2x2`
@@ -457,6 +457,30 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   与 Apple Paravirtual 三条 native 轨都执行 `quad_indexed_clear_2x2`，compare-captures 给出 v16 五路
   parity，同一 run 的 `vertex_selftest: PASS (vertex_quad_indexed_2x2 4080c0ff...)` 是 native 翻位证据
   （归档 `evidence/conformance-v16-53c2db5-2026-09-15/run-34868060103/`）。
+
+### 13.8 2026-09-15 增量：多渲染目标（v18 MRT）
+
+- **契约与线格式**（`da26872`/`63cf494`）：`MAX_COLOR_ATTACHMENTS` 升到 4（契约上限），
+  `RenderPipelineContract.color_formats: Vec<AttachmentFormat>`（entry `i` = location `i`），
+  准入先查数量相等再逐位置相等；MCC1 新增 `PIPELINE_KIND_RENDER_MRT = 0x02`（长度前缀格式列表），
+  旧 0x01 单格式字节逐字节不变、旧解码器遇 0x02 硬拒。
+- **两条 rail**（`87e0352`/`ae6df2a`）：Vulkan 侧 N 个 image/view/readback + 每附件一次
+  `vkCmdCopyImageToBuffer`（`copy_out == N`），新 reviewed 双输出片元模块
+  `solid_unorm8_dual.frag.spv`（location 0 `4080c0ff`、location 1 `ff8040c0`）；native 侧
+  `MTLRenderPassDescriptor` 多 color attachment + 多输出 reviewed MSL `quad_indexed_2x2_dual.metal`。
+  两条 rail 的能力位都是 **2**（reviewed 双输出模块只覆盖两个 location），3/4 附件 typed 拒绝。
+- **对象 API**（`392c7c6`）：`RenderColorAttachment { view, format, load }` 与
+  `draw_*_with_attachments`，附件列表顺序即 location，逐附件 `Clear`/`Load` 与 typed 拒绝。
+- **观测通道**（`410af7e`/`9277153`/`6dee8bf`）：render case 支持 `attachments: [...]`（每附件
+  `expected_hex`），比较器逐附件比较；v18 fixture `mrt_dual_output_2x2` 用新 reviewed declaring
+  kernel `mrt_declare`，期望字节 `4080c0ff…` 与 `ff8040c0…`（两者不同，保证"写了两个目标"可证伪）。
+- **证据**：CI run `34918043996` 五 job 全绿（main `96af05a`），五轨 parity 到 `compute-buffer-v18`，
+  Apple Paravirtual `mrt_selftest: PASS (mrt_dual_output_2x2 4080c0ff… ff8040c0…)`（归档
+  `evidence/conformance-v18-96af05a-2026-09-15/`），RTX 5060 真机双轨
+  `evidence/windows-rtx5060-v18-96af05a-2026-09-15/`，本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=18 captures=54`。
+- 仍未做：3/4 附件、附件格式组合（非双 `rgba8_unorm`）、`StoreOp::DontCare`、深度/模板、
+  实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
 ## 14. 关联资料
 
