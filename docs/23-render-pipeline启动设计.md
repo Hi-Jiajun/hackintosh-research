@@ -747,3 +747,39 @@ rg -n "MAX_DEVICE_QUEUES|dedicated_compute" crates/metal-api-vulkan/src/lib.rs |
 - **仍未做**：3/4 附件（需要 3/4 输出的 reviewed 模块）、非双 `rgba8_unorm` 的附件格式组合、
   `StoreOp::DontCare`、深度/模板、实例化步进、动态状态、heap aliasing、真实设备丢失恢复、
   guest memory 的 reims 侧接线、Gate 2/3。
+
+## 13. 实施状态：不可观测的附件（v19 `StoreOp::DontCare`，2026-09-15）
+
+本节记录 v18 之后的下一条渲染泛化：**允许丢弃附件，但被丢弃的附件必须从观测面消失**。
+契约里"携带但被拒"的形状只剩 `LoadOp::DontCare`（本节不放行）。边界不变：不是完整 Metal
+conformance，Gate 2/3 仍是终点。
+
+- **契约**（`61bc53a`）：`RenderAttachment::validate_shape` 放行 `StoreOp::DontCare`
+  （`LoadOp::DontCare` 仍拒；它表达的是"画之前的内容是垃圾"，与"不观测"是两种语义）；
+  pass 级新规则——**至少一个附件是 `StoreOp::Store`**，否则 `AllRenderAttachmentsDiscarded`：
+  全丢弃的 pass 没有任何可观测落点，等于给"没有落地"发空白证明。
+- **提交契约的豁免**（`935b632`）：core 的 `validate_writebacks_for_trace` 原先要求每个可写 view
+  都有 writeback，不感知丢弃。豁免上移到 core：一个 view 恰好"被某个附件丢弃且无任何 pass 存储"
+  时才免除 writeback；混合 store/discard 的同一 view 仍必须落地。两条 rail 与对象 API 三个调用点
+  因此自动一致，Vulkan/capture 侧各自的重复豁免被删除。
+- **Vulkan rail**（`b066e51`）：被丢弃附件 `VK_ATTACHMENT_STORE_OP_DONT_CARE`，不建 readback
+  缓冲、不 `vkCmdCopyImageToBuffer`、不记 `copy_out`；`TRANSFER_SRC` 能力位只对已存储附件要求
+  （丢弃附件不需要被读回，准入不该被无谓卡住），load 上传的 `TRANSFER_DST` 规则不变。
+- **native rail**（`632260b`/`f9789de`）：`MTLStoreAction::DontCare`、被丢弃附件不读回；
+  compute 侧的 `collect_writebacks` 跳过"丢弃且从不存储"的 view——否则会既伪造一份 pre-render
+  writeback，又计一次 pass 从未执行的 copy-out。
+- **对象 API**（`0e64015`）：`RenderColorAttachment` 增 `store: StoreOp`，descriptor 逐附件投影；
+  四个既有方法固定 `Store`，零漂移。
+- **观测通道**（`15967ea`/`c4463d3`）：附件声明 `store: "store" | "dontcare"`，dontcare 附件
+  **不得**带 `expected_hex`；用例必须至少一个 store 附件；结果的 `writebacks`/`allocations`
+  必须不含被丢弃附件（报了即拒）；`copy_out` 只数已存储的那些。
+- **fixture（v19）**：`discard_second_attachment_2x2`——沿用 v18 的 declaring kernel
+  `mrt_declare` 与双附件形状，location 0 = `store`（唯一期望 `4080c0ff`×4）、location 1 =
+  `dontcare`；计数契约 `copy_in == 3`、`copy_out == 2`。marker 五轨全点名。
+- **证据**：CI run `34922855995` 五 job 全绿（main `f5ad567`），五轨 parity 到 `compute-buffer-v19`，
+  Apple Paravirtual 的 render/vertex/present/heap/MRT 自检全部仍 PASS
+  （`evidence/conformance-v19-f5ad567-2026-09-15/`）；RTX 5060 直轨 + 对象轨
+  （`evidence/windows-rtx5060-v19-f5ad567-2026-09-15/`，两条轨都只报 900 的 `4080c0ff`×4，
+  `copy_in = 3`、`copy_out = 2`）；本地 `GATES_OK`、`LAVAPIPE_SMOKE_OK suites=19 captures=57`。
+- **仍未做**：`LoadOp::DontCare`、3/4 附件、非双 `rgba8_unorm` 的附件格式组合、深度/模板、
+  实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线、Gate 2/3。

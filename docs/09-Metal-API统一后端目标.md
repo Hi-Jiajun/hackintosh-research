@@ -389,7 +389,7 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
 2. 通用 shader 支持：只接受固定、审查过的 shader/source/entry/layout/footprint；v8 已覆盖 raw AIR 与 Apple wrapper 两种固定编码，但仍缺任意 AIR/MSL 编译、通用反射、地址计算、更多原子操作、纹理访问、动态资源索引、通用 MTLB 函数名解析和 Windows MSL 编译。
 3. 真实 guest memory 生命周期：buffer 数据主要在 provider 边界内管理；缺 guest allocation、映射、脏页、上传/回读、失效、迁移，以及 GPU 执行期间 CPU 修改资源的语义；snapshot 不持有真实 guest page；同一 backing buffer 多 binding alias 仍被拒绝。
 4. reims 生产接入：只有可选、离线的 Vulkan A/B executor（pin 升级后适配器已在 `6e5df5b` 修复，并由 `81d6cbe` 的 CI job 持续验证）；生产 guest/display 路径未调用 canonical Metal provider；owner→provider 命令通道已由 `0ed4f60`/`cd5fcf0` 完成、`134d746` 把 descriptor 传递纳入协议、`630260f` 支持 chunked payload、`574aca1` 修复拒绝重复 import 时的通道失步（provider outbox、IPC writer 与 owner receiver 由 `9226ef2`–`83b3f23` 提供，`8913e37` 单进程端到端打通，`9ac0dfe` 两进程拆分）；`e891102` 还让 `reims-smoke.exe` 在 Windows RTX 5060 上跑通（`PASS suite executor=reims`）；仍缺真实设备生命周期、生产队列调度和错误传播；Gate 2 未通过。
-5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）、调用方顶点/索引缓冲的 indexed draw（v16）、`LoadOp::Load` 的附件上传路径（v17）与多渲染目标 MRT（v18，见 §13.7/§13.8）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、3/4 附件的 reviewed 模块、`StoreOp::DontCare`、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
+5. 图形与显示路径：纹理读取（v11/v12）、离屏 render pass（v13，五路）、surface-less presentation 等价物（v14，provider 轨 + Apple 一设备自检）、heaps/ICB（v15，见 `docs/25`）、调用方顶点/索引缓冲的 indexed draw（v16）、`LoadOp::Load` 的附件上传路径（v17）、多渲染目标 MRT（v18）与不可观测附件 `StoreOp::DontCare`（v19，见 §13.7–§13.9）已落地；真实 `VkSurfaceKHR`/swapchain/窗口、多缓冲、FIFO 之外的 present mode、vsync/suboptimal、3/4 附件的 reviewed 模块、`LoadOp::DontCare`、深度/模板、实例化步进与动态状态仍未实现（design 见 `docs/23`、`docs/24`、`docs/25`）。当前范围仍是受限图形子集，不是完整 Metal 图形 conformance。
 6. 三重验证门：Gate 1 只在受限 fixture 内成立；Gate 2、Gate 3（VM E2E：guest Metal.framework/AppleParavirtGPU/wire/WHPX/KVM/guest RAM/dirty tracking/display）未完成，不能宣称 100% conformance。
 
 ### 13.4 外部依赖状态（2026-09-08）
@@ -481,6 +481,26 @@ guest Metal.framework / AppleParavirtGPU / vGPU wire
   `LAVAPIPE_SMOKE_OK suites=18 captures=54`。
 - 仍未做：3/4 附件、附件格式组合（非双 `rgba8_unorm`）、`StoreOp::DontCare`、深度/模板、
   实例化步进、动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
+
+### 13.9 2026-09-15 增量：不可观测的附件（v19 `StoreOp::DontCare`）
+
+- **契约**（`61bc53a`）：放行 `StoreOp::DontCare`（`LoadOp::DontCare` 仍拒），pass 级要求
+  **至少一个附件 `Store`**（`AllRenderAttachmentsDiscarded`）。
+- **提交契约**（`935b632`）：core 的 writeback 校验豁免"被某附件丢弃且无 pass 存储"的 view；
+  混合 store/discard 的同一 view 仍要落地。三个调用点（Vulkan / native / 对象 API）自动一致。
+- **两条 rail**（`b066e51`/`632260b`/`f9789de`）：Vulkan `DONT_CARE` + 不读回 + `TRANSFER_SRC`
+  只对已存储附件要求；native `MTLStoreAction::DontCare` + compute 侧 `collect_writebacks`
+  跳过丢弃视图（不伪造 pre-render writeback、不计 copy-out）。
+- **对象 API**（`0e64015`）：`RenderColorAttachment.store`。
+- **观测通道**（`15967ea`/`c4463d3`）：附件 `store: "dontcare"` 不得带 `expected_hex`；
+  结果不得含被丢弃附件的 writeback/allocation；v19 fixture `discard_second_attachment_2x2`
+  计数 `copy_in == 3`、`copy_out == 2`。
+- **证据**：CI run `34922855995` 五 job 全绿（main `f5ad567`），五轨 parity 到
+  `compute-buffer-v19`，Apple 自检全 PASS（`evidence/conformance-v19-f5ad567-2026-09-15/`）；
+  RTX 5060 双轨（`evidence/windows-rtx5060-v19-f5ad567-2026-09-15/`）；本地 `GATES_OK` +
+  `LAVAPIPE_SMOKE_OK suites=19 captures=57`。
+- 仍未做：`LoadOp::DontCare`、3/4 附件、非双 `rgba8_unorm` 的格式组合、深度/模板、实例化步进、
+  动态状态、heap aliasing、真实设备丢失恢复、guest memory 的 reims 侧接线与 Gate 2/3。
 
 ## 14. 关联资料
 
